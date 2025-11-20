@@ -222,7 +222,7 @@ img {
    6. Responsive Design
    ========================================================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 2160px) {
     body {
         -webkit-tap-highlight-color: transparent;
     }
