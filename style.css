@@ -1,0 +1,143 @@
+/* ==========================================================================
+   1. Global Styles & Variables
+   ========================================================================== */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0b0d11;
+    color: #DDDDDD;
+    overflow-x: hidden;
+}
+
+.bg-fixed-wrapper {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;
+}
+
+.bg-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(11, 13, 17, 0.92), #0b0d11);
+}
+
+/* ==========================================================================
+   2. Navigation
+   ========================================================================== */
+.header-main {
+    background: rgba(11, 13, 17, 0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-scroll::-webkit-scrollbar { height: 4px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: #E53738; border-radius: 10px; }
+.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 6px; }
+.nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
+.nav-link.active { background: white; color: #CA0C00; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+
+/* ==========================================================================
+   3. Animations & Loaders
+   ========================================================================== */
+.loader { width: 40px; height: 40px; border: 4px solid #FFF; border-bottom-color: #E53738; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.live-pulse { animation: pulse-red 2s infinite; }
+@keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* ==========================================================================
+   4. Components
+   ========================================================================== */
+
+/* Garante que todas as imagens dentro de links ou botões de time/liga não sejam cortadas */
+img {
+    object-fit: contain;
+}
+
+.game-card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    transition: all 0.2s ease-out;
+}
+
+.game-card:hover {
+    transform: translateY(-3px);
+    border-color: #E53738;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.news-card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    transition: all 0.2s ease-out;
+    overflow: hidden;
+}
+
+.news-card:hover {
+    transform: translateY(-3px);
+    border-color: #E53738;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* --- Tailwind CSS Custom Classes --- */
+.bg-dark-bg { background-color: #0b0d11; }
+.bg-surface { background-color: #1e1e1e; }
+.bg-surface-light { background-color: #252525; }
+.border-border { border-color: #333; }
+.text-accent-red { color: #E53738; }
+
+/* --- Pitch / Campo --- */
+.soccer-pitch {
+    background: linear-gradient(to bottom, #2e3b32, #1a221c);
+    border: 2px solid rgba(255,255,255,0.2);
+    position: relative; overflow: hidden; border-radius: 8px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+}
+.pitch-lines { position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.2); }
+.center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); }
+.half-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
+.player-dot { transition: all 0.5s ease; z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 50; }
+
+/* --- Form Badges --- */
+.form-badge { width: 6px; height: 6px; border-radius: 50%; margin-right: 2px; display: inline-block; }
+.form-W { background-color: #00cc99; }
+.form-D { background-color: #fbbf24; }
+.form-L { background-color: #ef4444; }
+
+/* --- Modals --- */
+#match-modal .flex-1.overflow-y-auto {
+    padding: 1.5rem; /* 24px */
+}
+
+@media (max-width: 768px) {
+    body {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    #main-content {
+        padding: 1rem;
+    }
+
+    #view-matches {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-link {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #standings-container table {
+        font-size: 11px;
+    }
+
+    #standings-container .p-3 {
+        padding: 0.5rem;
+    }
+
+    #standings-container .font-bold {
+        font-weight: 500;
+    }
+}

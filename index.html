@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportingLabs - Resultados de Futebol em Tempo Real</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-dark-bg">
+    <div class="bg-fixed-wrapper" id="bg-wrapper"><div class="bg-overlay"></div></div>
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 header-main">
+        <div class="container mx-auto px-4 h-16 flex justify-between items-center gap-2 sm:gap-4">
+            <div class="flex items-center gap-3 cursor-pointer hover:opacity-90 transition flex-shrink-0" onclick="app.changeLeague(app.state.currentLeague)">
+                <img src="PNG/2.png" alt="SportingLabs Logo" class="h-10 w-10 rounded-lg">
+                <span class="text-xl font-bold tracking-tight text-white leading-none">Sporting<span class="font-light opacity-90">Labs</span></span>
+            </div>
+            
+            <!-- Scrollable Nav -->
+            <div class="flex-1 overflow-x-auto nav-scroll mx-4">
+                <nav class="flex gap-2 p-1" id="league-nav">
+                </nav>
+            </div>
+
+            <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
+                <img id="region-flag" src="" class="w-5 h-auto rounded-sm">
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[90] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-surface w-full max-w-md rounded-2xl border border-border p-6 shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-accent-red"></i> Fonte de Dados</h3>
+                <button onclick="app.toggleSettings()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <p class="text-sm text-green-200 bg-green-500/10 p-3 rounded border border-green-500/20 mb-4 font-medium">
+                ✓ Conectado à API Pública da ESPN<br>
+                <span class="text-xs opacity-70">Placares, classificações e estatísticas em tempo real.</span>
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <button onclick="app.saveKey()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg w-full">Atualizar Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-24 pb-12 flex-grow max-w-7xl">
+        
+        <!-- League Header -->
+        <div class="bg-surface/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/10 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden transition-all">
+            <div class="flex items-center gap-6 z-10">
+                <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center p-2 relative group overflow-hidden">
+                    <img id="league-logo" src="" class="w-full h-full object-contain relative z-10" alt="League Logo">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full live-pulse"></span> Em Tempo Real
+                        </span>
+                    </div>
+                    <h1 id="league-title" class="text-2xl md:text-4xl font-black text-white tracking-tight">Carregando...</h1>
+                    <p class="text-gray-400 font-medium flex items-center gap-2 mt-1 text-sm" id="league-region">
+                        <i data-lucide="globe" class="w-4 h-4"></i> Futebol Mundial
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex bg-black/40 p-1 rounded-xl backdrop-blur-sm z-10 overflow-x-auto max-w-full gap-2">
+                <button onclick="app.setView('matches')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-matches">Placar</button>
+                <button onclick="app.setView('standings')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-standings">Classificação</button>
+                <button onclick="app.setView('news')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-news">Notícias</button>
+                <button onclick="app.setView('top-scorers')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-top-scorers">Artilheiros</button>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader" class="flex flex-col items-center justify-center py-20 hidden">
+            <div class="loader mb-4"></div>
+            <p class="text-gray-400 text-sm font-bold animate-pulse" id="loader-text">Carregando dados...</p>
+        </div>
+
+        <!-- View: Matches -->
+        <div id="view-matches" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+        <!-- View: Standings (Agora suporta Múltiplos Grupos) -->
+        <div id="view-standings" class="hidden">
+            <!-- Container dinâmico para grupos -->
+            <div id="standings-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+        </div>
+
+        <!-- View: News -->
+        <div id="view-news" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- View: Top Scorers -->
+        <div id="view-top-scorers" class="hidden">
+            <div id="top-scorers-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl"></div>
+        </div>
+
+    </main>
+
+    <!-- Match Detail Modal -->
+    <div id="match-modal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6 overflow-y-auto">
+        <div class="bg-dark-bg w-full max-w-6xl rounded-none md:rounded-2xl border border-border flex flex-col h-full md:h-[90vh] shadow-2xl relative overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-border bg-surface-light sticky top-0 z-30">
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <div class="flex items-center gap-2 text-xs font-bold text-red-500 uppercase tracking-widest">
+                        <span class="w-2 h-2 bg-red-500 rounded-full live-pulse"></span>
+                        Detalhes da Partida
+                    </div>
+                    <button onclick="app.closeModal('match-modal')" class="p-2 hover:bg-white/10 rounded-full transition text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+                </div>
+                <div class="flex items-center justify-around md:justify-center gap-2 md:gap-12 mb-4 md:mb-6">
+                    <div class="flex flex-col items-center w-1/3 text-center">
+                        <img id="modal-home-logo" class="w-16 h-16 object-contain mb-2 drop-shadow-lg bg-white/10 rounded-full p-2" src="">
+                        <h3 id="modal-home" class="text-lg md:text-2xl font-bold text-white leading-tight">Home</h3>
+                    </div>
+                    <div class="flex flex-col items-center flex-shrink-0">
+                        <div class="bg-black/60 px-6 py-3 rounded-xl border border-white/10 text-3xl md:text-5xl font-black text-white font-mono tracking-tighter shadow-inner min-w-[120px] text-center" id="modal-score">- : -</div>
+                        <span id="modal-status" class="text-xs font-bold text-red-400 mt-2 uppercase tracking-wide bg-red-900/20 px-2 py-1 rounded">...</span>
+                        <div id="modal-broadcast" class="mt-2 flex items-center gap-1 text-xs text-gray-400">
+                            <i data-lucide="tv" class="w-3 h-3"></i> <span id="broadcast-text">--</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center w-1/3 text-center">
+                        <img id="modal-away-logo" class="w-16 h-16 object-contain mb-2 drop-shadow-lg bg-white/10 rounded-full p-2" src="">
+                        <h3 id="modal-away" class="text-lg md:text-2xl font-bold text-white leading-tight">Away</h3>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-6 border-t border-white/5 pt-4 -mb-6 -mx-6 px-6 pb-0 bg-surface-light">
+                    <button onclick="app.setModalTab('stats')" class="modal-tab-btn text-sm font-bold text-white border-b-2 border-red-600 pb-2 px-2" id="tab-stats">Resumo</button>
+                    <button onclick="app.setModalTab('lineups')" class="modal-tab-btn text-sm font-bold text-gray-500 hover:text-white pb-2 px-2 transition" id="tab-lineups">Escalações</button>
+                </div>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="flex-1 overflow-y-auto">
+                <div id="modal-view-stats" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-surface p-5 rounded-xl border border-border">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-4 border-b border-border pb-2">Lances Principais</h4>
+                            <div class="space-y-0 relative" id="incidents-list"></div>
+                        </div>
+                         <div class="bg-surface p-5 rounded-xl border border-border">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-4 border-b border-border pb-2">Estatísticas</h4>
+                            <div class="space-y-4" id="stats-container"><p class="text-center text-gray-500 text-xs">Carregando...</p></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-surface p-5 rounded-xl border border-border">
+                             <h4 class="text-xs font-bold text-gray-400 uppercase mb-4 border-b border-border pb-2">Informações</h4>
+                             <div id="game-info" class="text-sm text-gray-300 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-view-lineups" class="hidden">
+                     <div class="relative">
+                        <div class="flex justify-between mb-2 px-1 items-center">
+                            <span class="text-xs font-bold text-gray-400 uppercase">Formação Tática</span>
+                            <span id="formation-label" class="text-xs font-bold text-red-500 bg-red-900/20 px-2 py-1 rounded">--</span>
+                        </div>
+                        <div class="soccer-pitch aspect-[16/10] shadow-2xl mx-auto w-full max-w-3xl mb-8" id="pitch-container">
+                            <div class="pitch-lines"></div><div class="center-circle"></div><div class="half-line"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="roster-lists"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Detail Modal -->
+    <div id="player-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-surface w-full max-w-md rounded-2xl border border-border p-6 shadow-2xl relative">
+            <button onclick="app.closeModal('player-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            <div class="flex flex-col items-center mb-6 text-center">
+                <div class="w-24 h-24 bg-gray-800 rounded-full overflow-hidden border-4 border-red-600 shadow-lg mb-4">
+                    <img id="player-modal-img" src="" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/2a2a2a/ffffff?text=Jog'">
+                </div>
+                <h3 id="player-modal-name" class="text-2xl font-bold text-white">Nome</h3>
+                <p id="player-modal-pos" class="text-sm text-red-400 font-bold uppercase">Posição</p>
+                <p id="player-modal-team" class="text-xs text-gray-500 mt-1">Time</p>
+            </div>
+            <div class="bg-black/30 rounded-xl p-4">
+                <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 text-center border-b border-white/10 pb-2">Estatísticas na Partida</h4>
+                <div id="player-modal-stats" class="grid grid-cols-2 gap-4 text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
