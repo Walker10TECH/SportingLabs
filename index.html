@@ -20,10 +20,16 @@
                 <span class="text-xl font-bold tracking-tight text-white leading-none">Sporting<span class="font-light opacity-90">Labs</span></span>
             </div>
             
-            <!-- Scrollable Nav -->
-            <div class="flex-1 overflow-x-auto nav-scroll mx-4">
-                <nav class="flex gap-2 p-1" id="league-nav">
-                </nav>
+            <!-- Sport & League Nav -->
+            <div class="flex-1 overflow-hidden mx-4 flex flex-col items-start">
+                <!-- Sport Nav -->
+                <div class="w-full overflow-x-auto nav-scroll">
+                    <nav class="flex gap-4 p-1" id="sport-nav"></nav>
+                </div>
+                 <!-- League Nav -->
+                <div class="w-full overflow-x-auto nav-scroll -mt-1">
+                    <nav class="flex gap-2 p-1" id="league-nav"></nav>
+                </div>
             </div>
 
             <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
@@ -76,6 +82,7 @@
                 <button onclick="app.setView('standings')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-standings">Classificação</button>
                 <button onclick="app.setView('news')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-news">Notícias</button>
                 <button onclick="app.setView('top-scorers')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-top-scorers">Artilheiros</button>
+                <button onclick="app.setView('players')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-players">Jogadores</button>
             </div>
         </div>
 
@@ -102,11 +109,29 @@
             <div id="top-scorers-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl"></div>
         </div>
 
+        <!-- View: Players -->
+        <div id="view-players" class="hidden">
+            <div class="mb-4">
+                <input type="text" id="player-search-input" onkeyup="app.filterPlayers()" placeholder="Buscar jogador pelo nome..." class="w-full bg-surface-light border border-border rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
+            </div>
+            <div id="players-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl">
+                <div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Match Detail Modal -->
     <div id="match-modal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6 overflow-y-auto">
         <div class="bg-dark-bg w-full max-w-6xl rounded-none md:rounded-2xl border border-border flex flex-col h-full md:h-[90vh] shadow-2xl relative overflow-hidden">
+            
+            <!-- Goal Celebration Animation -->
+            <div id="goal-animation-overlay" class="absolute inset-0 z-[100] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+                <h1 id="goal-text" class="text-8xl md:text-9xl font-black text-white text-center" style="text-shadow: 0 0 20px rgba(255, 255, 0, 0.7), 0 0 40px rgba(255, 255, 0, 0.5);">
+                    GOL!
+                </h1>
+            </div>
+
             <!-- Modal Header -->
             <div class="p-6 border-b border-border bg-surface-light sticky top-0 z-30">
                 <div class="flex justify-between items-center mb-4 md:mb-6">
@@ -123,7 +148,10 @@
                     </div>
                     <div class="flex flex-col items-center flex-shrink-0">
                         <div class="bg-black/60 px-6 py-3 rounded-xl border border-white/10 text-3xl md:text-5xl font-black text-white font-mono tracking-tighter shadow-inner min-w-[120px] text-center" id="modal-score">- : -</div>
-                        <span id="modal-status" class="text-xs font-bold text-red-400 mt-2 uppercase tracking-wide bg-red-900/20 px-2 py-1 rounded">...</span>
+                        <div class="flex items-center gap-2">
+                            <span id="modal-clock" class="text-lg font-bold text-red-400 mt-2 font-mono hidden">00:00</span>
+                            <span id="modal-status" class="text-xs font-bold text-gray-400 mt-2 uppercase tracking-wide bg-black/20 px-2 py-1 rounded">...</span>
+                        </div>
                         <div id="modal-broadcast" class="mt-2 flex items-center gap-1 text-xs text-gray-400">
                             <i data-lucide="tv" class="w-3 h-3"></i> <span id="broadcast-text">--</span>
                         </div>

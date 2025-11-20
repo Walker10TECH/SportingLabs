@@ -1,11 +1,18 @@
 /* ==========================================================================
    1. Global Styles & Variables
    ========================================================================== */
+:root {
+    --red-glow: rgba(229, 55, 56, 0.5);
+    --surface-color: rgba(30, 30, 30, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #0b0d11;
     color: #DDDDDD;
     overflow-x: hidden;
+    perspective: 1000px; /* Adiciona perspectiva para efeitos 3D */
 }
 
 .bg-fixed-wrapper {
@@ -15,7 +22,7 @@ body {
 
 .bg-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, rgba(11, 13, 17, 0.92), #0b0d11);
+    background: radial-gradient(circle at 50% 0%, rgba(11, 13, 17, 0.7) 0%, #0b0d11 70%);
 }
 
 /* ==========================================================================
@@ -23,60 +30,151 @@ body {
    ========================================================================== */
 .header-main {
     background: rgba(11, 13, 17, 0.7);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-scroll::-webkit-scrollbar { height: 4px; }
 .nav-scroll::-webkit-scrollbar-thumb { background: #E53738; border-radius: 10px; }
 .nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 6px; }
+.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.sport-link:hover { color: white; }
+.sport-link.active { color: white; border-bottom-color: #E53738; }
+
+
 .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
 .nav-link.active { background: white; color: #CA0C00; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
 
 /* ==========================================================================
    3. Animations & Loaders
    ========================================================================== */
-.loader { width: 40px; height: 40px; border: 4px solid #FFF; border-bottom-color: #E53738; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
-@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+ .loader {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    border: 3px solid;
+    border-color: #FFF #FFF transparent transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+.loader::after,
+.loader::before {
+    content: '';  
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: 3px solid;
+    border-color: transparent transparent #E53738 #E53738;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    animation: rotationBack 0.5s linear infinite;
+    transform-origin: center center;
+}
+.loader::before {
+    width: 40px;
+    height: 40px;
+    border-color: #FFF #FFF transparent transparent;
+    animation: rotation 1.5s linear infinite;
+}
+    
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes rotationBack {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
 
 .live-pulse { animation: pulse-red 2s infinite; }
 @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
 /* ==========================================================================
-   4. Components
+   4. Live Standings Update Animation
    ========================================================================== */
+.live-update-pulse { animation: pulse-bg 2s ease-out; }
+@keyframes pulse-bg { 0% { background-color: rgba(45, 212, 191, 0.2); } 100% { background-color: transparent; } }
+
+/* ==========================================================================
+   5. Goal Celebration Animation
+   ========================================================================== */
+#goal-animation-overlay.show #goal-text {
+    animation: goal-celebration 2.5s forwards ease-out;
+}
+
+@keyframes goal-celebration {
+    0% {
+        transform: scale(0.5) rotate(-15deg);
+        opacity: 0;
+    }
+    25% {
+        transform: scale(1.2) rotate(5deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
 
 /* Garante que todas as imagens dentro de links ou botões de time/liga não sejam cortadas */
 img {
     object-fit: contain;
 }
 
-.game-card {
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 12px;
-    transition: all 0.2s ease-out;
-}
-
-.game-card:hover {
-    transform: translateY(-3px);
-    border-color: #E53738;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-.news-card {
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 12px;
-    transition: all 0.2s ease-out;
+.game-card, .news-card {
+    background: var(--surface-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid transparent;
+    border-radius: 16px;
+    transition: all 0.3s ease-out;
+    position: relative;
     overflow: hidden;
+    transform-style: preserve-3d;
 }
 
-.news-card:hover {
-    transform: translateY(-3px);
-    border-color: #E53738;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+.game-card:before, .news-card:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px; /* Largura da borda */
+    background: linear-gradient(135deg, var(--border-color), transparent);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
 }
+
+.game-card:hover, .news-card:hover {
+    transform: translateY(-5px) rotateX(5deg) scale(1.02);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+    border-color: transparent;
+}
+
+.game-card:hover:before, .news-card:hover:before {
+    background: linear-gradient(135deg, var(--red-glow), #E53738);
+}
+
+/* Animação de fade-in para conteúdo carregado */
+.content-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
 
 /* --- Tailwind CSS Custom Classes --- */
 .bg-dark-bg { background-color: #0b0d11; }
@@ -105,9 +203,24 @@ img {
 .form-L { background-color: #ef4444; }
 
 /* --- Modals --- */
+.modal-enter {
+    animation: modal-enter-anim 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes modal-enter-anim {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 #match-modal .flex-1.overflow-y-auto {
     padding: 1.5rem; /* 24px */
 }
+
+
+
+/* ==========================================================================
+   6. Responsive Design
+   ========================================================================== */
 
 @media (max-width: 768px) {
     body {
@@ -126,6 +239,28 @@ img {
         padding: 6px 12px;
         font-size: 0.8rem;
     }
+
+    #league-title {
+        font-size: 1.5rem; /* Reduz o título da liga */
+    }
+
+    #modal-score {
+        font-size: 2.5rem; /* Reduz o placar no modal */
+        padding: 0.5rem 1rem;
+    }
+
+    #modal-home, #modal-away {
+        font-size: 1.125rem; /* Reduz nome dos times no modal */
+    }
+
+    #modal-home-logo, #modal-away-logo {
+        width: 3.5rem; /* 56px */
+        height: 3.5rem; /* 56px */
+    }
+
+    #goal-text {
+        font-size: 5rem; /* Reduz o texto da animação de gol */
+    }
 }
 
 @media (max-width: 480px) {
@@ -139,5 +274,19 @@ img {
 
     #standings-container .font-bold {
         font-weight: 500;
+    }
+
+    .header-main .container {
+        gap: 0.5rem; /* Reduz o espaçamento no cabeçalho principal */
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .game-card .text-sm {
+        font-size: 0.8rem; /* Reduz o nome dos times nos cards de jogo */
+    }
+
+    .game-card .text-lg {
+        font-size: 1rem; /* Reduz o placar nos cards de jogo */
     }
 }
