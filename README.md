@@ -54,6 +54,8 @@ Uma das características mais distintas da nossa UI é a **capacidade de metamor
 > **Funcionalidade Exclusiva:** Quando o utilizador muda de competição, a interface não altera apenas os dados; **ela muda gradativamente a taça da competição em destaque**. Isso cria uma imersão total, onde o ambiente da aplicação reflete a grandeza do torneio que está a ser consultado, seja o Brasileirão, a Libertadores ou ligas europeias.
 
 ### 📊 Placares e Classificações em Tempo Real
+https://drive.google.com/open?id=1BHs7R0cOO_jigerGs8h2WjevB7TgV_bC
+
 
 Visualização clara e direta dos resultados e das tabelas classificativas das principais ligas mundiais.
 
