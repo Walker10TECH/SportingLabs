@@ -2,7 +2,6 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
-![Status](https://img.shields.io/badge/status-Em%20Desenvolvimento-orange)
 
 > **A revolução do esporte através da tecnologia.** Uma iniciativa W3labs.
 
