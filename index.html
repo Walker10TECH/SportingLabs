@@ -6,7 +6,7 @@
     <title>SportingLabs - Resultados de Futebol em Tempo Real</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="min-h-screen flex flex-col bg-dark-bg">
@@ -32,8 +32,16 @@
                 </div>
             </div>
 
-            <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
-                <img id="region-flag" src="" class="w-5 h-auto rounded-sm">
+            <div class="flex items-center gap-3">
+                <!-- Search Bar -->
+                <div class="relative" id="search-container">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                    <input type="text" id="global-search-input" onkeyup="app.handleGlobalSearch()" placeholder="Buscar time ou liga..." class="bg-surface border border-border rounded-lg h-10 pl-9 pr-3 w-40 md:w-64 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition-all">
+                    <div id="search-results-container" class="hidden"></div>
+                </div>
+                <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
+                    <img id="region-flag" src="" class="w-5 h-auto rounded-sm">
+                </div>
             </div>
         </div>
     </header>
@@ -45,12 +53,24 @@
                 <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-accent-red"></i> Fonte de Dados</h3>
                 <button onclick="app.toggleSettings()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
             </div>
-            <p class="text-sm text-green-200 bg-green-500/10 p-3 rounded border border-green-500/20 mb-4 font-medium">
-                ✓ Conectado à API Pública da ESPN<br>
-                <span class="text-xs opacity-70">Placares, classificações e estatísticas em tempo real.</span>
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-3">
-                <button onclick="app.saveKey()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg w-full">Atualizar Dados</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Selecionar Fonte</label>
+                    <div id="data-source-selector" class="grid grid-cols-2 gap-2 mt-1">
+                        <button data-source="espn" class="source-btn p-3 rounded-lg border-2 text-sm font-bold transition">ESPN (Padrão)</button>
+                        <button data-source="apisports" class="source-btn p-3 rounded-lg border-2 text-sm font-bold transition">API-Sports</button>
+                    </div>
+                </div>
+                <div>
+                    <label for="api-key-input" class="text-xs font-bold text-gray-400 uppercase">Chave da API-Sports</label>
+                    <input type="password" id="api-key-input" placeholder="Cole sua chave aqui" class="w-full bg-surface-light border border-border rounded-lg p-3 mt-1 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <p class="text-xs text-gray-500 mt-1">Necessária para usar a fonte de dados API-Sports.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                    <button onclick="app.saveSettings()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg w-full flex items-center justify-center gap-2">
+                        <i data-lucide="save"></i> Salvar e Recarregar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -81,8 +101,7 @@
                 <button onclick="app.setView('matches')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-matches">Placar</button>
                 <button onclick="app.setView('standings')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-standings">Classificação</button>
                 <button onclick="app.setView('news')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-news">Notícias</button>
-                <button onclick="app.setView('top-scorers')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-top-scorers">Artilheiros</button>
-                <button onclick="app.setView('players')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-players">Jogadores</button>
+                <button onclick="app.setView('clubs')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-clubs">Clubes</button>
             </div>
         </div>
 
@@ -104,17 +123,12 @@
         <!-- View: News -->
         <div id="view-news" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-        <!-- View: Top Scorers -->
-        <div id="view-top-scorers" class="hidden">
-            <div id="top-scorers-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl"></div>
-        </div>
-
-        <!-- View: Players -->
-        <div id="view-players" class="hidden">
+        <!-- View: Clubs -->
+        <div id="view-clubs" class="hidden">
             <div class="mb-4">
-                <input type="text" id="player-search-input" onkeyup="app.filterPlayers()" placeholder="Buscar jogador pelo nome..." class="w-full bg-surface-light border border-border rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
+                <input type="text" id="club-search-input" onkeyup="app.filterClubs()" placeholder="Buscar clube pelo nome..." class="w-full bg-surface-light border border-border rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
             </div>
-            <div id="players-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl">
+            <div id="clubs-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl p-4">
                 <div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>
             </div>
         </div>
@@ -122,12 +136,12 @@
     </main>
 
     <!-- Match Detail Modal -->
-    <div id="match-modal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6 overflow-y-auto">
+    <div id="match-modal" class="fixed inset-0 z-[80] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6 overflow-y-auto">
         <div class="bg-dark-bg w-full max-w-6xl rounded-none md:rounded-2xl border border-border flex flex-col h-full md:h-[90vh] shadow-2xl relative overflow-hidden">
             
             <!-- Goal Celebration Animation -->
             <div id="goal-animation-overlay" class="absolute inset-0 z-[100] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
-                <h1 id="goal-text" class="text-8xl md:text-9xl font-black text-white text-center" style="text-shadow: 0 0 20px rgba(255, 255, 0, 0.7), 0 0 40px rgba(255, 255, 0, 0.5);">
+                <h1 id="goal-text" class="text-8xl md:text-9xl font-black text-white text-center" style="text-shadow: 0 0 20px rgba(255, 255, 0, 0.7), 0 0 40px rgba(255, 255, 0, 0.5); font-family: 'Poppins', sans-serif;">
                     GOL!
                 </h1>
             </div>
@@ -220,6 +234,22 @@
             <div class="bg-black/30 rounded-xl p-4">
                 <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 text-center border-b border-white/10 pb-2">Estatísticas na Partida</h4>
                 <div id="player-modal-stats" class="grid grid-cols-2 gap-4 text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Club History Modal -->
+    <div id="club-history-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-surface w-full max-w-2xl rounded-2xl border border-border p-6 shadow-2xl relative flex flex-col">
+            <button onclick="app.closeModal('club-history-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            <div class="flex flex-col mb-4">
+                <h3 id="club-history-name" class="text-2xl font-bold text-white">Nome do Clube</h3>
+            </div>
+            <div id="club-performance-chart" class="mb-4 p-4 bg-black/30 rounded-lg"></div>
+            <div class="flex flex-col mb-2">
+                <p class="text-sm text-red-400 font-bold uppercase">Histórico (via Wikipedia)</p>
+            </div>
+            <div id="club-history-content" class="max-h-[60vh] overflow-y-auto pr-2">
             </div>
         </div>
     </div>

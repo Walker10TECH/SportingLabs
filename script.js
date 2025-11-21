@@ -37,12 +37,101 @@ const app = {
                 }
             }
         },
-        cache: {}
+        // Mapeamento para nomes completos para melhorar a busca na Wikipédia
+        teamNameMap: {
+            // Brasileirão
+            'Athletico Paranaense': 'Club Athletico Paranaense',
+            'Atlético Goianiense': 'Atlético Clube Goianiense',
+            'Atlético Mineiro': 'Clube Atlético Mineiro',
+            'Bahia': 'Esporte Clube Bahia',
+            'Botafogo': 'Botafogo de Futebol e Regatas',
+            'Corinthians': 'Sport Club Corinthians Paulista',
+            'Criciúma': 'Criciúma Esporte Clube',
+            'Cruzeiro': 'Cruzeiro Esporte Clube',
+            'Cuiabá': 'Cuiabá Esporte Clube',
+            'Flamengo': 'Clube de Regatas do Flamengo',
+            'Fluminense': 'Fluminense Football Club',
+            'Fortaleza': 'Fortaleza Esporte Clube',
+            'Grêmio': 'Grêmio Foot-Ball Porto Alegrense',
+            'Internacional': 'Sport Club Internacional',
+            'Juventude': 'Esporte Clube Juventude',
+            'Palmeiras': 'Sociedade Esportiva Palmeiras',
+            'Red Bull Bragantino': 'Red Bull Bragantino',
+            'São Paulo': 'São Paulo Futebol Clube',
+            'Vasco da Gama': 'Club de Regatas Vasco da Gama',
+            'Vitória': 'Esporte Clube Vitória',
+            // Argentina
+            'River Plate': 'Club Atlético River Plate',
+            'Boca Juniors': 'Club Atlético Boca Juniors',
+            'Racing Club': 'Racing Club de Avellaneda',
+            'Independiente': 'Club Atlético Independiente',
+            'San Lorenzo': 'Club Atlético San Lorenzo de Almagro',
+            'Estudiantes': 'Club Estudiantes de La Plata',
+            'Vélez Sarsfield': 'Club Atlético Vélez Sarsfield',
+            // Inglaterra (Premier League)
+            'Arsenal': 'Arsenal F.C.',
+            'Aston Villa': 'Aston Villa F.C.',
+            'Chelsea': 'Chelsea F.C.',
+            'Everton': 'Everton F.C.',
+            'Liverpool': 'Liverpool F.C.',
+            'Manchester City': 'Manchester City F.C.',
+            'Manchester United': 'Manchester United F.C.',
+            'Newcastle United': 'Newcastle United F.C.',
+            'Tottenham Hotspur': 'Tottenham Hotspur F.C.',
+            'West Ham United': 'West Ham United F.C.',
+            // Espanha (La Liga)
+            'Atlético Madrid': 'Club Atlético de Madrid',
+            'Barcelona': 'Futbol Club Barcelona',
+            'Real Madrid': 'Real Madrid CF',
+            'Sevilla': 'Sevilla FC',
+            'Real Sociedad': 'Real Sociedad de Fútbol',
+            'Villarreal': 'Villarreal CF',
+            'Athletic Bilbao': 'Athletic Club',
+            'Real Betis': 'Real Betis Balompié',
+            // Itália (Serie A)
+            'Inter': 'Internazionale Milano',
+            'Juventus': 'Juventus F.C.',
+            'Milan': 'A.C. Milan',
+            'Napoli': 'S.S.C. Napoli',
+            'Roma': 'A.S. Roma',
+            'Lazio': 'S.S. Lazio',
+            // Alemanha (Bundesliga)
+            'Bayern Munich': 'FC Bayern Munich',
+            'Borussia Dortmund': 'Borussia Dortmund',
+            'RB Leipzig': 'RB Leipzig',
+            'Bayer Leverkusen': 'Bayer 04 Leverkusen',
+            // Outras Ligas
+            'Ajax': 'AFC Ajax',
+            'PSV': 'PSV Eindhoven',
+            'Feyenoord': 'Feyenoord Rotterdam',
+            'Paris Saint-Germain': 'Paris Saint-Germain F.C.',
+            'Al Nassr': 'Al-Nassr FC',
+            'Al Hilal': 'Al-Hilal Saudi FC',
+            'Al Ittihad': 'Al-Ittihad Club'
+        },
+        cache: {
+            clubs: [], // Cache para a lista de clubes para a busca global
+            standings: [] // Cache para os dados completos da classificação
+        }
     },
 
     init() {
         this.loadAndRenderLeagues();
         lucide.createIcons();
+        // Adiciona listener para fechar a busca ao clicar fora
+        document.addEventListener('click', (event) => {
+            const searchContainer = document.getElementById('search-container');
+            if (!searchContainer.contains(event.target)) {
+                document.getElementById('search-results-container').classList.add('hidden');
+            }
+        });
+
+        // Adiciona listener para a busca global no Enter
+        const globalSearchInput = document.getElementById('global-search-input');
+        globalSearchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') this.handleGlobalSearch();
+        });
+
         setInterval(() => { if(!document.hidden && this.state.view === 'matches') this.loadLeague(this.state.currentLeague, true); }, 60000);
     },
 
@@ -117,25 +206,25 @@ const app = {
         }
 
         this.state.view = v;
-        ['matches','standings', 'news', 'top-scorers', 'players', 'clubs'].forEach(name => {
+        ['matches','standings', 'news', 'clubs'].forEach(name => {
             const btn = document.getElementById('btn-'+name);
             const view = document.getElementById(`view-${name}`);
             if (btn && view) { // Check if both elements exist
-                if(name === v) {
-                    btn.classList.remove('text-gray-400');
-                    btn.classList.add('bg-red-600', 'text-white', 'shadow-md');
-                    view.classList.remove('hidden');
-                } else {
-                    btn.classList.add('text-gray-400');
-                    btn.classList.remove('bg-red-600', 'text-white', 'shadow-md');
-                    view.classList.add('hidden');
-                }
+                const isActive = name === v;
+                btn.classList.toggle('bg-red-600', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('shadow-md', isActive);
+                btn.classList.toggle('text-gray-400', !isActive);
+                view.classList.toggle('hidden', !isActive);
             }
+        });
+
+        // Atualiza a navegação inferior no mobile
+        document.querySelectorAll('.bottom-nav-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.view === v);
         });
         if(v === 'standings') this.loadStandings();
         if(v === 'news') this.loadNews();
-        if(v === 'top-scorers') this.loadTopScorers();
-        if(v === 'players') this.loadPlayers();
         if(v === 'clubs') this.loadClubs();
     },
 
@@ -162,14 +251,6 @@ const app = {
         });
     },
 
-    closeModal(id) { 
-        const modal = document.getElementById(id);
-        modal.classList.add('hidden');
-        modal.querySelector('.bg-surface, .bg-dark-bg')?.classList.remove('modal-enter');
-        clearInterval(this.state.matchRefreshInterval);
-        this.state.matchRefreshInterval = null;
-    },
-
     // --- API FETCHING ---
     
     async loadLeague(key, isRefresh = false, isSportChange = false) {
@@ -192,7 +273,7 @@ const app = {
 
         // Oculta/mostra abas de acordo com o suporte do esporte
         const isSoccer = this.state.currentSport === 'soccer';
-        const viewsToToggle = ['btn-standings', 'btn-top-scorers', 'btn-players', 'btn-clubs'];
+        const viewsToToggle = ['btn-standings', 'btn-clubs'];
 
         viewsToToggle.forEach(id => {
             const element = document.getElementById(id);
@@ -207,9 +288,7 @@ const app = {
         document.getElementById('view-standings').classList.add('hidden');
 
         if(this.state.view === 'news') { this.loadNews(); document.getElementById('loader').classList.add('hidden'); return; }
-        if(this.state.view === 'top-scorers') { this.loadTopScorers(); document.getElementById('loader').classList.add('hidden'); return; }
         if(this.state.view === 'standings') { this.loadStandings(); document.getElementById('loader').classList.add('hidden'); return; }
-        if(this.state.view === 'players') { this.loadPlayers(); document.getElementById('loader').classList.add('hidden'); return; }
         if(this.state.view === 'clubs') { this.loadClubs(); document.getElementById('loader').classList.add('hidden'); return; }
 
         try {
@@ -247,6 +326,7 @@ const app = {
             );
             const dataArray = await Promise.all(responses.map(res => res.json()));
 
+            this.state.cache.standings = dataArray; // Armazena os dados no cache
             container.innerHTML = ''; // Limpa o loader
 
             dataArray.forEach(data => {
@@ -268,7 +348,7 @@ const app = {
         try {
             const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/news`);
             const data = await res.json();
-            this.renderNews(data.articles || []);
+            if (container) this.renderNews(data.articles || []);
             container.classList.add('content-fade-in');
         } catch (e) {
             container.innerHTML = '<p class="col-span-full text-center text-red-400 p-4">Não foi possível carregar as notícias.</p>';
@@ -299,135 +379,6 @@ const app = {
         });
     },
 
-    async loadTopScorers() {
-        const container = document.getElementById('top-scorers-container');
-        container.innerHTML = '<div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>';
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
-
-        try {
-            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/leaders`);
-            if (!res.ok) throw new Error(`API de líderes falhou com status: ${res.status}`);
-            const data = await res.json();
-            // Generaliza a busca pela estatística principal (gols para futebol, pontos para basquete, etc.)
-            const mainStatName = sport === 'soccer' ? 'goals' : 'points';
-            const mainCategory = data.leaderCategories?.find(cat => cat.name.toLowerCase() === mainStatName);
-            const statDisplayName = mainCategory?.displayName || 'Pontos';
-            container.classList.add('content-fade-in');
-            this.renderTopScorers(mainCategory?.leaders || [], statDisplayName);
-        } catch (e) {
-            console.error("Erro ao carregar artilheiros:", e);
-            container.classList.remove('content-fade-in');
-            container.innerHTML = '<p class="text-center text-red-400 p-8">Não foi possível carregar os artilheiros.</p>';
-        }
-    },
-
-    renderTopScorers(leaders, statName = 'Gols') {
-        const container = document.getElementById('top-scorers-container');
-        if (leaders.length === 0) {
-            container.innerHTML = '<p class="text-center text-gray-500 p-8">Dados de artilharia indisponíveis para esta liga.</p>';
-            return;
-        }
-
-        let rowsHTML = '';
-        leaders.forEach(leader => {
-            rowsHTML += `
-                <tr class="border-b border-border text-gray-300 hover:bg-white/5 transition">
-                    <td class="p-4 text-center font-mono text-sm">${leader.rank}</td>
-                    <td class="p-4 flex items-center gap-4">
-                        <img src="${leader.athlete.headshot?.href || 'https://placehold.co/40x40/2a2a2a/ffffff?text=?'}" class="w-10 h-10 object-cover bg-surface-light rounded-full">
-                        <div>
-                            <div class="font-bold text-white">${leader.athlete.displayName}</div>
-                            <div class="text-xs text-gray-400">${leader.team.displayName}</div>
-                        </div>
-                    </td>
-                    <td class="p-4 text-center font-bold text-xl text-accent-red">${leader.value}</td>
-                </tr>
-            `;
-        });
-
-        container.innerHTML = `
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-500 uppercase bg-surface-light">
-                        <tr>
-                            <th class="p-4 text-center">#</th>
-                            <th class="p-4">Jogador</th>
-                            <th class="p-4 text-center">${statName}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border">${rowsHTML}</tbody>
-                </table>
-            </div>
-        `;
-    },
-
-    async loadPlayers() {
-        const container = document.getElementById('players-container');
-        container.innerHTML = '<div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>';
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
-
-        try {
-            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/athletes?limit=1000`);
-            const data = await res.json();
-            container.classList.add('content-fade-in');
-            this.renderPlayers(data.items || []);
-        } catch (e) {
-            container.classList.remove('content-fade-in');
-            container.innerHTML = '<p class="text-center text-red-400 p-8">Não foi possível carregar os jogadores.</p>';
-        }
-    },
-
-    renderPlayers(players) {
-        const container = document.getElementById('players-container');
-        if (players.length === 0) {
-            container.innerHTML = '<p class="text-center text-gray-500 p-8">Nenhum jogador encontrado para esta liga.</p>';
-            return;
-        }
-
-        let rowsHTML = '';
-        players.forEach(player => {
-            const athlete = player.athlete || player; // A estrutura pode variar
-            rowsHTML += `
-                <tr class="player-row border-b border-border text-gray-300 hover:bg-white/5 transition" data-name="${athlete.fullName.toLowerCase()}">
-                    <td class="p-4 flex items-center gap-4">
-                        <img src="${athlete.headshot?.href || 'https://placehold.co/40x40/2a2a2a/ffffff?text=?'}" class="w-10 h-10 object-cover bg-surface-light rounded-full">
-                        <div>
-                            <div class="font-bold text-white">${athlete.fullName}</div>
-                            <div class="text-xs text-gray-400">${athlete.position?.displayName || 'N/A'}</div>
-                        </div>
-                    </td>
-                    <td class="p-4 hidden sm:table-cell">${player.nationality?.displayName || 'N/A'}</td>
-                    <td class="p-4 text-center">${player.age || '-'}</td>
-                </tr>
-            `;
-        });
-
-        container.innerHTML = `
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-500 uppercase bg-surface-light">
-                        <tr>
-                            <th class="p-4">Nome</th>
-                            <th class="p-4 hidden sm:table-cell">Nacionalidade</th>
-                            <th class="p-4 text-center">Idade</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border">${rowsHTML}</tbody>
-                </table>
-            </div>
-        `;
-    },
-
-    filterPlayers() {
-        const input = document.getElementById('player-search-input').value.toLowerCase();
-        document.querySelectorAll('.player-row').forEach(row => {
-            const name = row.dataset.name;
-            row.style.display = name.includes(input) ? '' : 'none';
-        });
-    },
-
     async loadClubs() {
         const container = document.getElementById('clubs-container');
         container.innerHTML = '<div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>';
@@ -451,6 +402,7 @@ const app = {
             }
             
             container.classList.add('content-fade-in');
+            this.state.cache.clubs = teams; // Armazena os times no cache para a busca
             this.renderClubs(teams);
         } catch (e) {
             container.classList.remove('content-fade-in');
@@ -470,7 +422,7 @@ const app = {
             clubsHTML += `
                 <div class="club-card bg-surface p-4 rounded-lg border border-border flex items-center gap-4 cursor-pointer hover:bg-surface-light transition" 
                      data-name="${team.displayName.toLowerCase()}"
-                     onclick="app.openClubHistory('${team.displayName}')">
+                     onclick='app.openClubHistory(${JSON.stringify(team)})'>
                     <img src="${team.logos?.[0]?.href || 'https://placehold.co/40x40/2a2a2a/ffffff?text=?'}" class="w-10 h-10 object-contain bg-white rounded-full p-1">
                     <div>
                         <div class="font-bold text-white">${team.displayName}</div>
@@ -491,26 +443,152 @@ const app = {
         });
     },
 
-    async openClubHistory(teamName) {
+    handleGlobalSearch() {
+        const input = document.getElementById('global-search-input').value.toLowerCase();
+        const resultsContainer = document.getElementById('search-results-container');
+
+        if (input.length < 2) {
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        // Buscar competições
+        const leagueResults = [];
+        Object.values(this.state.sports).forEach(sport => {
+            Object.entries(sport.leagues).forEach(([key, league]) => {
+                if (league.name.toLowerCase().includes(input)) {
+                    leagueResults.push({ ...league, key: key, sport: sport.name });
+                }
+            });
+        });
+
+        // Buscar times (usando o cache de clubes)
+        const teamResults = this.state.cache.clubs.filter(team => 
+            team.displayName.toLowerCase().includes(input)
+        );
+
+        this.renderSearchResults(leagueResults, teamResults);
+    },
+
+    renderSearchResults(leagues, teams) {
+        const container = document.getElementById('search-results-container');
+        container.innerHTML = '';
+
+        if (leagues.length === 0 && teams.length === 0) {
+            container.innerHTML = `<p class="p-4 text-sm text-gray-500 text-center">Nenhum resultado encontrado.</p>`;
+            container.classList.remove('hidden');
+            return;
+        }
+
+        let html = '';
+        if (leagues.length > 0) {
+            html += `<h4 class="text-xs font-bold text-gray-400 uppercase p-3 border-b border-border">Competições</h4>`;
+            leagues.forEach(l => {
+                html += `<a href="#" onclick="app.changeLeague('${l.key}'); document.getElementById('search-results-container').classList.add('hidden');" class="flex items-center gap-3 p-3 hover:bg-white/10 transition">
+                           <img src="${l.logo}" class="w-6 h-6 object-contain"><span class="text-sm font-bold text-white">${l.name}</span></a>`;
+            });
+        }
+        if (teams.length > 0) {
+            html += `<h4 class="text-xs font-bold text-gray-400 uppercase p-3 border-b border-border mt-2">Times</h4>`;
+            teams.forEach(t => {
+                html += `<a href="#" onclick='app.openClubHistory(${JSON.stringify(t)}); document.getElementById("search-results-container").classList.add("hidden");' class="flex items-center gap-3 p-3 hover:bg-white/10 transition">
+                           <img src="${t.logos?.[0]?.href}" class="w-6 h-6 object-contain"><span class="text-sm font-bold text-white">${t.displayName}</span></a>`;
+            });
+        }
+        container.innerHTML = html;
+        container.classList.remove('hidden');
+    },
+
+    async openClubHistory(team) {
         const modal = document.getElementById('club-history-modal');
         modal.classList.remove('hidden');
         modal.querySelector('.bg-surface').classList.add('modal-enter');
-        document.getElementById('club-history-name').innerText = teamName;
+        document.getElementById('club-history-name').innerText = team.displayName;
         const contentDiv = document.getElementById('club-history-content');
         contentDiv.innerHTML = '<div class="loader w-6 h-6 mx-auto my-8"></div>';
 
-        try {
-            const res = await fetch(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(teamName)}`);
-            const data = await res.json();
-            contentDiv.innerHTML = `<p class="text-gray-300 text-sm leading-relaxed">${data.extract}</p>`;
-        } catch (e) {
+        this.renderPerformanceChart(team.id);
+
+        // Tenta buscar na Wikipédia com nomes diferentes para mais precisão
+        const fullName = this.state.teamNameMap[team.displayName] || team.displayName;
+        const searchTerms = [
+            fullName,
+            team.displayName, 
+            team.name, 
+            team.abbreviation
+        ].filter((value, index, self) => self.indexOf(value) === index && Boolean(value)); // Remove duplicados e nulos
+        let wikipediaHtml = null;
+        let wikipediaLink = '';
+
+        for (const term of searchTerms) {
+            try {
+                const res = await fetch(`https://pt.wikipedia.org/api/rest_v1/page/html/${encodeURIComponent(term)}`);
+                if (res.ok) {
+                    wikipediaHtml = await res.text();
+                    wikipediaLink = `https://pt.wikipedia.org/wiki/${encodeURIComponent(term)}`;
+                    break; // Para na primeira busca bem-sucedida
+                }
+            } catch (e) { /* Ignora erros para tentar o próximo termo */ }
+        }
+
+        if (wikipediaHtml) {
+            contentDiv.innerHTML = `<a href="${wikipediaLink}" target="_blank" rel="noopener noreferrer" class="text-accent-red hover:underline text-xs mb-4 inline-block">Ver artigo original na Wikipédia ↗</a>${wikipediaHtml}`;
+        } else {
+            console.error("Erro ao carregar história do clube da Wikipédia para:", team.displayName);
             contentDiv.innerHTML = '<p class="text-center text-red-400">Não foi possível carregar a história do clube.</p>';
         }
+    },
+
+    renderPerformanceChart(teamId) {
+        const container = document.getElementById('club-performance-chart');
+        container.innerHTML = ''; // Limpa o conteúdo anterior
+
+        let teamEntry = null;
+        // Procura o time nos dados de classificação cacheados
+        for (const group of this.state.cache.standings) {
+            for (const child of group.children) {
+                teamEntry = child.standings?.entries.find(e => e.team.id === teamId);
+                if (teamEntry) break;
+            }
+            if (teamEntry) break;
+        }
+
+        if (!teamEntry) return;
+
+        const formStat = teamEntry.stats.find(s => s.name === 'form');
+        if (!formStat || !formStat.displayValue) return;
+
+        const form = formStat.displayValue.split(''); // Ex: ['W', 'W', 'L', 'D', 'W']
+        const results = { W: 0, D: 0, L: 0 };
+        form.forEach(r => { if (results[r] !== undefined) results[r]++; });
+
+        const chartData = [
+            { label: 'Vitórias', value: results.W, color: '#00cc99' },
+            { label: 'Empates', value: results.D, color: '#fbbf24' },
+            { label: 'Derrotas', value: results.L, color: '#ef4444' }
+        ];
+
+        const maxValue = Math.max(...chartData.map(d => d.value), 1); // Evita divisão por zero
+
+        const bars = chartData.map(d => `
+            <div class="chart-bar-group">
+                <div class="chart-label">${d.label} (${d.value})</div>
+                <div class="chart-bar-bg">
+                    <div class="chart-bar" style="width: ${(d.value / maxValue) * 100}%; background-color: ${d.color};"></div>
+                </div>
+            </div>
+        `).join('');
+
+        container.innerHTML = bars;
     },
 
     // Função para obter uma cor de texto contrastante (branco ou preto)
     getContrastColor(hexColor) {
         if (!hexColor) return '#FFFFFF';
+        // Expande cores hexadecimais de 3 para 6 dígitos
+        if (hexColor.length === 3) {
+            hexColor = hexColor.split('').map(char => char + char).join('');
+        }
         const r = parseInt(hexColor.substr(0, 2), 16);
         const g = parseInt(hexColor.substr(2, 2), 16);
         const b = parseInt(hexColor.substr(4, 2), 16);
@@ -593,14 +671,21 @@ const app = {
             if(entries.length === 0) return;
             
             const tableWrapper = document.createElement('div');
-            tableWrapper.className = 'bg-surface rounded-xl border border-border overflow-hidden shadow-xl flex flex-col';
+            tableWrapper.className = 'standings-table-wrapper bg-surface rounded-xl border-border overflow-hidden flex flex-col';
             tableWrapper.dataset.groupName = groupName; // Adiciona para fácil identificação
             
             let rowsHTML = '';
             entries.forEach((entry, idx) => {
-                const stats = entry.stats || [];
-                const getStat = (n) => stats.find(s => s.name === n)?.value || 0;
-                let color = idx < 4 ? 'border-l-4 border-blue-500' : 'border-l-4 border-transparent';
+                const stats = entry.stats;
+                const getStat = (n) => stats.find(s => s.name === n)?.value ?? 0;
+                
+                // Lógica de cores para classificação baseada na API
+                const note = entry.note;
+                const rank = stats.find(s => s.name === 'rank')?.value ?? (idx + 1);
+                let borderColor = 'transparent';
+                if (note && note.color) {
+                    borderColor = `#${note.color}`;
+                }
 
                 // Procura o jogo do time atual na lista de jogos do dia
                 const match = todaysMatches.find(ev => ev.competitions[0].competitors.some(c => c.id === entry.team.id));
@@ -623,9 +708,11 @@ const app = {
                 }
                 
                 rowsHTML += `
-                    <tr class="border-b border-[#333] text-gray-300 hover:bg-white/5 transition" data-team-id="${entry.team.id}" data-original-stats='${JSON.stringify(entry.stats)}'>
-                        <td class="p-3 text-center font-mono text-xs ${color} bg-[#1a1a1a]">${idx+1}</td>
-                        <td class="p-3 flex items-center gap-3 min-w-[150px]">
+                    <tr class="border-b border-[#333] text-gray-300 hover:bg-white/5 transition" data-team-id="${entry.team.id}" data-original-stats='${JSON.stringify(entry.stats)}' title="${note?.description || ''}">
+                        <td class="p-3 text-center font-mono text-xs border-l-4 rank-cell" style="border-color: ${borderColor};">
+                            ${rank}
+                        </td>
+                        <td class="p-3 flex items-center gap-3 min-w-[150px] team-cell">
                             <img src="${entry.team.logos?.[0]?.href}" class="w-6 h-6 bg-white rounded-full p-0.5 object-contain">
                             <div>
                                 <span class="font-bold text-white text-xs md:text-sm">${entry.team.displayName}</span>
@@ -795,14 +882,16 @@ const app = {
         this.updateTeamRowInStandings(away.id, awayResult);
     },
 
-    closeModal(id) { 
-        document.getElementById(id).classList.add('hidden');
-        if (this.state.matchRefreshInterval) {
-                clearInterval(this.state.matchRefreshInterval);
-                this.state.matchRefreshInterval = null;
-            }
-        // Recarrega a classificação para reverter as mudanças visuais
-        if (this.state.view === 'standings') {
+    closeModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.querySelector('.bg-surface, .bg-dark-bg')?.classList.remove('modal-enter');
+        if (id === 'match-modal') {
+            if (this.state.matchRefreshInterval) {
+                    clearInterval(this.state.matchRefreshInterval);
+                    this.state.matchRefreshInterval = null;
+                }
             this.loadStandings();
         }
     },

@@ -1,32 +1,25 @@
 /* ==========================================================================
-   1. Global Styles & Variables
+   Global Styles & Variables
    ========================================================================== */
-:root {
-    --red-glow: rgba(229, 55, 56, 0.5);
-    --surface-color: rgba(30, 30, 30, 0.7);
-    --border-color: rgba(255, 255, 255, 0.1);
-}
-
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #0b0d11;
+    font-family: 'Poppins', sans-serif;
+    background-color: #13131A;
     color: #DDDDDD;
     overflow-x: hidden;
-    perspective: 1000px; /* Adiciona perspectiva para efeitos 3D */
 }
 
 .bg-fixed-wrapper {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;
+    background-size: cover; background-position: center; transition: background-image 0.8s ease-in-out;
 }
 
 .bg-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(11, 13, 17, 0.7) 0%, #0b0d11 70%);
+    background: radial-gradient(circle at 50% 0%, rgba(19, 19, 26, 0.6) 0%, #13131A 80%);
 }
 
 /* ==========================================================================
-   2. Navigation
+   Navigation
    ========================================================================== */
 .header-main {
     background: rgba(11, 13, 17, 0.7);
@@ -36,17 +29,22 @@ body {
 
 .nav-scroll::-webkit-scrollbar { height: 4px; }
 .nav-scroll::-webkit-scrollbar-thumb { background: #E53738; border-radius: 10px; }
-.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 6px; }
-.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; border-radius: 6px; }
+.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.3s ease; border-bottom: 2px solid transparent; }
 .sport-link:hover { color: white; }
 .sport-link.active { color: white; border-bottom-color: #E53738; }
 
 
-.nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
-.nav-link.active { background: white; color: #CA0C00; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+.nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
+.nav-link.active { 
+    background: #E53738; 
+    color: white; 
+    box-shadow: 0 4px 15px rgba(229, 55, 56, 0.3);
+    transform: translateY(-2px);
+}
 
 /* ==========================================================================
-   3. Animations & Loaders
+   Animations & Loaders
    ========================================================================== */
  .loader {
     width: 60px;
@@ -97,7 +95,7 @@ body {
 @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
 /* ==========================================================================
-   4. Live Standings Update Animation
+   Live Standings Update Animation
    ========================================================================== */
 .live-update-pulse { animation: pulse-bg 2s ease-out; }
 @keyframes pulse-bg { 0% { background-color: rgba(45, 212, 191, 0.2); } 100% { background-color: transparent; } }
@@ -134,39 +132,36 @@ img {
 }
 
 .game-card, .news-card {
-    background: var(--surface-color);
-    backdrop-filter: blur(10px);
-    border: 1px solid transparent;
-    border-radius: 16px;
+    background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
     transition: all 0.3s ease-out;
     position: relative;
     overflow: hidden;
-    transform-style: preserve-3d;
-}
-
-.game-card:before, .news-card:before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    padding: 1px; /* Largura da borda */
-    background: linear-gradient(135deg, var(--border-color), transparent);
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    pointer-events: none;
 }
 
 .game-card:hover, .news-card:hover {
-    transform: translateY(-5px) rotateX(5deg) scale(1.02);
-    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
-    border-color: transparent;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border-color: rgba(229, 55, 56, 0.3);
 }
 
-.game-card:hover:before, .news-card:hover:before {
-    background: linear-gradient(135deg, var(--red-glow), #E53738);
+.game-card::after, .news-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--x) var(--y), rgba(229, 55, 56, 0.2) 0%, transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.game-card:hover::after, .news-card:hover::after {
+    opacity: 1;
 }
 
 /* Animação de fade-in para conteúdo carregado */
@@ -175,12 +170,17 @@ img {
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Animação de troca de abas */
+.tab-content-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
 
 /* --- Tailwind CSS Custom Classes --- */
-.bg-dark-bg { background-color: #0b0d11; }
-.bg-surface { background-color: #1e1e1e; }
-.bg-surface-light { background-color: #252525; }
-.border-border { border-color: #333; }
+.bg-dark-bg { background-color: #13131A; }
+.bg-surface { background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%); }
+.bg-surface-light { background-color: rgba(40, 40, 51, 0.8); }
+.border-border { border-color: rgba(255, 255, 255, 0.1); }
 .text-accent-red { color: #E53738; }
 
 /* --- Pitch / Campo --- */
@@ -189,6 +189,21 @@ img {
     border: 2px solid rgba(255,255,255,0.2);
     position: relative; overflow: hidden; border-radius: 8px;
     box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+}
+
+/* --- Search Results Dropdown --- */
+#search-results-container {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 100%;
+    background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%); /* bg-surface */
+    border: 1px solid #333; /* border-border */
+    border-radius: 0.75rem; /* rounded-xl */
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 60;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 .pitch-lines { position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.2); }
 .center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); }
@@ -204,7 +219,7 @@ img {
 
 /* --- Modals --- */
 .modal-enter {
-    animation: modal-enter-anim 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: modal-enter-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes modal-enter-anim {
@@ -216,22 +231,79 @@ img {
     padding: 1.5rem; /* 24px */
 }
 
+/* --- Estilos para o conteúdo da Wikipédia no Modal de História do Clube --- */
+#club-history-content {
+    color: #ccc;
+    line-height: 1.6;
+}
+/* Esconde elementos indesejados da página da Wikipédia */
+#club-history-content .mw-editsection,
+#club-history-content .infobox-buttons,
+#club-history-content .navbox,
+#club-history-content .reflist,
+#club-history-content .portal,
+#club-history-content .catlinks,
+#club-history-content .printfooter,
+#club-history-content .mw-indicators {
+    display: none !important;
+}
+/* Estilos gerais para o conteúdo */
+#club-history-content h1, #club-history-content h2, #club-history-content h3 {
+    color: #E53738;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.3em;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+#club-history-content h1 { font-size: 1.8em; }
+#club-history-content h2 { font-size: 1.5em; }
+#club-history-content h3 { font-size: 1.2em; }
+#club-history-content a { color: #f87171; text-decoration: none; }
+#club-history-content a:hover { text-decoration: underline; }
+#club-history-content .infobox {
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid #444;
+    color: #ccc;
+    margin-bottom: 1em;
+}
+#club-history-content .infobox th { background-color: rgba(0,0,0,0.3); }
 
+/* --- Estilos para o Gráfico de Desempenho no Modal de Clube --- */
+.chart-bar-group {
+    margin-bottom: 0.75rem;
+}
+.chart-label {
+    font-size: 0.75rem; /* text-xs */
+    color: #9CA3AF; /* text-gray-400 */
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+.chart-bar-bg {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 9999px; /* rounded-full */
+    height: 0.75rem; /* h-3 */
+    overflow: hidden;
+}
+.chart-bar {
+    height: 100%;
+    border-radius: 9999px; /* rounded-full */
+    transition: width 0.5s ease-out;
+}
 
 /* ==========================================================================
    6. Responsive Design
    ========================================================================== */
-
-@media (max-width: 2160px) {
+@media (max-width: 768px) {
     body {
         -webkit-tap-highlight-color: transparent;
     }
 
     #main-content {
-        padding: 1rem;
+        padding: 1.5rem;
+        max-width: 1600px;
     }
 
-    #view-matches {
+    #view-matches, #view-news {
         grid-template-columns: 1fr;
     }
 
@@ -264,7 +336,7 @@ img {
 }
 
 @media (max-width: 480px) {
-    #standings-container table {
+     #standings-container table {
         font-size: 11px;
     }
 
@@ -273,8 +345,24 @@ img {
     }
 
     #standings-container .font-bold {
-        font-weight: 500;
+        font-weight: 600;
     }
+    
+    /* Ajustes na tabela de classificação para telas pequenas */
+    #standings-container .rank-cell {
+        width: 35px; /* Largura fixa para a célula de rank */
+        background-color: rgba(0,0,0,0.1);
+    }
+
+    #standings-container .team-cell {
+        vertical-align: middle; /* Alinha o conteúdo verticalmente */
+    }
+
+    .standings-table-wrapper {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
+    }
+
 
     .header-main .container {
         gap: 0.5rem; /* Reduz o espaçamento no cabeçalho principal */
