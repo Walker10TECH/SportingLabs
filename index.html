@@ -42,16 +42,20 @@
                 <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
                     <img id="region-flag" src="" class="w-5 h-auto rounded-sm">
                 </div>
+                <button onclick="app.toggleTheme()" id="theme-toggle-btn" class="p-2 hover:bg-white/10 rounded-full transition text-gray-400 hover:text-white" title="Mudar Tema">
+                    <i data-lucide="sun" class="hidden theme-icon" id="theme-sun"></i>
+                    <i data-lucide="moon" class="hidden theme-icon" id="theme-moon"></i>
+                </button>
             </div>
         </div>
     </header>
 
     <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 z-[90] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-surface w-full max-w-md rounded-2xl border border-border p-6 shadow-2xl transform transition-all scale-100">
+        <div class="settings-modal-container bg-surface w-full max-w-md rounded-2xl border border-border p-6 shadow-2xl transform transition-all scale-100">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-accent-red"></i> Fonte de Dados</h3>
-                <button onclick="app.toggleSettings()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+                <button onclick="app.closeModal('settings-modal')" class="settings-close-btn text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
             </div>
             <div class="space-y-4">
                 <div>
@@ -67,7 +71,7 @@
                     <p class="text-xs text-gray-500 mt-1">Necessária para usar a fonte de dados API-Sports.</p>
                 </div>
                 <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
-                    <button onclick="app.saveSettings()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg w-full flex items-center justify-center gap-2">
+                    <button onclick="app.saveKey()" class="settings-save-btn bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg w-full flex items-center justify-center gap-2">
                         <i data-lucide="save"></i> Salvar e Recarregar
                     </button>
                 </div>
@@ -76,63 +80,59 @@
     </div>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 pt-24 pb-12 flex-grow max-w-7xl">
+    <main class="container mx-auto px-4 pt-24 pb-12 flex-grow w-full">
         
         <!-- League Header -->
-        <div class="bg-surface/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/10 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden transition-all">
+        <section class="bg-surface/80 backdrop-blur-md rounded-2xl p-6 mb-12 border border-white/10 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden transition-all">
             <div class="flex items-center gap-6 z-10">
                 <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center p-2 relative group overflow-hidden">
                     <img id="league-logo" src="" class="w-full h-full object-contain relative z-10" alt="League Logo">
                 </div>
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full live-pulse"></span> Em Tempo Real
-                        </span>
-                    </div>
                     <h1 id="league-title" class="text-2xl md:text-4xl font-black text-white tracking-tight">Carregando...</h1>
                     <p class="text-gray-400 font-medium flex items-center gap-2 mt-1 text-sm" id="league-region">
                         <i data-lucide="globe" class="w-4 h-4"></i> Futebol Mundial
                     </p>
                 </div>
             </div>
-
+    
             <div class="flex bg-black/40 p-1 rounded-xl backdrop-blur-sm z-10 overflow-x-auto max-w-full gap-2">
                 <button onclick="app.setView('matches')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-matches">Placar</button>
                 <button onclick="app.setView('standings')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-standings">Classificação</button>
                 <button onclick="app.setView('news')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-news">Notícias</button>
                 <button onclick="app.setView('clubs')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-clubs">Clubes</button>
+                <button onclick="app.setView('top-scorers')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-top-scorers">Artilharia</button>
             </div>
-        </div>
+        </section>
 
-        <!-- Loader -->
-        <div id="loader" class="flex flex-col items-center justify-center py-20 hidden">
-            <div class="loader mb-4"></div>
-            <p class="text-gray-400 text-sm font-bold animate-pulse" id="loader-text">Carregando dados...</p>
-        </div>
+        <!-- Section: Matches -->
+        <section id="view-matches" class="min-h-[300px] mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+        </section>
 
-        <!-- View: Matches -->
-        <div id="view-matches" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
-
-        <!-- View: Standings (Agora suporta Múltiplos Grupos) -->
-        <div id="view-standings" class="hidden">
-            <!-- Container dinâmico para grupos -->
+        <!-- Section: Standings -->
+        <section id="view-standings" class="min-h-[300px] mb-16">
             <div id="standings-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
-        </div>
+        </section>
 
-        <!-- View: News -->
-        <div id="view-news" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <!-- Section: Top Scorers -->
+        <section id="view-top-scorers" class="min-h-[300px] mb-16">
+            <div id="top-scorers-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl"></div>
+        </section>
 
-        <!-- View: Clubs -->
-        <div id="view-clubs" class="hidden">
+        <!-- Section: News -->
+        <section id="view-news" class="min-h-[300px] mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></section>
+
+        <!-- Section: Clubs -->
+        <section id="view-clubs" class="min-h-[300px] mb-16">
             <div class="mb-4">
                 <input type="text" id="club-search-input" onkeyup="app.filterClubs()" placeholder="Buscar clube pelo nome..." class="w-full bg-surface-light border border-border rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
             </div>
             <div id="clubs-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl p-4">
                 <div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>
             </div>
-        </div>
-
+        </section>
+        
     </main>
 
     <!-- Match Detail Modal -->
@@ -240,16 +240,22 @@
 
     <!-- Club History Modal -->
     <div id="club-history-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-surface w-full max-w-2xl rounded-2xl border border-border p-6 shadow-2xl relative flex flex-col">
+        <div class="modal-content bg-surface w-full max-w-2xl rounded-2xl border border-border p-6 shadow-2xl relative flex flex-col">
             <button onclick="app.closeModal('club-history-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
             <div class="flex flex-col mb-4">
                 <h3 id="club-history-name" class="text-2xl font-bold text-white">Nome do Clube</h3>
             </div>
-            <div id="club-performance-chart" class="mb-4 p-4 bg-black/30 rounded-lg"></div>
-            <div class="flex flex-col mb-2">
-                <p class="text-sm text-red-400 font-bold uppercase">Histórico (via Wikipedia)</p>
+            <!-- Tabs for Club Modal -->
+            <div class="flex border-b border-border mb-4">
+                <button onclick="app.setClubModalTab('history')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Histórico</button>
+                <button onclick="app.setClubModalTab('performance')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Desempenho</button>
+                <button onclick="app.setClubModalTab('squad')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Elenco</button>
             </div>
-            <div id="club-history-content" class="max-h-[60vh] overflow-y-auto pr-2">
+
+            <div class="max-h-[60vh] overflow-y-auto pr-2">
+                <div id="club-tab-history" class="club-modal-tab-content"></div>
+                <div id="club-tab-performance" class="club-modal-tab-content hidden p-4 bg-black/30 rounded-lg"></div>
+                <div id="club-tab-squad" class="club-modal-tab-content hidden"></div>
             </div>
         </div>
     </div>

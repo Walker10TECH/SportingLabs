@@ -1,11 +1,45 @@
 /* ==========================================================================
-   Global Styles & Variables
+   1. Global Styles & Variables
    ========================================================================== */
+/* --- Theme Variables --- */
+:root {
+    --bg-primary: #13131A;
+    --bg-surface: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
+    --bg-surface-light: rgba(40, 40, 51, 0.8);
+    --text-primary: #DDDDDD;
+    --text-secondary: #9CA3AF;
+    --text-dark: #150000;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color-light: rgba(255, 255, 255, 0.08);
+    --accent-color: #E53738;
+    --accent-color-alt: #FF5050;
+    --card-bg: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
+    --card-border: rgba(255, 255, 255, 0.08);
+}
+
+.light-theme {
+    --bg-primary: #FAFAFA;
+    --bg-surface: #FFFFFF;
+    --bg-surface-light: #F0F0F0;
+    --text-primary: #150000;
+    --text-secondary: #5B5757;
+    --text-dark: #150000;
+    --border-color: #EEEDED;
+    --border-color-light: #D6D5D5;
+    --card-bg: #EEEDED;
+    --card-border: transparent;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #13131A;
-    color: #DDDDDD;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Offset for fixed header */
 }
 
 .bg-fixed-wrapper {
@@ -19,7 +53,7 @@ body {
 }
 
 /* ==========================================================================
-   Navigation
+   2. Navigation
    ========================================================================== */
 .header-main {
     background: rgba(11, 13, 17, 0.7);
@@ -44,13 +78,13 @@ body {
 }
 
 /* ==========================================================================
-   Animations & Loaders
+   3. Animations & Loaders
    ========================================================================== */
  .loader {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    display: inline-block;
+    display: block;
     position: relative;
     border: 3px solid;
     border-color: #FFF #FFF transparent transparent;
@@ -69,15 +103,15 @@ body {
     margin: auto;
     border: 3px solid;
     border-color: transparent transparent #E53738 #E53738;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     animation: rotationBack 0.5s linear infinite;
     transform-origin: center center;
 }
 .loader::before {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-color: #FFF #FFF transparent transparent;
     animation: rotation 1.5s linear infinite;
 }
@@ -95,7 +129,7 @@ body {
 @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
 /* ==========================================================================
-   Live Standings Update Animation
+   4. Live Standings Update Animation
    ========================================================================== */
 .live-update-pulse { animation: pulse-bg 2s ease-out; }
 @keyframes pulse-bg { 0% { background-color: rgba(45, 212, 191, 0.2); } 100% { background-color: transparent; } }
@@ -132,16 +166,16 @@ img {
 }
 
 .game-card, .news-card {
-    background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
+    background: var(--card-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border);
     border-radius: 20px;
     transition: all 0.3s ease-out;
     position: relative;
     overflow: hidden;
 }
 
-.game-card:hover, .news-card:hover {
+.game-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     border-color: rgba(229, 55, 56, 0.3);
@@ -160,7 +194,7 @@ img {
     pointer-events: none;
 }
 
-.game-card:hover::after, .news-card:hover::after {
+.game-card:hover::after {
     opacity: 1;
 }
 
@@ -175,12 +209,24 @@ img {
     animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Animação de fade-in para imagens carregadas via lazy-load */
+.image-fade-in {
+    animation: image-fade-in-anim 0.5s ease-in-out forwards;
+}
+@keyframes image-fade-in-anim {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
 /* --- Tailwind CSS Custom Classes --- */
-.bg-dark-bg { background-color: #13131A; }
-.bg-surface { background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%); }
-.bg-surface-light { background-color: rgba(40, 40, 51, 0.8); }
-.border-border { border-color: rgba(255, 255, 255, 0.1); }
+.bg-dark-bg { background-color: var(--bg-primary); }
+.bg-surface { background: var(--bg-surface); }
+.bg-surface-light { background-color: var(--bg-surface-light); }
+.border-border { border-color: var(--border-color); }
 .text-accent-red { color: #E53738; }
 
 /* --- Pitch / Campo --- */
@@ -196,7 +242,7 @@ img {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    width: 100%;
+    width: 280px; /* Largura fixa para o dropdown de busca */
     background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%); /* bg-surface */
     border: 1px solid #333; /* border-border */
     border-radius: 0.75rem; /* rounded-xl */
@@ -209,7 +255,7 @@ img {
 .center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); }
 .half-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
 .player-dot { transition: all 0.5s ease; z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 50; }
+.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 20; }
 
 /* --- Form Badges --- */
 .form-badge { width: 6px; height: 6px; border-radius: 50%; margin-right: 2px; display: inline-block; }
@@ -217,7 +263,7 @@ img {
 .form-D { background-color: #fbbf24; }
 .form-L { background-color: #ef4444; }
 
-/* --- Modals --- */
+/* --- Animações de Modal --- */
 .modal-enter {
     animation: modal-enter-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
@@ -227,11 +273,7 @@ img {
     to { opacity: 1; transform: scale(1); }
 }
 
-#match-modal .flex-1.overflow-y-auto {
-    padding: 1.5rem; /* 24px */
-}
-
-/* --- Estilos para o conteúdo da Wikipédia no Modal de História do Clube --- */
+/* --- Conteúdo da Wikipédia (Modal de Clube) --- */
 #club-history-content {
     color: #ccc;
     line-height: 1.6;
@@ -268,7 +310,44 @@ img {
 }
 #club-history-content .infobox th { background-color: rgba(0,0,0,0.3); }
 
-/* --- Estilos para o Gráfico de Desempenho no Modal de Clube --- */
+/* --- Tabela de Elenco (Modal de Clube) --- */
+.squad-table th, .squad-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+.squad-table th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: #9CA3AF; /* text-gray-400 */
+}
+.player-photo-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF; /* text-gray-400 */
+}
+.player-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    opacity: 0; /* Inicia invisível para a animação */
+}
+
+/* --- Abas (Modal de Clube) --- */
+.club-modal-tab-btn {
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+.club-modal-tab-btn:hover { color: white; }
+
+/* --- Gráfico de Desempenho (Modal de Clube) --- */
 .chart-bar-group {
     margin-bottom: 0.75rem;
 }
@@ -291,20 +370,235 @@ img {
 }
 
 /* ==========================================================================
-   6. Responsive Design
+   6. Novo Design de Partidas e Estatísticas (Light/Dark Theme)
+   ========================================================================== */
+
+/* --- Upcoming Match Card --- */
+.match-card-new {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* gap-24px */
+    padding-top: 1rem; /* padding: 16px 0px 0px; */
+    isolation: isolate;
+    position: relative;
+}
+
+.match-card-new-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem; /* padding: 0px 16px; */
+}
+
+.match-card-new-header .league-logo {
+    width: 24px;
+    height: 24px;
+}
+
+.match-card-new-time {
+    background: #D6D5D5; /* Grays/20 */
+    color: #322D2D; /* Grays/100 */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.match-card-new-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem; /* padding: 0px 16px; */
+    gap: 1rem;
+}
+
+.match-card-new-team {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* gap: 24px */
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.match-card-new-team.away {
+    justify-content: flex-end;
+}
+
+.match-card-new-team img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.match-card-new-footer {
+    background: #1E1E1E;
+    color: #FFFFFF;
+    padding: 8px 16px;
+}
+
+.match-card-new-footer h4 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.match-card-new-footer p {
+    font-size: 12px;
+    font-weight: 600;
+    color: #D6D5D5;
+}
+
+/* --- Stats Table --- */
+.stats-table {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* gap: 32px */
+    color: var(--text-primary);
+}
+
+.stats-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem; /* gap: 16px */
+}
+
+.stats-category-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem; /* gap: 8px */
+}
+
+.stat-item-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-primary);
+}
+
+.stat-bar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.stat-bar-wrapper {
+    display: flex;
+    flex-grow: 1;
+    height: 4px;
+    background-color: #D6D5D5; /* Grays/20 */
+}
+
+.stat-bar {
+    height: 100%;
+}
+
+.stat-bar.home {
+    background-color: var(--accent-color-alt); /* Pink Maybe */
+}
+
+.stat-bar.away {
+    background-color: var(--text-dark); /* Black */
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .match-card-new-team {
+        font-size: 16px;
+    }
+}
+
+/* ==========================================================================
+   7. Modal de Configurações (Light/Dark Theme)
+   ========================================================================== */
+.settings-modal-container {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+.settings-modal-container h3 {
+    color: var(--text-primary);
+}
+
+.settings-modal-container label,
+.settings-modal-container .text-xs.text-gray-500 {
+    color: var(--text-secondary);
+}
+
+.settings-modal-container .settings-close-btn {
+    color: var(--text-secondary);
+}
+.settings-modal-container .settings-close-btn:hover {
+    color: var(--text-primary);
+}
+
+.settings-modal-container .source-btn {
+    background-color: transparent;
+    border-color: var(--border-color-light);
+    color: var(--text-secondary);
+}
+
+.settings-modal-container .source-btn.active {
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+    background-color: rgba(229, 55, 56, 0.1);
+}
+
+/* ==========================================================================
+   8. Tabela de Artilharia
+   ========================================================================== */
+.top-scorers-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-primary);
+}
+
+.top-scorers-table th, .top-scorers-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-scorers-table thead th {
+    background-color: var(--bg-surface-light);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.top-scorers-table tbody tr:hover {
+    background-color: var(--bg-surface-light);
+}
+
+/* ==========================================================================
+   9. Design Responsivo
    ========================================================================== */
 @media (max-width: 768px) {
     body {
         -webkit-tap-highlight-color: transparent;
     }
 
-    #main-content {
-        padding: 1.5rem;
-        max-width: 1600px;
-    }
-
-    #view-matches, #view-news {
-        grid-template-columns: 1fr;
+    main {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .nav-link {
@@ -336,7 +630,7 @@ img {
 }
 
 @media (max-width: 480px) {
-     #standings-container table {
+    #standings-container table {
         font-size: 11px;
     }
 
