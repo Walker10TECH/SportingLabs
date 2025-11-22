@@ -1,55 +1,32 @@
 /* ==========================================================================
    1. Global Styles & Variables
    ========================================================================== */
-/* --- Theme Variables --- */
 :root {
-    --bg-primary: #13131A;
-    --bg-surface: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
-    --bg-surface-light: rgba(40, 40, 51, 0.8);
-    --text-primary: #DDDDDD;
-    --text-secondary: #9CA3AF;
-    --text-dark: #150000;
+    --red-glow: rgba(229, 55, 56, 0.5);
+    --surface-color: rgba(0, 0, 0, 0.7);
     --border-color: rgba(255, 255, 255, 0.1);
-    --border-color-light: rgba(255, 255, 255, 0.08);
-    --accent-color: #E53738;
-    --accent-color-alt: #FF5050;
-    --card-bg: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
-    --card-border: rgba(255, 255, 255, 0.08);
-}
-
-.light-theme {
-    --bg-primary: #FAFAFA;
-    --bg-surface: #FFFFFF;
-    --bg-surface-light: #F0F0F0;
-    --text-primary: #150000;
-    --text-secondary: #5B5757;
-    --text-dark: #150000;
-    --border-color: #EEEDED;
-    --border-color-light: #D6D5D5;
-    --card-bg: #EEEDED;
-    --card-border: transparent;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    overflow-x: hidden;
-}
+    font-family: 'Inter', sans-serif;
+    background-color: #0b0d11;
+    color: #DDDDDD;
+    perspective: 1000px; /* Adiciona perspectiva para efeitos 3D */
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px; /* Offset for fixed header */
+    /* Flexbox para estrutura principal */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .bg-fixed-wrapper {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background-size: cover; background-position: center; transition: background-image 0.8s ease-in-out;
+    background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;
 }
 
 .bg-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(19, 19, 26, 0.6) 0%, #13131A 80%);
+    background: radial-gradient(circle at 50% 0%, rgba(11, 13, 17, 0.7) 0%, #0b0d11 70%);
 }
 
 /* ==========================================================================
@@ -57,34 +34,80 @@ html {
    ========================================================================== */
 .header-main {
     background: rgba(11, 13, 17, 0.7);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky; /* Mantém o cabeçalho fixo no topo */
+    top: 0;
+    z-index: 100;
 }
 
-.nav-scroll::-webkit-scrollbar { height: 4px; }
-.nav-scroll::-webkit-scrollbar-thumb { background: #E53738; border-radius: 10px; }
-.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; border-radius: 6px; }
-.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.3s ease; border-bottom: 2px solid transparent; }
+.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 6px; }
+.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.2s; border-bottom: 2px solid transparent; }
 .sport-link:hover { color: white; }
 .sport-link.active { color: white; border-bottom-color: #E53738; }
 
+/* Estilos para Dropdown */
+.dropdown-menu {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
 
-.nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
-.nav-link.active { 
-    background: #E53738; 
-    color: white; 
-    box-shadow: 0 4px 15px rgba(229, 55, 56, 0.3);
-    transform: translateY(-2px);
+.dropdown-menu:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* 12px */
+    padding: 0.5rem 0.75rem; /* 8px 12px */
+}
+
+.nav-link:hover { background: rgb(131, 126, 126); color: white; }
+.nav-link.active { background: white; color: #CA0C00; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+
+/* Estilos para a Barra de Pesquisa Global */
+#global-search-container {
+    position: relative;
+}
+
+#global-search-results {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90vw;
+    max-width: 500px;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* ==========================================================================
    3. Animations & Loaders
    ========================================================================== */
  .loader {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    display: block;
+    display: inline-block;
     position: relative;
     border: 3px solid;
     border-color: #FFF #FFF transparent transparent;
@@ -103,15 +126,15 @@ html {
     margin: auto;
     border: 3px solid;
     border-color: transparent transparent #E53738 #E53738;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     animation: rotationBack 0.5s linear infinite;
     transform-origin: center center;
 }
 .loader::before {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-color: #FFF #FFF transparent transparent;
     animation: rotation 1.5s linear infinite;
 }
@@ -166,19 +189,14 @@ img {
 }
 
 .game-card, .news-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
+    background: var(--surface-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid transparent;
+    border-radius: 16px;
     transition: all 0.3s ease-out;
     position: relative;
     overflow: hidden;
-}
-
-.game-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    border-color: rgba(229, 55, 56, 0.3);
+    transform-style: preserve-3d;
 }
 
 .game-card::after, .news-card::after {
@@ -194,8 +212,14 @@ img {
     pointer-events: none;
 }
 
-.game-card:hover::after {
-    opacity: 1;
+.game-card:hover, .news-card:hover {
+    transform: translateY(-5px) rotateX(5deg) scale(1.02);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+    border-color: transparent;
+}
+
+.game-card:hover:before, .news-card:hover:before {
+    background: linear-gradient(135deg, var(--red-glow), #E53738);
 }
 
 /* Animação de fade-in para conteúdo carregado */
@@ -204,29 +228,24 @@ img {
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Animação de troca de abas */
-.tab-content-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
+/* Estilo para o placar no card de jogo */
+.game-card-score {
+    background-color: #374151; /* Cinza escuro (gray-700) */
+    color: #ffffff; /* Branco */
+    font-weight: 700; /* bold */
+    font-size: 1.125rem; /* text-lg */
+    padding: 0.125rem 0.75rem; /* py-0.5 px-3 */
+    border-radius: 0.375rem; /* rounded-md */
+    min-width: 40px;
+    text-align: center;
 }
 
-/* Animação de fade-in para imagens carregadas via lazy-load */
-.image-fade-in {
-    animation: image-fade-in-anim 0.5s ease-in-out forwards;
-}
-@keyframes image-fade-in-anim {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
 
 /* --- Tailwind CSS Custom Classes --- */
-.bg-dark-bg { background-color: var(--bg-primary); }
-.bg-surface { background: var(--bg-surface); }
-.bg-surface-light { background-color: var(--bg-surface-light); }
-.border-border { border-color: var(--border-color); }
+.bg-dark-bg { background-color: #0b0d11; }
+.bg-surface { background-color: #1e1e1e; }
+.bg-surface-light { background-color: #252525; }
+.border-border { border-color: #333; }
 .text-accent-red { color: #E53738; }
 
 /* --- Pitch / Campo --- */
@@ -236,26 +255,11 @@ img {
     position: relative; overflow: hidden; border-radius: 8px;
     box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
 }
-
-/* --- Search Results Dropdown --- */
-#search-results-container {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    width: 280px; /* Largura fixa para o dropdown de busca */
-    background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%); /* bg-surface */
-    border: 1px solid #333; /* border-border */
-    border-radius: 0.75rem; /* rounded-xl */
-    max-height: 400px;
-    overflow-y: auto;
-    z-index: 60;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-}
 .pitch-lines { position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.2); }
 .center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); }
 .half-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
 .player-dot { transition: all 0.5s ease; z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 20; }
+.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 50; }
 
 /* --- Form Badges --- */
 .form-badge { width: 6px; height: 6px; border-radius: 50%; margin-right: 2px; display: inline-block; }
@@ -263,9 +267,13 @@ img {
 .form-D { background-color: #fbbf24; }
 .form-L { background-color: #ef4444; }
 
-/* --- Animações de Modal --- */
+.player-row {
+    cursor: default;
+}
+
+/* --- Modals --- */
 .modal-enter {
-    animation: modal-enter-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: modal-enter-anim 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes modal-enter-anim {
@@ -273,332 +281,44 @@ img {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* --- Conteúdo da Wikipédia (Modal de Clube) --- */
-#club-history-content {
-    color: #ccc;
-    line-height: 1.6;
+#match-modal .flex-1.overflow-y-auto {
+    padding: 1.5rem; /* 24px */
 }
-/* Esconde elementos indesejados da página da Wikipédia */
-#club-history-content .mw-editsection,
-#club-history-content .infobox-buttons,
-#club-history-content .navbox,
-#club-history-content .reflist,
-#club-history-content .portal,
-#club-history-content .catlinks,
-#club-history-content .printfooter,
-#club-history-content .mw-indicators {
-    display: none !important;
-}
-/* Estilos gerais para o conteúdo */
-#club-history-content h1, #club-history-content h2, #club-history-content h3 {
-    color: #E53738;
-    border-bottom: 1px solid #444;
-    padding-bottom: 0.3em;
-    margin-top: 1.5em;
-    margin-bottom: 1em;
-}
-#club-history-content h1 { font-size: 1.8em; }
-#club-history-content h2 { font-size: 1.5em; }
-#club-history-content h3 { font-size: 1.2em; }
-#club-history-content a { color: #f87171; text-decoration: none; }
-#club-history-content a:hover { text-decoration: underline; }
-#club-history-content .infobox {
-    background-color: rgba(0,0,0,0.2);
-    border: 1px solid #444;
-    color: #ccc;
-    margin-bottom: 1em;
-}
-#club-history-content .infobox th { background-color: rgba(0,0,0,0.3); }
 
-/* --- Tabela de Elenco (Modal de Clube) --- */
-.squad-table th, .squad-table td {
-    padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    vertical-align: middle;
+/* Garante que a tabela de classificação não quebre o layout em telas menores */
+.standings-wrapper {
+    overflow-x: auto;
 }
-.squad-table th {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    color: #9CA3AF; /* text-gray-400 */
+
+/* Flexbox para o conteúdo principal */
+#main-content {
+    flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+    padding: 1.5rem;
 }
-.player-photo-placeholder {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #9CA3AF; /* text-gray-400 */
-}
-.player-photo {
+
+/* Garante que o conteúdo principal não ultrapasse a largura da tela e o centraliza em telas grandes */
+#main-content {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    opacity: 0; /* Inicia invisível para a animação */
+    max-width: 1280px; /* Limite para melhor legibilidade em telas largas */
+    margin: 0 auto; /* Centraliza o conteúdo */
 }
 
-/* --- Abas (Modal de Clube) --- */
-.club-modal-tab-btn {
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease-in-out;
-}
-.club-modal-tab-btn:hover { color: white; }
-
-/* --- Gráfico de Desempenho (Modal de Clube) --- */
-.chart-bar-group {
-    margin-bottom: 0.75rem;
-}
-.chart-label {
-    font-size: 0.75rem; /* text-xs */
-    color: #9CA3AF; /* text-gray-400 */
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-.chart-bar-bg {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 9999px; /* rounded-full */
-    height: 0.75rem; /* h-3 */
-    overflow: hidden;
-}
-.chart-bar {
-    height: 100%;
-    border-radius: 9999px; /* rounded-full */
-    transition: width 0.5s ease-out;
-}
 
 /* ==========================================================================
-   6. Novo Design de Partidas e Estatísticas (Light/Dark Theme)
+   6. Responsive Design
    ========================================================================== */
 
-/* --- Upcoming Match Card --- */
-.match-card-new {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* gap-24px */
-    padding-top: 1rem; /* padding: 16px 0px 0px; */
-    isolation: isolate;
-    position: relative;
-}
-
-.match-card-new-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem; /* padding: 0px 16px; */
-}
-
-.match-card-new-header .league-logo {
-    width: 24px;
-    height: 24px;
-}
-
-.match-card-new-time {
-    background: #D6D5D5; /* Grays/20 */
-    color: #322D2D; /* Grays/100 */
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.match-card-new-body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem; /* padding: 0px 16px; */
-    gap: 1rem;
-}
-
-.match-card-new-team {
-    display: flex;
-    align-items: center;
-    gap: 1rem; /* gap: 24px */
-    flex: 1;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.match-card-new-team.away {
-    justify-content: flex-end;
-}
-
-.match-card-new-team img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-}
-
-.match-card-new-footer {
-    background: #1E1E1E;
-    color: #FFFFFF;
-    padding: 8px 16px;
-}
-
-.match-card-new-footer h4 {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.match-card-new-footer p {
-    font-size: 12px;
-    font-weight: 600;
-    color: #D6D5D5;
-}
-
-/* --- Stats Table --- */
-.stats-table {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem; /* gap: 32px */
-    color: var(--text-primary);
-}
-
-.stats-category {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem; /* gap: 16px */
-}
-
-.stats-category-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.stat-item {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem; /* gap: 8px */
-}
-
-.stat-item-label {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text-primary);
-}
-
-.stat-bar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.stat-bar-wrapper {
-    display: flex;
-    flex-grow: 1;
-    height: 4px;
-    background-color: #D6D5D5; /* Grays/20 */
-}
-
-.stat-bar {
-    height: 100%;
-}
-
-.stat-bar.home {
-    background-color: var(--accent-color-alt); /* Pink Maybe */
-}
-
-.stat-bar.away {
-    background-color: var(--text-dark); /* Black */
-}
-
-/* Responsive Adjustments */
-@media (min-width: 768px) {
-    .match-card-new-team {
-        font-size: 16px;
-    }
-}
-
-/* ==========================================================================
-   7. Modal de Configurações (Light/Dark Theme)
-   ========================================================================== */
-.settings-modal-container {
-    background: var(--bg-surface);
-    border-color: var(--border-color);
-}
-
-.settings-modal-container h3 {
-    color: var(--text-primary);
-}
-
-.settings-modal-container label,
-.settings-modal-container .text-xs.text-gray-500 {
-    color: var(--text-secondary);
-}
-
-.settings-modal-container .settings-close-btn {
-    color: var(--text-secondary);
-}
-.settings-modal-container .settings-close-btn:hover {
-    color: var(--text-primary);
-}
-
-.settings-modal-container .source-btn {
-    background-color: transparent;
-    border-color: var(--border-color-light);
-    color: var(--text-secondary);
-}
-
-.settings-modal-container .source-btn.active {
-    border-color: var(--accent-color);
-    color: var(--text-primary);
-    background-color: rgba(229, 55, 56, 0.1);
-}
-
-/* ==========================================================================
-   8. Tabela de Artilharia
-   ========================================================================== */
-.top-scorers-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: var(--text-primary);
-}
-
-.top-scorers-table th, .top-scorers-table td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.top-scorers-table thead th {
-    background-color: var(--bg-surface-light);
-    font-weight: 700;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-
-.top-scorers-table tbody tr:hover {
-    background-color: var(--bg-surface-light);
-}
-
-/* ==========================================================================
-   9. Design Responsivo
-   ========================================================================== */
 @media (max-width: 768px) {
     body {
         -webkit-tap-highlight-color: transparent;
     }
 
-    main {
-        padding-left: 1rem;
-        padding-right: 1rem;
+    #main-content {
+        padding: 1rem;
+    }
+
+    #view-matches {
+        grid-template-columns: 1fr;
     }
 
     .nav-link {
@@ -627,41 +347,37 @@ img {
     #goal-text {
         font-size: 5rem; /* Reduz o texto da animação de gol */
     }
+
+    #match-modal .flex-1.overflow-y-auto {
+        padding: 1rem; /* 16px */
+    }
 }
 
 @media (max-width: 480px) {
+    #main-content {
+        padding: 1rem 0.75rem;
+    }
+
     #standings-container table {
         font-size: 11px;
-    }
+    }    
 
     #standings-container .p-3 {
         padding: 0.5rem;
     }
 
     #standings-container .font-bold {
-        font-weight: 600;
+        font-weight: 500;
     }
-    
-    /* Ajustes na tabela de classificação para telas pequenas */
-    #standings-container .rank-cell {
-        width: 35px; /* Largura fixa para a célula de rank */
-        background-color: rgba(0,0,0,0.1);
-    }
-
-    #standings-container .team-cell {
-        vertical-align: middle; /* Alinha o conteúdo verticalmente */
-    }
-
-    .standings-table-wrapper {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: linear-gradient(167.03deg, #282833 2.56%, #121217 97.88%);
-    }
-
 
     .header-main .container {
         gap: 0.5rem; /* Reduz o espaçamento no cabeçalho principal */
         padding-left: 0.5rem;
         padding-right: 0.5rem;
+    }
+
+    .game-card {
+        padding: 0.75rem; /* Reduz o padding interno dos cards */
     }
 
     .game-card .text-sm {
@@ -671,4 +387,200 @@ img {
     .game-card .text-lg {
         font-size: 1rem; /* Reduz o placar nos cards de jogo */
     }
+}
+
+@media (max-width: 375px) {
+    /* Ajustes finos para telas muito pequenas (iPhone SE, etc.) */
+    #main-content {
+        padding: 1rem 0.5rem;
+    }
+    #league-title {
+        font-size: 1.25rem; /* 20px */
+    }
+
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 0.75rem; /* 12px */
+    }
+
+    .game-card .text-sm {
+        font-size: 0.75rem; /* Nomes dos times ainda menores */
+    }
+
+    #modal-score {
+        font-size: 2rem; /* Placar do modal menor */
+    }
+
+    #modal-home, #modal-away {
+        font-size: 1rem; /* Nomes dos times no modal menores */
+    }
+
+    #goal-text {
+        font-size: 4rem; /* Animação de gol menor */
+    }
+
+    #match-modal .flex-1.overflow-y-auto {
+        padding: 0.75rem; /* 12px */
+    }
+}
+
+/* Animação para atualização do placar */
+.score-update-animation {
+    animation: score-pop 0.5s ease-out;
+}
+
+@keyframes score-pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.4);
+        color: #facc15; /* Amarelo Dourado */
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Estilo para o iframe da Wikipedia */
+iframe#wikipedia-frame {
+    background-color: #1e1e1e; /* Cor de fundo escura enquanto a página carrega */
+}
+
+/* Estilos para Resultados da Busca na Wikipedia */
+.wiki-result-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease-out;
+}
+.wiki-result-card:hover {
+    border-color: var(--red-glow);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Estilos para o conteúdo do artigo da Wikipedia no Modal */
+#wiki-article-content {
+    font-size: 1rem; /* 16px */
+    line-height: 1.8;
+    color: #d1d5db; /* gray-300 */
+}
+
+#wiki-article-content p {
+    margin-bottom: 1.25em;
+}
+
+#wiki-article-content h1, 
+#wiki-article-content h2, 
+#wiki-article-content h3,
+#wiki-article-content h4 {
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.25em;
+}
+#wiki-article-content h1 { font-size: 1.875rem; }
+#wiki-article-content h2 { font-size: 1.5rem; }
+#wiki-article-content h3 { font-size: 1.25rem; }
+#wiki-article-content h4 { font-size: 1.125rem; border-bottom: none; }
+
+#wiki-article-content a {
+    color: #ffffff; /* Alterado de vermelho para branco */
+    text-decoration: none;
+    font-weight: 700; /* Alterado para negrito */
+    transition: all 0.2s ease;
+    border-radius: 3px;
+    padding: 1px 3px;
+    margin: -1px -3px;
+}
+#wiki-article-content a:hover {
+    text-decoration: underline; /* Mantém apenas o sublinhado no hover */
+}
+
+#wiki-article-content ul,
+#wiki-article-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.25em;
+}
+#wiki-article-content ul { list-style-type: disc; }
+#wiki-article-content ol { list-style-type: decimal; }
+
+#wiki-article-content blockquote {
+    border-left: 4px solid var(--red-glow);
+    padding-left: 1rem;
+    margin: 1.5em 0;
+    color: #9ca3af; /* gray-400 */
+    font-style: italic;
+}
+
+#wiki-article-content table { display: none; } /* Oculta tabelas complexas que quebram o layout */
+#wiki-article-content .infobox { display: none; } /* Oculta as caixas de informação laterais */
+
+/* Estilos para Tabela 3D de Artilheiros */
+.styled-table {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem; /* 12px */
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* Adiciona rolagem horizontal para tabelas de artilheiros em telas pequenas */
+.top-scorers-table-wrapper {
+    overflow-x: auto;
+}
+
+.styled-table thead th {
+    background: linear-gradient(to bottom, #3a0e0e, #E53738);
+    color: white;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.styled-table tbody tr {
+    background-color: var(--surface-color);
+    transition: all 0.2s ease-out;
+}
+.table-3d tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateZ(10px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.styled-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Estilos para a Grade de Clubes */
+#clubs-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.club-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s ease-out;
+}
+.club-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--red-glow);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
