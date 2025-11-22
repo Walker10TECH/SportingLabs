@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,6 +11,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="min-h-screen flex flex-col bg-dark-bg">
+    <!-- Global Loading Overlay -->
+    <div id="global-loader" class="fixed inset-0 z-[999] bg-background-color flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="flex items-center gap-4 mb-4">
+            <img src="PNG/2.png" alt="SportingLabs Logo" class="h-16 w-16 rounded-lg animate-pulse">
+            <span class="text-3xl font-bold tracking-tight text-white leading-none">Sporting<span class="font-light opacity-90">Labs</span></span>
+        </div>
+        <div class="loader"></div>
+        <p class="text-gray-400 mt-6 text-sm">Carregando dados iniciais...</p>
+    </div>
+
     <div class="bg-fixed-wrapper" id="bg-wrapper"><div class="bg-overlay"></div></div>
 
     <!-- Header -->
@@ -21,24 +32,36 @@
             </div>
             
             <!-- Sport & League Nav -->
-            <div class="flex-1 overflow-hidden mx-4 flex flex-col items-start">
-                <!-- Sport Nav -->
-                <div class="w-full overflow-x-auto nav-scroll">
-                    <nav class="flex gap-4 p-1" id="sport-nav"></nav>
+            <div class="flex-1 flex justify-center items-center gap-3">
+                <!-- Dropdown Modalidade -->
+                <div class="relative dropdown-container">
+                    <button onclick="app.toggleDropdown('sport-dropdown-menu')" class="dropdown-btn">
+                        <span id="selected-sport-name">Modalidade</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 opacity-70"></i>
+                    </button>
+                    <div id="sport-dropdown-menu" class="dropdown-menu hidden"></div>
                 </div>
-                 <!-- League Nav -->
-                <div class="w-full overflow-x-auto nav-scroll -mt-1">
-                    <nav class="flex gap-2 p-1" id="league-nav"></nav>
+
+                <!-- Dropdown Competição -->
+                <div class="relative dropdown-container">
+                    <button onclick="app.toggleDropdown('league-dropdown-menu')" class="dropdown-btn wide">
+                        <img id="selected-league-logo" src="" class="w-5 h-5 object-contain">
+                        <span id="selected-league-name">Competição</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 opacity-70"></i>
+                    </button>
+                    <div id="league-dropdown-menu" class="dropdown-menu hidden"></div>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <!-- Search Bar -->
-                <div class="relative" id="search-container">
+                <div class="relative" id="global-search-container">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                    <input type="text" id="global-search-input" onkeyup="app.handleGlobalSearch()" placeholder="Buscar time ou liga..." class="bg-surface border border-border rounded-lg h-10 pl-9 pr-3 w-40 md:w-64 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 transition-all">
-                    <div id="search-results-container" class="hidden"></div>
+                    <input type="text" id="global-search-input" placeholder="Buscar..." class="bg-surface-light border border-border rounded-lg h-10 pl-9 pr-3 w-40 md:w-64 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-color transition-all">
+                    <div class="search-loader"></div> <!-- Ícone de carregamento adicionado aqui -->
+                    <div id="global-search-results" class="hidden"></div>
                 </div>
+
                 <div id="region-display" class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg" title="Região Detectada">
                     <img id="region-flag" src="" class="w-5 h-auto rounded-sm">
                 </div>
@@ -101,7 +124,6 @@
                 <button onclick="app.setView('standings')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-standings">Classificação</button>
                 <button onclick="app.setView('news')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-news">Notícias</button>
                 <button onclick="app.setView('clubs')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-clubs">Clubes</button>
-                <button onclick="app.setView('top-scorers')" class="view-btn px-4 md:px-6 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap" id="btn-top-scorers">Artilharia</button>
             </div>
         </section>
 
@@ -115,23 +137,17 @@
             <div id="standings-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
         </section>
 
-        <!-- Section: Top Scorers -->
-        <section id="view-top-scorers" class="min-h-[300px] mb-16">
-            <div id="top-scorers-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl"></div>
-        </section>
-
         <!-- Section: News -->
         <section id="view-news" class="min-h-[300px] mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></section>
 
         <!-- Section: Clubs -->
         <section id="view-clubs" class="min-h-[300px] mb-16">
-            <div class="mb-4">
-                <input type="text" id="club-search-input" onkeyup="app.filterClubs()" placeholder="Buscar clube pelo nome..." class="w-full bg-surface-light border border-border rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600">
-            </div>
-            <div id="clubs-container" class="bg-surface rounded-xl border border-border overflow-hidden shadow-xl p-4">
-                <div class="p-8 flex justify-center"><div class="loader w-6 h-6"></div></div>
-            </div>
+            <div id="clubs-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
+
+        <!-- Section: Wikipedia Article -->
+        <section id="view-wiki" class="min-h-[300px] mb-16 hidden bg-surface p-4 sm:p-6 md:p-8 rounded-2xl border border-border">
+        </section>        
         
     </main>
 
@@ -238,24 +254,27 @@
         </div>
     </div>
 
-    <!-- Club History Modal -->
-    <div id="club-history-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="modal-content bg-surface w-full max-w-2xl rounded-2xl border border-border p-6 shadow-2xl relative flex flex-col">
-            <button onclick="app.closeModal('club-history-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
-            <div class="flex flex-col mb-4">
-                <h3 id="club-history-name" class="text-2xl font-bold text-white">Nome do Clube</h3>
+    <!-- Club History/Squad Modal -->
+    <div id="club-history-modal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-0 md:p-6 overflow-y-auto">
+        <div class="modal-content bg-dark-bg w-full max-w-4xl rounded-none md:rounded-2xl border border-border flex flex-col h-full md:h-[90vh] shadow-2xl relative overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-border bg-surface-light sticky top-0 z-30">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="club-history-name" class="text-xl font-bold text-white">Nome do Clube</h3>
+                    <button onclick="app.closeModal('club-history-modal')" class="p-2 hover:bg-white/10 rounded-full transition text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+                </div>
+                <!-- Abas do Modal -->
+                <div class="flex gap-4 border-b border-border -mb-4 -mx-4 px-4">
+                    <button onclick="app.setClubModalTab('history')" class="club-modal-tab-btn text-sm font-bold text-gray-400 hover:text-white border-b-2 border-transparent pb-3 px-2 transition">História (Wiki)</button>
+                    <button onclick="app.setClubModalTab('squad')" class="club-modal-tab-btn text-sm font-bold text-gray-400 hover:text-white border-b-2 border-transparent pb-3 px-2 transition">Elenco</button>
+                    <button onclick="app.setClubModalTab('performance')" class="club-modal-tab-btn text-sm font-bold text-gray-400 hover:text-white border-b-2 border-transparent pb-3 px-2 transition">Desempenho</button>
+                </div>
             </div>
-            <!-- Tabs for Club Modal -->
-            <div class="flex border-b border-border mb-4">
-                <button onclick="app.setClubModalTab('history')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Histórico</button>
-                <button onclick="app.setClubModalTab('performance')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Desempenho</button>
-                <button onclick="app.setClubModalTab('squad')" class="club-modal-tab-btn flex-1 pb-2 font-bold text-sm">Elenco</button>
-            </div>
-
-            <div class="max-h-[60vh] overflow-y-auto pr-2">
-                <div id="club-tab-history" class="club-modal-tab-content"></div>
-                <div id="club-tab-performance" class="club-modal-tab-content hidden p-4 bg-black/30 rounded-lg"></div>
-                <div id="club-tab-squad" class="club-modal-tab-content hidden"></div>
+            <!-- Modal Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div id="club-tab-history" class="hidden wiki-article-content"></div>
+                <div id="club-tab-squad" class="hidden"></div>
+                <div id="club-tab-performance" class="hidden"></div>
             </div>
         </div>
     </div>

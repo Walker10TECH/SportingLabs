@@ -1,19 +1,20 @@
 /* ==========================================================================
-   1. Global Styles & Variables
+   1. Global Styles & Variables (Mobile-First)
    ========================================================================== */
 :root {
-    --red-glow: rgba(229, 55, 56, 0.5);
-    --surface-color: rgba(0, 0, 0, 0.7);
-    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-color: #ffffff; /* Verde vibrante do OneFootball */
+    --accent-glow: rgba(0, 240, 160, 0.5);
+    --background-color: #121212;
+    --surface-color: #1a1a1a;
+    --border-color: rgba(255, 255, 255, 0.15);
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #0b0d11;
-    color: #DDDDDD;
-    perspective: 1000px; /* Adiciona perspectiva para efeitos 3D */
-
-    /* Flexbox para estrutura principal */
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -26,25 +27,60 @@ body {
 
 .bg-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(11, 13, 17, 0.7) 0%, #0b0d11 70%);
+    background: radial-gradient(circle at 50% 0%, rgba(18, 18, 18, 0.7) 0%, var(--background-color) 70%);
 }
 
 /* ==========================================================================
    2. Navigation
    ========================================================================== */
 .header-main {
-    background: rgba(11, 13, 17, 0.7);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
     position: sticky; /* Mantém o cabeçalho fixo no topo */
     top: 0;
     z-index: 100;
 }
 
-.nav-link { white-space: nowrap; color: rgba(255,255,255,0.7); padding: 8px 16px; font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; border-radius: 6px; }
-.sport-link { white-space: nowrap; color: rgba(255,255,255,0.5); padding: 4px 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; transition: all 0.2s; border-bottom: 2px solid transparent; }
-.sport-link:hover { color: white; }
-.sport-link.active { color: white; border-bottom-color: #E53738; }
+.nav-link {
+    white-space: nowrap;
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: color 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+/* Estilos para os novos botões de Dropdown */
+.dropdown-btn {
+    background-color: #FFFFFF !important;
+    border: 1.3px solid #B8BBC2 !important; /* Cor do botão fechado */
+    color: #313144 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important; /* Padding ajustado para mobile */
+    gap: 9px !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    transition: border-color 0.2s ease !important;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+.dropdown-btn:hover {
+    border-color: #215AFF !important; /* Cor azul no hover */
+}
+.dropdown-btn i {
+    color: #313144 !important; /* Cor do ícone de seta */
+}
+.dropdown-btn.wide {
+    min-width: 200px;
+    justify-content: space-between;
+}
+.dropdown-container.open .dropdown-btn {
+    border-color: #215AFF; /* Cor do botão aberto */
+    border-radius: 8px 8px 0 0 !important;
+}
 
 /* Estilos para Dropdown */
 .dropdown-menu {
@@ -52,6 +88,16 @@ body {
     transform: translateY(-10px);
     transition: opacity 0.2s ease, transform 0.2s ease;
     pointer-events: none;
+    position: absolute;
+    top: 100%;
+    left: 0; 
+    background-color: #FFFFFF;
+    border: 1.3px solid #215AFF;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    z-index: 110;
+    width: 100%; /* Garante que o menu tenha a mesma largura do botão */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
 }
 
 .dropdown-menu:not(.hidden) {
@@ -63,12 +109,37 @@ body {
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* 12px */
-    padding: 0.5rem 0.75rem; /* 8px 12px */
+    gap: 10px;
+    padding: 11px 24px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: #313144;
+    transition: background-color 0.15s ease !important;
+}
+.dropdown-item:hover {
+    background-color: #C4CBDF;
+}
+.dropdown-item.active {
+    background-color: #e0e4f0; /* Um pouco mais claro para o item ativo */
 }
 
-.nav-link:hover { background: rgb(131, 126, 126); color: white; }
-.nav-link.active { background: white; color: #CA0C00; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+.nav-link:hover {
+    color: var(--text-primary);
+}
+.nav-link.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent-color);
+    font-weight: 800;
+}
+
+.search-result-item {
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
 
 /* Estilos para a Barra de Pesquisa Global */
 #global-search-container {
@@ -82,7 +153,7 @@ body {
     transform: translateX(-50%);
     width: 90vw;
     max-width: 500px;
-    background-color: var(--surface-color);
+    background-color: #2a2a2a;
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
@@ -99,6 +170,34 @@ body {
 .search-result-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+/* Estilo para o ícone de carregamento na barra de pesquisa */
+#global-search-container .search-loader {
+    display: none; /* Oculto por padrão */
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top-color: var(--accent-color);
+    border-right-color: var(--accent-color);
+    border-radius: 50%;
+    animation: rotation 0.8s linear infinite;
+}
+
+/* Mostra o loader quando a classe 'loading' está presente no input */
+#global-search-input.loading + .search-loader {
+    display: block;
+}
+
+/* Estilo para esconder o loader global */
+.loader-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 
 /* ==========================================================================
    3. Animations & Loaders
@@ -125,12 +224,19 @@ body {
     bottom: 0;
     margin: auto;
     border: 3px solid;
-    border-color: transparent transparent #E53738 #E53738;
+    border-color: transparent transparent var(--accent-color) var(--accent-color);
     width: 50px;
     height: 50px;
     border-radius: 50%;
     animation: rotationBack 0.5s linear infinite;
     transform-origin: center center;
+}
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem;
+    width: 100%;
 }
 .loader::before {
     width: 40px;
@@ -190,32 +296,19 @@ img {
 
 .game-card, .news-card {
     background: var(--surface-color);
-    backdrop-filter: blur(10px);
-    border: 1px solid transparent;
+    border: 1px solid var(--border-color);
     border-radius: 16px;
-    transition: all 0.3s ease-out;
+    transition: border-color 0.3s ease-out;
     position: relative;
     overflow: hidden;
-    transform-style: preserve-3d;
-}
-
-.game-card::after, .news-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at var(--x) var(--y), rgba(229, 55, 56, 0.2) 0%, transparent 40%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
 }
 
 .game-card:hover, .news-card:hover {
-    transform: translateY(-5px) rotateX(5deg) scale(1.02);
-    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
-    border-color: transparent;
+    border-color: var(--accent-glow);
+}
+
+.game-card.live-match {
+    border-color: var(--accent-color);
 }
 
 .game-card:hover:before, .news-card:hover:before {
@@ -230,23 +323,23 @@ img {
 
 /* Estilo para o placar no card de jogo */
 .game-card-score {
-    background-color: #374151; /* Cinza escuro (gray-700) */
-    color: #ffffff; /* Branco */
+    color: var(--text-primary);
     font-weight: 700; /* bold */
     font-size: 1.125rem; /* text-lg */
-    padding: 0.125rem 0.75rem; /* py-0.5 px-3 */
-    border-radius: 0.375rem; /* rounded-md */
     min-width: 40px;
     text-align: center;
+}
+.game-card-score.home {
+    color: var(--accent-color);
 }
 
 
 /* --- Tailwind CSS Custom Classes --- */
-.bg-dark-bg { background-color: #0b0d11; }
-.bg-surface { background-color: #1e1e1e; }
-.bg-surface-light { background-color: #252525; }
-.border-border { border-color: #333; }
-.text-accent-red { color: #E53738; }
+.bg-dark-bg { background-color: var(--background-color); }
+.bg-surface { background-color: var(--surface-color); }
+.bg-surface-light { background-color: #252525; } /* Manter para diferenciação */
+.border-border { border-color: var(--border-color); }
+.text-accent-red { color: var(--accent-color); } /* Mapeia a classe antiga para a nova cor */
 
 /* --- Pitch / Campo --- */
 .soccer-pitch {
@@ -285,9 +378,9 @@ img {
     padding: 1.5rem; /* 24px */
 }
 
-/* Garante que a tabela de classificação não quebre o layout em telas menores */
-.standings-wrapper {
-    overflow-x: auto;
+/* Melhora o espaçamento e padding no modal de partida */
+#modal-view-stats {
+    padding: 1.5rem;
 }
 
 /* Flexbox para o conteúdo principal */
@@ -303,124 +396,140 @@ img {
     margin: 0 auto; /* Centraliza o conteúdo */
 }
 
+/* Layouts de Grid - Base Mobile (Coluna Única) */
+#view-matches,
+#standings-container,
+#view-news {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
 
 /* ==========================================================================
-   6. Responsive Design
+   6. Responsive Design (Mobile-First)
    ========================================================================== */
 
-@media (max-width: 768px) {
-    body {
-        -webkit-tap-highlight-color: transparent;
+/* --- TABLETS (e.g., iPad) --- */
+@media (min-width: 768px) {
+    /* Layout */
+    #main-content { padding: 2rem; }
+    #view-matches { grid-template-columns: repeat(2, 1fr); }
+    #standings-container { grid-template-columns: repeat(2, 1fr); }
+    #view-news { grid-template-columns: repeat(2, 1fr); }
+    #modal-view-stats { grid-template-columns: 2fr 1fr; } /* Retorna o layout de 2 colunas no modal */
+
+    /* Header */
+    .dropdown-btn { padding: 11px 18px !important; } /* Retorna o padding original */
+
+    /* Dropdowns - Retorna ao comportamento de menu flutuante */
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: auto;
+        background-color: #FFFFFF;
+        border: 1.3px solid #215AFF;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        backdrop-filter: none;
+        display: block;
+        padding: 0;
     }
 
-    #main-content {
+    /* Modals */
+    #match-modal, #wiki-article-modal, #player-modal, #settings-modal {
+        padding: 1.5rem;
+    }
+    #match-modal .bg-dark-bg, #wiki-article-modal .modal-content {
+        height: 90vh;
+        border-radius: 1rem;
+    }
+
+    /* Typography */
+    #league-title { font-size: 2.25rem; }
+    #modal-score { font-size: 3rem; }
+    #modal-home, #modal-away { font-size: 1.5rem; }
+    #goal-text { font-size: 8rem; }
+}
+
+/* --- LAPTOPS & DESKTOPS --- */
+@media (min-width: 1024px) {
+    /* Layout */
+    #view-news { grid-template-columns: repeat(3, 1fr); }
+    #modal-view-stats { grid-template-columns: 2fr 1fr; }
+
+    /* Typography */
+    #league-title { font-size: 2.5rem; }
+}
+
+/* --- LARGE DESKTOPS --- */
+@media (min-width: 1280px) {
+    #standings-container {
+        /* Se houver apenas uma tabela, centraliza. Se houver duas, elas ficam lado a lado. */
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        justify-content: center;
+    }
+}
+
+/* --- MOBILE-SPECIFIC OVERRIDES --- */
+@media (max-width: 767px) {
+    /* Dropdowns como overlay em tela cheia */
+    .dropdown-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(26, 26, 26, 0.9); /* Fundo escuro semitransparente */
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column; /* Empilha os itens verticalmente */
+        align-items: center;
+        justify-content: center;
         padding: 1rem;
+        border-radius: 0;
+        border: none;
+        transform: translateY(0); /* Remove a animação de slide */
+    }
+    .dropdown-menu:not(.hidden) {
+        animation: fadeIn 0.2s ease-out; /* Animação de fade-in suave */
+    }
+    .dropdown-item {
+        background-color: var(--surface-color);
+        color: var(--text-primary);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        max-width: 320px; /* Limita a largura dos itens no overlay */
+        text-align: center;
+        justify-content: center;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    .dropdown-item:hover {
+        background-color: var(--accent-color);
+        color: var(--background-color);
+    }
+    .dropdown-item.active {
+        background-color: var(--accent-color);
+        color: var(--background-color);
+        font-weight: 700;
     }
 
-    #view-matches {
-        grid-template-columns: 1fr;
+    /* Modals em tela cheia */
+    #match-modal, #wiki-article-modal, #player-modal, #settings-modal {
+        padding: 0;
     }
-
-    .nav-link {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-
-    #league-title {
-        font-size: 1.5rem; /* Reduz o título da liga */
-    }
-
-    #modal-score {
-        font-size: 2.5rem; /* Reduz o placar no modal */
-        padding: 0.5rem 1rem;
-    }
-
-    #modal-home, #modal-away {
-        font-size: 1.125rem; /* Reduz nome dos times no modal */
-    }
-
-    #modal-home-logo, #modal-away-logo {
-        width: 3.5rem; /* 56px */
-        height: 3.5rem; /* 56px */
-    }
-
-    #goal-text {
-        font-size: 5rem; /* Reduz o texto da animação de gol */
-    }
-
-    #match-modal .flex-1.overflow-y-auto {
-        padding: 1rem; /* 16px */
-    }
-}
-
-@media (max-width: 480px) {
-    #main-content {
-        padding: 1rem 0.75rem;
-    }
-
-    #standings-container table {
-        font-size: 11px;
-    }    
-
-    #standings-container .p-3 {
-        padding: 0.5rem;
-    }
-
-    #standings-container .font-bold {
-        font-weight: 500;
-    }
-
-    .header-main .container {
-        gap: 0.5rem; /* Reduz o espaçamento no cabeçalho principal */
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-
-    .game-card {
-        padding: 0.75rem; /* Reduz o padding interno dos cards */
-    }
-
-    .game-card .text-sm {
-        font-size: 0.8rem; /* Reduz o nome dos times nos cards de jogo */
-    }
-
-    .game-card .text-lg {
-        font-size: 1rem; /* Reduz o placar nos cards de jogo */
-    }
-}
-
-@media (max-width: 375px) {
-    /* Ajustes finos para telas muito pequenas (iPhone SE, etc.) */
-    #main-content {
-        padding: 1rem 0.5rem;
-    }
-    #league-title {
-        font-size: 1.25rem; /* 20px */
-    }
-
-    .nav-link {
-        padding: 6px 10px;
-        font-size: 0.75rem; /* 12px */
-    }
-
-    .game-card .text-sm {
-        font-size: 0.75rem; /* Nomes dos times ainda menores */
-    }
-
-    #modal-score {
-        font-size: 2rem; /* Placar do modal menor */
-    }
-
-    #modal-home, #modal-away {
-        font-size: 1rem; /* Nomes dos times no modal menores */
-    }
-
-    #goal-text {
-        font-size: 4rem; /* Animação de gol menor */
-    }
-
-    #match-modal .flex-1.overflow-y-auto {
-        padding: 0.75rem; /* 12px */
+    #match-modal .bg-dark-bg, #wiki-article-modal .modal-content, #player-modal .bg-surface, #settings-modal .settings-modal-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        max-height: none;
     }
 }
 
@@ -461,62 +570,67 @@ iframe#wikipedia-frame {
 
 /* Estilos para o conteúdo do artigo da Wikipedia no Modal */
 #wiki-article-content {
+    /* Este ID pode ser usado para o container principal do modal */
     font-size: 1rem; /* 16px */
     line-height: 1.8;
     color: #d1d5db; /* gray-300 */
 }
 
-#wiki-article-content p {
-    margin-bottom: 1.25em;
+.wiki-article-content p {
+    margin-bottom: 1.5em; /* Aumenta o espaço entre parágrafos para melhor leitura */
 }
 
-#wiki-article-content h1, 
-#wiki-article-content h2, 
-#wiki-article-content h3,
-#wiki-article-content h4 {
+/* Unifica os seletores de título para consistência */
+.wiki-article-content h1,
+.wiki-article-content h2,
+.wiki-article-content h3,
+.wiki-article-content h4,
+.wiki-article-content h5 {
     font-weight: 700;
     color: #ffffff;
     margin-top: 2em;
-    margin-bottom: 0.75em;
+    margin-bottom: 1em;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.25em;
+    padding-bottom: 0.5em;
 }
-#wiki-article-content h1 { font-size: 1.875rem; }
-#wiki-article-content h2 { font-size: 1.5rem; }
-#wiki-article-content h3 { font-size: 1.25rem; }
-#wiki-article-content h4 { font-size: 1.125rem; border-bottom: none; }
 
-#wiki-article-content a {
-    color: #ffffff; /* Alterado de vermelho para branco */
+.wiki-article-content h1 { font-size: 2rem; }      /* 32px */
+.wiki-article-content h2 { font-size: 1.75rem; }   /* 28px */
+.wiki-article-content h3 { font-size: 1.375rem; }  /* 22px */
+.wiki-article-content h4 { font-size: 1.125rem; }  /* 18px */
+.wiki-article-content h5 { font-size: 1rem; border-bottom: none; } /* 16px */
+
+.wiki-article-content a {
+    color: var(--accent-color);
     text-decoration: none;
-    font-weight: 700; /* Alterado para negrito */
+    font-weight: 600;
     transition: all 0.2s ease;
-    border-radius: 3px;
-    padding: 1px 3px;
-    margin: -1px -3px;
+    border-bottom: 1px solid transparent;
 }
-#wiki-article-content a:hover {
-    text-decoration: underline; /* Mantém apenas o sublinhado no hover */
+.wiki-article-content a:hover {
+    border-bottom-color: var(--accent-color); /* Efeito de sublinhado sutil no hover */
 }
 
-#wiki-article-content ul,
-#wiki-article-content ol {
+.wiki-article-content ul,
+.wiki-article-content ol {
     margin-left: 1.5rem;
-    margin-bottom: 1.25em;
+    margin-bottom: 1.5em;
+    padding-left: 1em; /* Adiciona um pouco de padding interno */
 }
-#wiki-article-content ul { list-style-type: disc; }
-#wiki-article-content ol { list-style-type: decimal; }
+.wiki-article-content ul { list-style-type: disc; }
+.wiki-article-content ol { list-style-type: decimal; }
 
-#wiki-article-content blockquote {
-    border-left: 4px solid var(--red-glow);
-    padding-left: 1rem;
+.wiki-article-content blockquote {
+    border-left: 3px solid var(--accent-color);
+    padding: 0.5em 1.5rem;
     margin: 1.5em 0;
-    color: #9ca3af; /* gray-400 */
+    color: #d1d5db; /* gray-300, para melhor contraste */
     font-style: italic;
+    background-color: rgba(255, 255, 255, 0.03); /* Fundo sutil */
 }
 
-#wiki-article-content table { display: none; } /* Oculta tabelas complexas que quebram o layout */
-#wiki-article-content .infobox { display: none; } /* Oculta as caixas de informação laterais */
+.wiki-article-content table { display: none; } /* Oculta tabelas complexas que quebram o layout */
+.wiki-article-content .infobox { display: none; } /* Oculta as caixas de informação laterais */
 
 /* Estilos para Tabela 3D de Artilheiros */
 .styled-table {
@@ -537,7 +651,7 @@ iframe#wikipedia-frame {
 }
 
 .styled-table thead th {
-    background: linear-gradient(to bottom, #3a0e0e, #E53738);
+    background: var(--surface-color);
     color: white;
     padding: 1rem;
     text-transform: uppercase;
@@ -581,6 +695,101 @@ iframe#wikipedia-frame {
 }
 .club-card:hover {
     transform: translateY(-5px);
-    border-color: var(--red-glow);
+    border-color: var(--accent-glow);
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ==========================================================================
+   8. Player Squad View
+   ========================================================================== */
+.player-squad-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease-out;
+}
+.player-squad-card:hover {
+    border-color: var(--accent-glow);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+.player-squad-card img {
+    width: 56px; /* w-14 */
+    height: 56px; /* h-14 */
+    border-radius: 9999px; /* rounded-full */
+    object-fit: cover;
+    background-color: #374151; /* gray-700 */
+    border: 2px solid var(--border-color);
+}
+
+/* ==========================================================================
+   7. Match Modal Enhancements (OneFootball Inspired)
+   ========================================================================== */
+
+/* Melhora o card de informações do jogo */
+#game-info {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+#game-info p {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+#game-info p strong {
+    color: #9ca3af; /* gray-400 */
+    font-weight: 600;
+}
+
+/* Melhora a lista de incidentes */
+#incidents-list .incident-item {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+#incidents-list .incident-item:hover {
+    background-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Melhora as barras de estatísticas */
+.stat-bar-container {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+}
+.stat-bar {
+    height: 100%;
+    transition: width 0.4s ease-out;
+    border-radius: 4px;
+}
+.stat-bar.home {
+    background-color: var(--accent-color);
+}
+.stat-bar.away {
+    background-color: var(--text-secondary);
+}
+
+/* Estilos para o novo seletor de clubes */
+.club-selector {
+    width: 100%;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
