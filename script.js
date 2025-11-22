@@ -409,28 +409,12 @@ const app = {
     },
 
     setView(v) {
-        // Oculta abas não suportadas por certos esportes
-        const unsupportedViews = ['standings', 'players'];
-        if (this.state.currentSport !== 'soccer' && unsupportedViews.includes(v)) {
-            this.setView('matches'); // Volta para a aba de placar se a clicada não for suportada
-            return;
-        }
-
-
         this.state.view = v;
         ['matches','standings', 'news', 'clubs', 'wiki'].forEach(name => {
             const btn = document.getElementById('btn-'+name);
             const view = document.getElementById(`view-${name}`);
             
-            if (btn) {
-                if (name === v) {
-                    btn.classList.add('active');
-                    btn.classList.remove('text-gray-400');
-                } else {
-                    btn.classList.remove('active');
-                    btn.classList.add('text-gray-400');
-                }
-            }
+            if (btn) btn.classList.toggle('active', name === v);
             
             if (view) {
                 if (name === v) {
@@ -438,33 +422,6 @@ const app = {
                 } else {
                     view.classList.add('hidden');
                 }
-            }
-        });
-
-        if(v === 'standings') this.loadStandings();
-        if(v === 'news') this.loadNews();
-        if(v === 'clubs') this.loadClubs();
-    },
-
-    setModalTab(t) {
-        const modalContent = document.querySelector('#match-modal .flex-1.overflow-y-auto');
-        modalContent.classList.remove('content-fade-in');
-
-        this.state.modalTab = t;
-        const tabs = ['stats', 'lineups'];
-        tabs.forEach(tabId => {
-            const btn = document.getElementById(`tab-${tabId}`);
-            const view = document.getElementById(`modal-view-${tabId}`);
-            if (tabId === t) {
-                // Adiciona um pequeno delay para a animação ser perceptível na troca de abas
-                setTimeout(() => {
-                    modalContent.classList.add('content-fade-in');
-                }, 50);
-                btn.classList.add('text-white', 'border-red-600');
-                view.classList.remove('hidden');
-            } else {
-                btn.classList.remove('text-white', 'border-red-600');
-                view.classList.add('hidden');
             }
         });
     },
@@ -481,7 +438,7 @@ const app = {
     
     async loadLeague(key, isRefresh = false, isSportChange = false) {
         const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[key];
+        const league = this.state.sports[sport]?.leagues[key];
         if (!league) {
             console.error(`Liga com a chave "${key}" não encontrada para o esporte "${sport}".`);
             return;
@@ -489,80 +446,75 @@ const app = {
         
         // Update header only if it's not a background refresh or if the sport changed
         if (!isRefresh || isSportChange) {
+            document.getElementById('league-logo').src = league.logo;
             document.getElementById('league-title').innerText = league.name;
             document.getElementById('bg-wrapper').style.backgroundImage = `url('${league.bg}')`;
         }
-        document.getElementById('league-logo').src = league.logo;
 
         // Oculta/mostra abas de acordo com o suporte do esporte
-        const supportedViews = this.state.currentSport === 'soccer';
-        document.getElementById('btn-standings').style.display = supportedViews ? 'block' : 'none';
-        document.getElementById('btn-clubs').style.display = supportedViews ? 'block' : 'none';
+        const isSoccer = this.state.currentSport === 'soccer';
+        document.getElementById('btn-standings').style.display = isSoccer ? 'flex' : 'none';
+        document.getElementById('btn-clubs').style.display = isSoccer ? 'flex' : 'none';
 
-        const matchesContainer = document.getElementById('view-matches');
-        this.renderLoader(matchesContainer);
-
-        document.getElementById('view-standings').classList.add('hidden');
-
-        try {
-            // Adiciona animação de fade-in ao container de partidas
-            const matchesContainer = document.getElementById('view-matches');
-            matchesContainer.classList.remove('content-fade-in');
-
-            const res = await fetch(`${this.proxyUrl}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/scoreboard?lang=pt&region=${this.state.userRegion}`);
-            const data = await res.json();
-            this.state.cache[key] = data.events || []; 
-            this.renderMatches(data.events || []);
-        } catch (e) {
-            document.getElementById('view-matches').innerHTML = '<p class="text-center text-gray-400 col-span-2">Erro ao conectar à ESPN.</p>';
-        }
-        matchesContainer.classList.add('content-fade-in');
-    },
-
-    async loadStandings() {
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
-        if (!league) {
-            console.error(`Tentando carregar classificação para uma liga inválida.`);
-            return;
+        // Garante que a visão padrão seja 'matches' se a atual não for suportada
+        if (!isSoccer && (this.state.view === 'standings' || this.state.view === 'clubs')) {
+            this.setView('matches');
         }
 
-        const slugsToFetch = league.slugs || [league.slug];
-        const container = document.getElementById('standings-container');
-        this.renderLoader(container);
-
-        try {
-            // Busca os dados de todas as divisões em paralelo
-            const responses = await Promise.all(
-                slugsToFetch.map(slug => fetch(`${this.proxyUrl}https://site.api.espn.com/apis/v2/sports/${sport}/${slug}/standings?lang=pt&region=${this.state.userRegion}`))
-            );
-            const dataArray = await Promise.all(responses.map(res => res.json()));
-
-            container.innerHTML = ''; // Limpa o loader
-
-            dataArray.forEach(data => {
-                const children = data.children || [];
-                this.renderStandings(children, true); // O `true` indica para adicionar ao container
-                container.classList.add('content-fade-in');
-            });
-        } catch (e) {
-            container.innerHTML = '<p class="text-center text-red-400 p-4">Classificação indisponível.</p>';
+        // Mostra loaders em todas as seções relevantes
+        this.renderLoader(document.getElementById('view-matches'));
+        this.renderLoader(document.getElementById('view-news'));
+        if (isSoccer) {
+            this.renderLoader(document.getElementById('standings-container'));
+            this.renderLoader(document.getElementById('clubs-grid-container'));
         }
-    },
-
-    async loadNews() {
-        const container = document.getElementById('view-news');
-        this.renderLoader(container);
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
 
         try {
-            const res = await fetch(`${this.proxyUrl}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/news`);
-            const data = await res.json();
-            this.renderNews(data.articles || []);
-            container.classList.add('content-fade-in');
+            const baseUrl = `${this.proxyUrl}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}`;
+            const regionParams = `?lang=pt&region=${this.state.userRegion}`;
+
+            // Cria um array de promessas para buscar todos os dados em paralelo
+            const promises = [
+                fetch(`${baseUrl}/scoreboard${regionParams}`).then(res => res.json()), // Partidas
+                fetch(`${baseUrl}/news${regionParams}`).then(res => res.json()) // Notícias
+            ];
+
+            // Adiciona a busca por classificação apenas se for futebol
+            if (isSoccer) {
+                const slugsToFetch = league.slugs || [league.slug];
+                const standingsPromises = slugsToFetch.map(slug =>
+                    fetch(`${this.proxyUrl}https://site.api.espn.com/apis/v2/sports/${sport}/${slug}/standings${regionParams}`).then(res => res.json())
+                );
+                promises.push(Promise.all(standingsPromises));
+            }
+
+            const [matchesData, newsData, standingsDataArray] = await Promise.all(promises);
+
+            // Renderiza Partidas
+            this.state.cache[key] = matchesData.events || [];
+            this.renderMatches(matchesData.events || []);
+
+            // Renderiza Notícias
+            this.renderNews(newsData.articles || []);
+
+            // Renderiza Classificação e Clubes (apenas para futebol)
+            if (isSoccer && standingsDataArray) {
+                const container = document.getElementById('standings-container');
+                container.innerHTML = ''; // Limpa o loader
+                const allTeams = new Map();
+
+                standingsDataArray.forEach(data => {
+                    const children = data.children || [];
+                    this.renderStandings(children, true); // O `true` indica para adicionar ao container
+                    children.forEach(child => child.standings?.entries?.forEach(entry => allTeams.set(entry.team.id, entry.team)));
+                });
+
+                this.renderClubsGrid(Array.from(allTeams.values()));
+            }
+
         } catch (e) {
-            container.innerHTML = '<p class="col-span-full text-center text-red-400 p-4">Não foi possível carregar as notícias.</p>';
+            console.error("Falha ao carregar dados da liga:", e);
+            document.getElementById('view-matches').innerHTML = '<p class="text-center text-gray-400 col-span-2">Erro ao carregar os dados. Tente novamente.</p>';
         }
     },
 
@@ -574,6 +526,7 @@ const app = {
             return;
         }
 
+        container.classList.remove('content-fade-in');
         articles.slice(0, 12).forEach(article => {
             const imageUrl = article.images?.[0]?.url || 'https://placehold.co/600x400/1e1e1e/ffffff?text=Notícia';
             container.innerHTML += `
@@ -588,6 +541,7 @@ const app = {
                 </a>
             `;
         });
+        container.classList.add('content-fade-in');
     },
 
     // --- Global Search ---
@@ -778,47 +732,6 @@ const app = {
     },
 
     // --- Clubs View ---
-    async loadClubs() {
-        const selectorContainer = document.getElementById('club-selector-container');
-        const detailsContainer = document.getElementById('club-details-container');
-        
-        this.renderLoader(selectorContainer);
-        detailsContainer.innerHTML = `<div class="text-center p-8 bg-surface rounded-xl border border-border">
-                <i data-lucide="arrow-up" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                <p class="text-gray-400 mt-2">Selecione um clube acima para ver os detalhes.</p>
-            </div>`;
-        
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
-        const slugsToFetch = league.slugs || [league.slug];
-
-        try {
-            const responses = await Promise.all(
-                slugsToFetch.map(slug => fetch(`${this.proxyUrl}https://site.api.espn.com/apis/v2/sports/${sport}/${slug}/standings?lang=pt&region=${this.state.userRegion}`))
-            );
-            const dataArray = await Promise.all(responses.map(res => res.json()));
-
-            const allTeams = new Map(); // Usa um Map para evitar times duplicados
-            dataArray.forEach(data => {
-                const children = data.children || [];
-                children.forEach(child => {
-                    const entries = child.standings?.entries || [];
-                    entries.forEach(entry => {
-                        if (!allTeams.has(entry.team.id)) {
-                            allTeams.set(entry.team.id, entry.team);
-                        }
-                    });
-                });
-            });
-
-            this.renderClubsDropdown(Array.from(allTeams.values()));
-        } catch (error) {
-            console.error("Erro ao carregar clubes:", error);
-            selectorContainer.innerHTML = '<p class="text-center text-red-400 p-4">Não foi possível carregar os clubes.</p>';
-        }
-        lucide.createIcons();
-    },
-
     renderClubsDropdown(teams) {
         const container = document.getElementById('club-selector-container');
 
@@ -905,41 +818,6 @@ const app = {
         `;
     },
 
-    // --- Clubs View ---
-    async loadClubs() {
-        const container = document.getElementById('clubs-grid-container');
-        this.renderLoader(container);
-        
-        const sport = this.state.currentSport;
-        const league = this.state.sports[sport].leagues[this.state.currentLeague];
-        const slugsToFetch = league.slugs || [league.slug];
-
-        try {
-            const responses = await Promise.all(
-                slugsToFetch.map(slug => fetch(`${this.proxyUrl}https://site.api.espn.com/apis/v2/sports/${sport}/${slug}/standings?lang=pt&region=${this.state.userRegion}`))
-            );
-            const dataArray = await Promise.all(responses.map(res => res.json()));
-
-            const allTeams = new Map();
-            dataArray.forEach(data => {
-                const children = data.children || [];
-                children.forEach(child => {
-                    const entries = child.standings?.entries || [];
-                    entries.forEach(entry => {
-                        if (!allTeams.has(entry.team.id)) {
-                            allTeams.set(entry.team.id, entry.team);
-                        }
-                    });
-                });
-            });
-
-            this.renderClubsGrid(Array.from(allTeams.values()));
-        } catch (error) {
-            console.error("Erro ao carregar clubes:", error);
-            container.innerHTML = '<p class="col-span-full text-center text-red-400 p-4">Não foi possível carregar os clubes.</p>';
-        }
-    },
-
     renderClubsGrid(teams) {
         const container = document.getElementById('clubs-grid-container');
         container.innerHTML = '';
@@ -949,6 +827,7 @@ const app = {
             return;
         }
 
+        container.classList.remove('content-fade-in');
         teams.forEach(team => {
             const logo = team.logos?.[0]?.href || 'https://placehold.co/100x100/2a2a2a/ffffff?text=?';
             container.innerHTML += `
@@ -958,6 +837,7 @@ const app = {
                 </div>
             `;
         });
+        container.classList.add('content-fade-in');
     },
 
     openClubModal(teamId, teamName) {
@@ -987,7 +867,7 @@ const app = {
             const view = document.getElementById(`club-tab-${id}`);
             
             if (id === tabName) {
-                btn.classList.add('active');
+                btn.classList.add('text-white', 'border-red-600');
                 view.classList.remove('hidden');
 
                 // Carrega o conteúdo da aba apenas se ainda não foi carregado
@@ -1003,7 +883,7 @@ const app = {
                     }
                 }
             } else {
-                btn.classList.remove('active');
+                btn.classList.remove('text-white', 'border-red-600');
                 view.classList.add('hidden');
             }
         });
@@ -1133,8 +1013,10 @@ const app = {
 
     renderMatches(events) {
         const div = document.getElementById('view-matches');
+        div.classList.remove('content-fade-in');
         div.innerHTML = '';
         if(events.length === 0) { div.innerHTML = '<p class="col-span-full text-center text-gray-500 py-12">Nenhum jogo hoje ou dados indisponíveis.</p>'; return; }
+
 
         events.forEach(ev => {
             const comp = ev.competitions[0];
@@ -1166,6 +1048,7 @@ const app = {
                 </div>
             `;
         });
+        div.classList.add('content-fade-in');
         lucide.createIcons();
     },
 
@@ -1182,7 +1065,7 @@ const app = {
 
     renderStandings(children, append = false) {
         const container = document.getElementById('standings-container');
-        if (!append) container.innerHTML = '';
+        if (!append) { container.innerHTML = ''; container.classList.remove('content-fade-in'); }
         if (children.length === 0 && !append) {
             container.innerHTML = '<p class="text-center text-gray-500 w-full">Dados não encontrados.</p>';
             return;
@@ -1283,6 +1166,7 @@ const app = {
                 </div>
             `;
             container.appendChild(tableWrapper);
+            container.classList.add('content-fade-in');
         });
     },
 
@@ -1335,10 +1219,6 @@ const app = {
         this.state.matchRefreshInterval = null;
         this.state.lastGoalCount = 0; // Reseta a contagem de gols ao abrir um novo jogo
 
-        this.setModalTab('stats');
-
-        document.getElementById('incidents-list').innerHTML = '<p class="text-center text-gray-500 text-xs mt-4">Carregando lances...</p>';
-
         document.getElementById('stats-container').innerHTML = '<p class="text-center text-gray-500 text-xs">Carregando...</p>';
         const sport = this.state.currentSport;
         const league = this.state.sports[sport].leagues[this.state.currentLeague];
@@ -1381,7 +1261,6 @@ const app = {
                 this.updateLiveStandings(home, away);
             }
 
-            this.renderIncidents(data.plays || [], home.id);
             this.renderStats(data.boxscore?.teams || []);
 
             // Se o jogo acabou, para de atualizar
@@ -1427,43 +1306,9 @@ const app = {
             this.state.matchRefreshInterval = null;
             // Recarrega a classificação para reverter as mudanças visuais
             if (this.state.view === 'standings') {
-                this.loadStandings();
+                this.loadLeague(this.state.currentLeague, true);
             }
         }
-    },
-
-    renderIncidents(plays, homeId) {
-        const div = document.getElementById('incidents-list');
-        div.innerHTML = '';
-        // A API retorna os tipos de evento em inglês
-        const keyEvents = plays.filter(p => p.type.text.toLowerCase().includes('goal') || p.type.text.toLowerCase().includes('card'));
-        const goalEvents = keyEvents.filter(p => p.type.text.toLowerCase().includes('goal'));
-
-        // Dispara a animação de gol se um novo gol for detectado
-        if (goalEvents.length > this.state.lastGoalCount) {
-            const overlay = document.getElementById('goal-animation-overlay');
-            overlay.classList.add('show');
-            setTimeout(() => overlay.classList.remove('show'), 2500); // Remove a classe após a animação
-        }
-        this.state.lastGoalCount = goalEvents.length;
-
-
-        if(keyEvents.length === 0) { div.innerHTML = '<p class="text-center text-gray-500 text-xs mt-4">Sem lances principais.</p>'; return; }
-        
-        keyEvents.reverse().forEach(p => {
-            const isHome = p.team?.id === homeId;
-            let icon = '⚽'; // Padrão para Gol
-            if (p.type.text.toLowerCase().includes('card')) {
-                icon = p.text.toLowerCase().includes('vermelho') ? '🟥' : '🟨';
-            }
-            div.innerHTML += `
-                <div class="flex items-center gap-3 p-2 border-l-2 ${isHome ? 'border-blue-500 bg-blue-500/5' : 'border-red-500 bg-red-500/5 flex-row-reverse text-right'} mb-2 rounded text-xs transition hover:bg-white/5">
-                    <span class="font-bold text-gray-300 font-mono w-8">${p.clock.displayValue}</span>
-                    <span class="text-lg">${icon}</span>
-                    <span class="text-gray-300 flex-1">${p.text}</span>
-                </div>
-            `;
-        });
     },
 
     renderStats(teams) {
