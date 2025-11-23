@@ -23,7 +23,7 @@ Abaixo estão algumas telas que demonstram as principais funcionalidades e a int
 
 | Tabela de Classificação | Detalhes da Partida |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://drive.google.com/uc?export=view&id=1OX-DyJqaz-jtZfNlYrengl4cYcOjxpN1" alt="Tabela de Classificação" width="450"> | <img src="https://drive.google.com/uc?export=view&id=17Eua4KZjVvodqK1cU_DKGHBQiIrSfA8G" alt="Detalhes da Partida" width="450"> |
+| <img src="https://drive.google.com/uc?export=view&id=1OX-DyJqaz-jtZfNlYrengl4cYcOjxpN1" alt="Tabela de Classificação" width="450"> | <img src="https://drive.google.com/file/d/1F80EC2l_rPsqtTjnI9w6qdJYiFlaaVap/view?usp=sharing" alt="Detalhes da Partida" width="450"> |
 
 | Clubes e Elenco | Seção de Notícias |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
