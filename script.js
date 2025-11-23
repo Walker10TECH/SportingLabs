@@ -462,6 +462,11 @@ const app = {
                 Object.values(this.state.timers).forEach(timer => clearInterval(timer.interval));
                 this.state.timers = {};
 
+                // Verifica se há jogos ao vivo para mostrar o indicador
+                const hasLiveGames = events.some(ev => ev.status.type.state === 'in');
+                const liveIndicator = document.getElementById('live-indicator');
+                if (liveIndicator) liveIndicator.classList.toggle('hidden', !hasLiveGames);
+
                 // Determine Theme
                 const themeClass = this.getThemeClassForLeague();
 
