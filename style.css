@@ -220,6 +220,85 @@ body {
 .modal-overlay.open .modal-content { transform: scale(1); }
 
 /* Modal Responsiveness */
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-content.theme-brasileirao .modal-header { background-color: #ffffff; color: #000000; }
+.modal-content.theme-brasileirao #modal-score { background-color: #000000; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-brasileiraob .modal-header { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
+.modal-content.theme-brasileiraob #modal-score { background-color: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-libertadores .modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
+.modal-content.theme-libertadores #modal-score { background-color: #1a1a1a; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-sulamericana .modal-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
+.modal-content.theme-sulamericana #modal-score { background-color: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-champions .modal-header { background: linear-gradient(135deg, #001c55 0%, #043496 100%); color: #ffffff; }
+
+.modal-content.theme-premier .modal-header { background-color: #38003c; color: #ffffff; }
+.modal-content.theme-premier #modal-score { background-color: #fff; color: #38003c; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-laliga .modal-header { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
+
+.modal-content.theme-bundesliga .modal-header { background-color: #d20515; color: #ffffff; }
+.modal-content.theme-bundesliga #modal-score { background-color: #ffffff; color: #000000; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-seriea .modal-header { background-color: #00458c; color: #ffffff; }
+
+.modal-content.theme-saudi .modal-header { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
+.modal-content.theme-saudi #modal-score { background-color: #003d20; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-argentina .modal-header { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
+.modal-content.theme-argentina #modal-score { background-color: #0d2c4c; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-eredivisie .modal-header { background-color: #e30613; color: #ffffff; }
+.modal-content.theme-eredivisie #modal-score { background-color: #ffffff; color: #000000; padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-olympics .modal-header { background: linear-gradient(135deg, #0077c8, #005a9a); color: white; border-bottom: 3px solid #f4c300; }
+.modal-content.theme-olympics #modal-score { background-color: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 6px; }
+
+.modal-content.theme-copaamerica .modal-header { background: linear-gradient(90deg, #00387b, #005c31); color: white; border-bottom: 3px solid #fdd116; }
+.modal-content.theme-copaamerica #modal-score { background-color: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 6px; }
+
+/* Club Modal Header Themes */
+.modal-content.theme-brasileirao .club-modal-header { background-color: #ffffff; color: #000000; }
+.modal-content.theme-brasileiraob .club-modal-header { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
+.modal-content.theme-libertadores .club-modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
+.modal-content.theme-sulamericana .club-modal-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
+.modal-content.theme-champions .club-modal-header { background: linear-gradient(135deg, #001c55 0%, #043496 100%); color: #ffffff; }
+.modal-content.theme-premier .club-modal-header { background-color: #38003c; color: #ffffff; }
+.modal-content.theme-laliga .club-modal-header { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
+.modal-content.theme-bundesliga .club-modal-header { background-color: #d20515; color: #ffffff; }
+.modal-content.theme-seriea .club-modal-header { background-color: #00458c; color: #ffffff; }
+.modal-content.theme-saudi .club-modal-header { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
+.modal-content.theme-argentina .club-modal-header { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
+.modal-content.theme-eredivisie .club-modal-header { background-color: #e30613; color: #ffffff; }
+.modal-content.theme-olympics .club-modal-header { background: linear-gradient(135deg, #0077c8, #005a9a); color: white; border-bottom: 3px solid #f4c300; }
+.modal-content.theme-copaamerica .club-modal-header { background: linear-gradient(90deg, #00387b, #005c31); color: white; border-bottom: 3px solid #fdd116; }
+
+.club-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-bar-home {
+    transition: background-color 0.3s, width 0.5s;
+}
+
 @media (max-width: 768px) {
     .modal-content {
         height: 100vh;

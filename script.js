@@ -579,6 +579,25 @@ const app = {
                 container.innerHTML = tableHtml;
             },
 
+            getThemeClassForLeague(lKey) {
+                if (!lKey) lKey = this.state.currentLeague;
+
+                if (lKey.includes('brasileiraob')) return 'theme-brasileiraob';
+                if (lKey.includes('libertadores')) return 'theme-libertadores';
+                if (lKey.includes('champions')) return 'theme-champions';
+                if (lKey.includes('premier')) return 'theme-premier';
+                if (lKey.includes('laliga')) return 'theme-laliga';
+                if (lKey.includes('bundesliga')) return 'theme-bundesliga';
+                if (lKey.includes('seriea')) return 'theme-seriea';
+                if (lKey.includes('saudi')) return 'theme-saudi';
+                if (lKey.includes('argentina')) return 'theme-argentina';
+                if (lKey.includes('eredivisie')) return 'theme-eredivisie';
+                if (lKey.includes('olympics')) return 'theme-olympics';
+                if (lKey.includes('sulamericana')) return 'theme-sulamericana';
+                
+                return 'theme-brasileirao'; // Default
+            },
+
             /* --- RENDER MATCHES (TV STYLE) --- */
             renderMatches(events) {
                 const grid = document.getElementById('matches-grid');
@@ -590,21 +609,7 @@ const app = {
                 this.state.timers = {};
 
                 // Determine Theme
-                const lKey = this.state.currentLeague;
-                let themeClass = 'theme-brasileirao'; // Default
-                
-                if (lKey.includes('brasileiraob')) themeClass = 'theme-brasileiraob';
-                else if (lKey.includes('libertadores')) themeClass = 'theme-libertadores';
-                else if (lKey.includes('champions')) themeClass = 'theme-champions';
-                else if (lKey.includes('premier')) themeClass = 'theme-premier';
-                else if (lKey.includes('laliga')) themeClass = 'theme-laliga';
-                else if (lKey.includes('bundesliga')) themeClass = 'theme-bundesliga';
-                else if (lKey.includes('seriea')) themeClass = 'theme-seriea';
-                else if (lKey.includes('saudi')) themeClass = 'theme-saudi';
-                else if (lKey.includes('argentina')) themeClass = 'theme-argentina';
-                else if (lKey.includes('eredivisie')) themeClass = 'theme-eredivisie';
-                else if (lKey.includes('olympics')) themeClass = 'theme-olympics';
-                else if (lKey.includes('sulamericana')) themeClass = 'theme-sulamericana';
+                const themeClass = this.getThemeClassForLeague();
 
                 events.forEach(ev => {
                     const comp = ev.competitions[0];
@@ -618,7 +623,7 @@ const app = {
 
                     const card = document.createElement('div');
                     card.className = `match-card ${themeClass}`;
-                    card.onclick = () => this.openMatch(ev.id);
+                    card.onclick = () => this.openMatch(ev.id, themeClass, home.team.color);
 
                     card.innerHTML = `
                         <div class="tv-scoreboard">
@@ -749,13 +754,14 @@ const app = {
             renderClubs(children) {
                 const grid = document.getElementById('clubs-grid');
                 grid.innerHTML = '';
+                const themeClass = this.getThemeClassForLeague();
                 const seen = new Set();
                 children.forEach(c => {
                     c.standings.entries.forEach(e => {
                         if(seen.has(e.team.id)) return;
                         seen.add(e.team.id);
                         grid.innerHTML += `
-                            <div class="club-grid-item" onclick="app.openClub('${e.team.id}', '${e.team.displayName}')">
+                            <div class="club-grid-item" onclick="app.openClub('${e.team.id}', '${e.team.displayName}', '${themeClass}')">
                                 <img src="${e.team.logos[0].href}" class="h-12 mb-2 mx-auto object-contain">
                                 <h4 class="text-xs sm:text-sm text-white font-bold w-full truncate">${e.team.displayName}</h4>
                             </div>
@@ -827,12 +833,21 @@ const app = {
             },
 
             // --- Modals ---
-            async openMatch(id) {
+            async openMatch(id, themeClass = 'theme-brasileirao', teamColor = '#d1ff4d') {
                 const modal = document.getElementById('match-modal');
+                const modalContent = modal.querySelector('.modal-content');
+
                 document.getElementById('bg-wrapper').style.filter = 'blur(8px)';
                 modal.classList.add('open');
                 this.setMatchTab('timeline');
-                
+
+                // Limpa temas antigos e aplica o novo
+                if (modalContent) {
+                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana'];
+                    modalContent.classList.remove(...themes);
+                    modalContent.classList.add(themeClass);
+                }
+
                 // Reset
                 document.getElementById('modal-score').innerText = '-';
                 document.getElementById('timeline-container').innerHTML = '<div class="spinner mx-auto"></div>';
@@ -859,7 +874,7 @@ const app = {
                     safeSetText('modal-away', away.team.abbreviation);
                     safeSetSrc('modal-home-logo', home.team.logos[0].href);
                     safeSetSrc('modal-away-logo', away.team.logos[0].href);
-                    safeSetText('modal-score', `${home.score}-${away.score}`);
+                    safeSetText('modal-score', `${home.score || 0}-${away.score || 0}`);
                     safeSetText('modal-status', header.status.type.description);
 
                     // Penaltis
@@ -889,7 +904,7 @@ const app = {
                     }
 
                     this.renderTimeline(data);
-                    this.renderStats(data);
+                    this.renderStats(data, teamColor);
 
                 } catch(e) { console.error(e); }
             },
@@ -932,7 +947,7 @@ const app = {
                 });
             },
 
-            renderStats(data) {
+            renderStats(data, teamColor = '#d1ff4d') {
                 const cont = document.getElementById('stats-container');
                 if(!cont) return;
                 cont.innerHTML = '';
@@ -953,7 +968,7 @@ const app = {
                     cont.innerHTML += `
                         <div class="mb-4">
                             <div class="flex justify-between text-xs text-gray-400 font-bold mb-1 uppercase"><span>${valH}</span><span>${s.label}</span><span>${valA}</span></div>
-                            <div class="flex h-2 bg-gray-800 rounded-full overflow-hidden"><div class="bg-[#d1ff4d]" style="width: ${pct}%"></div><div class="bg-gray-600 flex-1"></div></div>
+                            <div class="flex h-2 bg-gray-800 rounded-full overflow-hidden"><div class="stat-bar-home" style="width: ${pct}%; background-color: #${teamColor};"></div><div class="bg-gray-600 flex-1"></div></div>
                         </div>
                     `;
                 });
@@ -1012,12 +1027,22 @@ const app = {
             },
 
             // --- Clubs ---
-            openClub(id, name) {
-                document.getElementById('club-modal').classList.add('open');
+            openClub(id, name, themeClass = 'theme-brasileirao') {
+                const modal = document.getElementById('club-modal');
+                const modalContent = modal.querySelector('.modal-content');
+                modal.classList.add('open');
                 document.getElementById('bg-wrapper').style.filter = 'blur(8px)';
                 document.getElementById('club-modal-name').innerText = name;
                 this.state.currentClubId = id;
                 this.state.currentClubName = name;
+
+                // Limpa temas antigos e aplica o novo
+                if (modalContent) {
+                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana', 'theme-copaamerica'];
+                    modalContent.classList.remove(...themes);
+                    modalContent.classList.add(themeClass);
+                }
+
                 this.setClubTab('history');
             },
 
