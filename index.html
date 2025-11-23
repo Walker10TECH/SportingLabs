@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,6 +12,28 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Transitions and Animations */
+        .modal-overlay {
+            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay:not(.open) {
+            pointer-events: none;
+            opacity: 0;
+            backdrop-filter: blur(0px);
+        }
+        .modal-overlay:not(.open) .modal-content {
+            transform: scale(0.95) translateY(20px);
+        }
+        #mobile-sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+        #mobile-sidebar.open { transform: translateX(0); }
+    </style>
 </head>
 <body>
 
@@ -21,7 +44,7 @@
         </div>
     </div>
 
-    <div class="bg-fixed-wrapper" id="bg-wrapper"></div>
+    <div class="bg-fixed-wrapper" id="bg-wrapper" style="transition: filter 0.3s ease;"></div>
     <div class="bg-gradient-overlay"></div>
 
     <!-- Header -->
@@ -53,14 +76,53 @@
             <input type="text" id="global-search-input" class="search-input" placeholder="Pesquisar...">
             <div id="global-search-results" class="hidden"></div>
         </div>
+
+        <!-- Mobile Options Button -->
+        <div class="md:hidden flex items-center gap-2">
+            <button class="nav-pill" onclick="app.toggleMobileMenu()"><i data-lucide="menu" class="w-5 h-5"></i></button>
+            <button class="nav-pill" onclick="app.toggleMobileSearch()"><i data-lucide="search" class="w-5 h-5"></i></button>
+        </div>
     </header>
 
     <!-- Mobile Nav -->
     <div class="fixed bottom-0 left-0 w-full bg-[#1a1b1e] border-t border-border z-40 md:hidden flex justify-around p-3 pb-6">
-        <button class="flex flex-col items-center gap-1 text-xs text-white" onclick="app.setView('matches')" id="mob-matches"><i data-lucide="calendar-days"></i>Jogos</button>
-        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('standings')" id="mob-standings"><i data-lucide="trophy"></i>Tabela</button>
-        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('news')" id="mob-news"><i data-lucide="newspaper"></i>Notícias</button>
-        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('clubs')" id="mob-clubs"><i data-lucide="shield"></i>Clubes</button>
+        <button class="flex flex-col items-center gap-1 text-xs text-white" onclick="app.setView('matches')" id="mob-matches"><i data-lucide="calendar-days" class="w-5 h-5"></i>Jogos</button>
+        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('standings')" id="mob-standings"><i data-lucide="trophy" class="w-5 h-5"></i>Tabela</button>
+        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('news')" id="mob-news"><i data-lucide="newspaper" class="w-5 h-5"></i>Notícias</button>
+        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('clubs')" id="mob-clubs"><i data-lucide="shield" class="w-5 h-5"></i>Clubes</button>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden md:hidden" onclick="app.toggleMobileMenu()"></div>
+    <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#1a1b1e] border-r border-[#333] z-50 p-4 md:hidden">
+        <div class="logo-text mb-8">Sporting<span>Labs</span></div>
+        
+        <h3 class="text-xs font-bold text-gray-500 uppercase px-2 mb-2">Esportes</h3>
+        <div class="dropdown-container relative mb-4">
+            <button class="nav-pill w-full justify-between" onclick="app.toggleDropdown('mob-sport-menu')">
+                <span id="mob-header-sport-name">Futebol</span> <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+            <div id="mob-sport-menu" class="dropdown-menu !w-full"></div>
+        </div>
+
+        <h3 class="text-xs font-bold text-gray-500 uppercase px-2 mb-2">Ligas</h3>
+        <div id="mob-sidebar-league-list" class="space-y-1"></div>
+        
+        <button onclick="app.toggleMobileMenu()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
+            <i data-lucide="x"></i>
+        </button>
+    </aside>
+
+    <!-- Mobile Search Overlay -->
+    <div id="mobile-search-overlay" class="fixed inset-0 bg-[#0e0e10] z-50 p-4 hidden md:hidden">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="relative w-full">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <input type="text" id="mobile-search-input" class="search-input w-full" placeholder="Pesquisar jogadores, times...">
+            </div>
+            <button class="text-gray-400" onclick="app.toggleMobileSearch()">Cancelar</button>
+        </div>
+        <div id="mobile-search-results"></div>
     </div>
 
     <!-- Main -->
@@ -70,16 +132,16 @@
         <aside class="hidden md:block w-64 shrink-0 sticky top-24 h-fit">
             <div class="bg-[#1a1b1e] rounded-xl p-2 border border-[#333] mb-6">
                 <button onclick="app.setView('matches')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-white group" id="desk-matches">
-                    <i data-lucide="calendar-days" class="text-accent-green group-hover:text-white"></i> Partidas
+                    <i data-lucide="calendar-days" class="group-hover:text-white"></i> Partidas
                 </button>
                 <button onclick="app.setView('standings')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-standings">
-                    <i data-lucide="trophy" class="group-hover:text-white"></i> Classificação
+                    <i data-lucide="trophy" class="text-gray-400 group-hover:text-white"></i> Classificação
                 </button>
                 <button onclick="app.setView('news')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-news">
-                    <i data-lucide="newspaper" class="group-hover:text-white"></i> Notícias
+                    <i data-lucide="newspaper" class="text-gray-400 group-hover:text-white"></i> Notícias
                 </button>
                 <button onclick="app.setView('clubs')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-clubs">
-                    <i data-lucide="shield" class="group-hover:text-white"></i> Clubes
+                    <i data-lucide="shield" class="text-gray-400 group-hover:text-white"></i> Clubes
                 </button>
             </div>
             <h3 class="text-xs font-bold text-gray-500 uppercase px-2 mb-2">Atalhos</h3>
@@ -91,7 +153,7 @@
             
             <!-- League Title -->
             <div class="flex items-center gap-4 mb-6">
-                <img id="page-league-logo" class="w-16 h-16 object-contain bg-white/10 rounded-xl p-2">
+                <img id="page-league-logo" class="w-16 h-16 object-contain bg-white rounded-xl p-2">
                 <div>
                     <h1 id="page-league-name" class="text-3xl font-black text-white leading-none">...</h1>
                     <p class="text-gray-400 text-sm mt-1 flex items-center gap-2"><img id="region-flag" class="w-4"> <span id="region-name">Mundo</span></p>
@@ -101,7 +163,7 @@
             <!-- Views -->
             <section id="view-matches">
                 <div class="section-title">Jogos de Hoje</div>
-                <div id="matches-grid"></div>
+                <div id="matches-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </section>
 
             <section id="view-standings" class="hidden">
@@ -111,12 +173,21 @@
 
             <section id="view-news" class="hidden">
                 <div class="section-title">Últimas Notícias</div>
-                <div id="news-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section id="view-featured-players" class="hidden">
+                <div class="section-title">Jogadores em Destaque</div>
+                <div id="featured-players-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
             <section id="view-clubs" class="hidden">
                 <div class="section-title">Clubes</div>
-                <div id="clubs-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                <div class="relative w-full mb-4">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                    <input type="text" id="club-search-input" class="search-input w-full" placeholder="Filtrar clubes...">
+                </div>
+                <div id="clubs-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
             </section>
 
             <section id="view-wiki" class="hidden">
@@ -139,25 +210,25 @@
                 <div class="flex items-center justify-between w-full max-w-2xl relative z-10">
                     <div class="flex flex-col items-center w-1/3">
                         <img id="modal-home-logo" class="w-16 h-16 object-contain mb-2">
-                        <h2 id="modal-home" class="text-lg font-bold text-white text-center">HOME</h2>
+                        <h2 id="modal-home" class="text-base md:text-lg font-bold text-white text-center">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span id="modal-score" class="text-5xl font-black text-white tracking-tighter">0-0</span>
+                        <span id="modal-score" class="text-4xl md:text-5xl font-black text-white tracking-tighter">0-0</span>
                         <span id="modal-status" class="text-[#d1ff4d] font-bold uppercase text-sm mt-1">LIVE</span>
                         <div id="modal-pk-score" class="text-gray-400 text-xs mt-1 hidden"></div>
-                        <div id="modal-agg-score" class="bg-gray-800 text-white px-2 py-0.5 rounded text-xs mt-2 hidden">AGG 0-0</div>
+                        <div id="modal-agg-score" class="bg-gray-800 text-white px-2 py-0.5 rounded text-[10px] md:text-xs mt-2 hidden">AGG 0-0</div>
                     </div>
                     <div class="flex flex-col items-center w-1/3">
-                        <img id="modal-away-logo" class="w-16 h-16 object-contain mb-2">
-                        <h2 id="modal-away" class="text-lg font-bold text-white text-center">AWAY</h2>
+                        <img id="modal-away-logo" class="w-12 h-12 md:w-16 md:h-16 object-contain mb-2">
+                        <h2 id="modal-away" class="text-base md:text-lg font-bold text-white text-center">AWAY</h2>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto bg-[#0e0e10] p-6">
                 <div class="flex gap-6 mb-6 border-b border-[#333]">
-                    <button class="pb-2 border-b-2 border-[#d1ff4d] text-white font-bold" onclick="app.setMatchTab('timeline')" id="tab-btn-timeline">Lances</button>
-                    <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-white" onclick="app.setMatchTab('stats')" id="tab-btn-stats">Estatísticas</button>
+                    <button class="modal-tab-btn" onclick="app.setMatchTab('timeline')" id="tab-btn-timeline">Lances</button>
+                    <button class="modal-tab-btn" onclick="app.setMatchTab('stats')" id="tab-btn-stats">Estatísticas</button>
                 </div>
 
                 <div id="match-tab-timeline">
@@ -181,8 +252,8 @@
                 <button onclick="app.closeModal('club-modal')" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
             </div>
             <div class="flex gap-4 px-6 pt-4 border-b border-[#333] bg-[#1a1b1e]">
-                <button class="pb-3 border-b-2 border-[#d1ff4d] text-white font-bold" onclick="app.setClubTab('history')">História</button>
-                <button class="pb-3 border-b-2 border-transparent text-gray-500" onclick="app.setClubTab('squad')">Elenco</button>
+                <button class="modal-tab-btn" onclick="app.setClubTab('history')" id="club-tab-btn-history">História</button>
+                <button class="modal-tab-btn" onclick="app.setClubTab('squad')" id="club-tab-btn-squad">Elenco</button>
             </div>
             <div class="flex-1 overflow-y-auto p-6 bg-[#0e0e10]">
                 <div id="club-view-history" class="wiki-content"></div>

@@ -4,6 +4,7 @@ const app = {
                 currentLeague: 'brasileirao',
                 view: 'matches',
                 region: 'br',
+                timers: {},
                 matchRefresh: null,
                 playerCache: {},
                 teamWikiDb: {
@@ -231,17 +232,17 @@ const app = {
                     'soccer': {
                         name: 'Futebol',
                         leagues: {
-                            'brasileirao': { id: 'bra.1', slug: 'bra.1', name: 'Brasileirão Série A', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/85.png', bg: 'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2024/04/taca-e1712177532245.jpeg?w=910', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Brasileiro_de_Futebol_-_S%C3%A9rie_A', wikiTopScorers: 'Lista_de_artilheiros_do_Campeonato_Brasileiro_de_Futebol' },
+                            'brasileirao': { id: 'bra.1', slug: 'bra.1', name: 'Brasileirão Série A', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/85.png', bg: 'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2024/04/taca-e1712177532245.jpeg?w=910', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Brasileiro_de_Futebol_-_S%C3%A9rie_A' },
                             'brasileiraob': { id: 'bra.2', slug: 'bra.2', name: 'Brasileirão Série B', logo: 'https://tse2.mm.bing.net/th/id/OIP.__oKyl0FfsyAe5TuaZdzjAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3', bg: 'https://tse2.mm.bing.net/th/id/OIP.r04uwPhHqix_1NMlertKLAHaEK?rs=1&pid=ImgDetMain&o=7&rm=3', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Brasileiro_de_Futebol_-_S%C3%A9rie_B' },
                             'libertadores': { id: 'conmebol.libertadores', slug: 'conmebol.libertadores', name: 'Libertadores', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd67P_AzfHmj4qq31fAcG2Kg_ONyN72Bbnxpah0fZHu87x8m9RyKdL-5ZXOooXKx1QGlQ&usqp=CAU', bg: 'https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2021/01/29/60141dfea45a6.jpeg', wiki: 'https://pt.wikipedia.org/wiki/Copa_Libertadores_da_Am%C3%A9rica' },
                             'sulamericana': { id: 'conmebol.sudamericana', slug: 'conmebol.sudamericana', name: 'Sul-Americana', logo: 'https://play-lh.googleusercontent.com/CuPkacdZsi9ApxBOnGwPBAV-zikx8VKmRbMUYVfB-vy-DsNfrQ6ykY6lMcj8iqR7oC5u', bg: 'https://s2-ge.glbimg.com/-M2a9kZoesn0lYulcHlg0hIvCko=/0x0:1280x853/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2022/j/Y/BAJcXyRz6Iz6Svtlf1AA/244ecb3d-2cab-4933-87e0-de24261e1696.jfif', wiki: 'https://pt.wikipedia.org/wiki/Copa_Sul-Americana' },
                             'champions': { id: 'uefa.champions', slug: 'uefa.champions', name: 'Champions League', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/2.png', bg: 'https://lncimg.lance.com.br/cdn-cgi/image/width=1280,height=720,quality=75,fit=cover/uploads/2023/03/17/641465f53b411.jpeg', wiki: 'https://pt.wikipedia.org/wiki/Liga_dos_Campe%C3%B5es_da_UEFA' },
-                            'premier': { id: 'eng.1', slug: 'eng.1', name: 'Premier League', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png', bg: 'https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2020/04/05/5e8a04ba97834.jpeg', wiki: 'https://pt.wikipedia.org/wiki/Premier_League', wikiTopScorers: 'Lista_de_artilheiros_da_Premier_League' },
-                            'laliga': { id: 'esp.1', slug: 'esp.1', name: 'La Liga', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/15.png', bg: 'https://assets.goal.com/images/v3/blt054a5ddddf1e5a2b/158f203189e94419d7010667f379da35bcf16d8e.jpg', wiki: 'https://pt.wikipedia.org/wiki/La_Liga', wikiTopScorers: 'Anexo:Lista_de_artilheiros_da_La_Liga' },
-                            'seriea': { id: 'ita.1', slug: 'ita.1', name: 'Serie A', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/12.png', bg: 'https://cloudfront-us-east-1.images.arcpublishing.com/newr7/L6ZP3CEJ6VMPNFT5HTW7H7L7LY.jpg', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Italiano_de_Futebol_-_S%C3%A9rie_A', wikiTopScorers: 'Lista_de_artilheiros_do_Campeonato_Italiano_de_Futebol' },
-                            'bundesliga': { id: 'ger.1', slug: 'ger.1', name: 'Bundesliga', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/10.png', bg: 'https://s2-ge.glbimg.com/F2PP74GbwM16ougDWVMDhZzEp6U=/0x0:1024x659/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/X/Y/3pfuBhTzuraB6EHOqszA/gettyimages-1742744089.jpg', wiki: 'https://pt.wikipedia.org/wiki/Bundesliga', wikiTopScorers: 'Lista_de_artilheiros_da_Fußball-Bundesliga' },
+                            'premier': { id: 'eng.1', slug: 'eng.1', name: 'Premier League', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png', bg: 'https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2020/04/05/5e8a04ba97834.jpeg', wiki: 'https://pt.wikipedia.org/wiki/Premier_League' },
+                            'laliga': { id: 'esp.1', slug: 'esp.1', name: 'La Liga', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/15.png', bg: 'https://assets.goal.com/images/v3/blt054a5ddddf1e5a2b/158f203189e94419d7010667f379da35bcf16d8e.jpg', wiki: 'https://pt.wikipedia.org/wiki/La_Liga' },
+                            'seriea': { id: 'ita.1', slug: 'ita.1', name: 'Serie A', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/12.png', bg: 'https://cloudfront-us-east-1.images.arcpublishing.com/newr7/L6ZP3CEJ6VMPNFT5HTW7H7L7LY.jpg', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Italiano_de_Futebol_-_S%C3%A9rie_A' },
+                            'bundesliga': { id: 'ger.1', slug: 'ger.1', name: 'Bundesliga', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/10.png', bg: 'https://s2-ge.glbimg.com/F2PP74GbwM16ougDWVMDhZzEp6U=/0x0:1024x659/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/X/Y/3pfuBhTzuraB6EHOqszA/gettyimages-1742744089.jpg', wiki: 'https://pt.wikipedia.org/wiki/Bundesliga' },
                             'saudi': { id: 'ksa.1', slug: 'ksa.1', name: 'Saudita', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Saudi_Pro_League_Logo.svg/1196px-Saudi_Pro_League_Logo.svg.png', bg: 'https://www.365scores.com/pt-br/news/magazine/wp-content/uploads/2023/11/366423961_5646928382077000_2604818796297545939_n-e1699379331310.jpg', wiki: 'https://en.wikipedia.org/wiki/Saudi_Pro_League' },
-                            'eredivisie': { id: 'ned.1', slug: 'ned.1', name: 'Eredivisie', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Eredivisie_nieuw_logo_2017-.svg', bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFGutuFAjY1Jn4Egu_ncE2-IMj_zUDooPWDQ&s', wiki: 'https://pt.wikipedia.org/wiki/Eredivisie', wikiTopScorers: 'Lista_de_artilheiros_da_Eredivisie' },
+                            'eredivisie': { id: 'ned.1', slug: 'ned.1', name: 'Eredivisie', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Eredivisie_nieuw_logo_2017-.svg', bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFGutuFAjY1Jn4Egu_ncE2-IMj_zUDooPWDQ&s', wiki: 'https://pt.wikipedia.org/wiki/Eredivisie' },
                             'argentina': { id: 'arg.1', slug: 'arg.1', name: 'Argentina', logo: 'https://a.espncdn.com/i/leaguelogos/soccer/500/1.png', bg: 'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2024/12/Capturar_e27e29.jpg?w=793', wiki: 'https://pt.wikipedia.org/wiki/Campeonato_Argentino_de_Futebol' }
                         }
                     },
@@ -276,6 +277,8 @@ const app = {
 
             setupEvents() {
                 document.getElementById('global-search-input').addEventListener('keyup', this.debounce(e => this.handleSearch(e.target.value), 500));
+                document.getElementById('mobile-search-input').addEventListener('keyup', this.debounce(e => this.handleSearch(e.target.value, true), 500));
+                document.getElementById('club-search-input').addEventListener('keyup', this.debounce(e => this.filterClubs(e.target.value), 300));
                 window.onclick = e => {
                     if(!e.target.closest('.dropdown-container')) document.querySelectorAll('.dropdown-menu').forEach(el=>el.classList.remove('open'));
                     if(!e.target.closest('#search-container')) document.getElementById('global-search-results').classList.add('hidden');
@@ -286,6 +289,21 @@ const app = {
 
             renderNav() {
                 const sMenu = document.getElementById('sport-menu');
+                const mobSMenu = document.getElementById('mob-sport-menu');
+                sMenu.innerHTML = '';
+                mobSMenu.innerHTML = '';
+
+                Object.entries(this.state.sports).forEach(([k, v]) => {
+                    const div = document.createElement('div');
+                    div.className = 'dropdown-item';
+                    div.innerText = v.name;
+                    div.onclick = () => this.changeSport(k);
+                    sMenu.appendChild(div);
+
+                    const mobDiv = div.cloneNode(true);
+                    mobDiv.onclick = () => this.changeSport(k);
+                    mobSMenu.appendChild(mobDiv);
+                });
                 sMenu.innerHTML = '';
                 Object.entries(this.state.sports).forEach(([k, v]) => {
                     const div = document.createElement('div');
@@ -297,7 +315,9 @@ const app = {
 
                 const lMenu = document.getElementById('league-menu');
                 const sidebar = document.getElementById('sidebar-league-list');
+                const mobSidebar = document.getElementById('mob-sidebar-league-list');
                 lMenu.innerHTML = ''; sidebar.innerHTML = '';
+                mobSidebar.innerHTML = '';
                 
                 const leagues = this.state.sports[this.state.currentSport].leagues;
                 Object.entries(leagues).forEach(([k, v]) => {
@@ -312,12 +332,18 @@ const app = {
                     sItem.innerHTML = `<img src="${v.logo}" class="w-5 h-5 object-contain"> ${v.name}`;
                     sItem.onclick = () => this.changeLeague(k);
                     sidebar.appendChild(sItem);
+
+                    const mobSItem = sItem.cloneNode(true);
+                    mobSItem.onclick = () => { this.changeLeague(k); this.toggleMobileMenu(); };
+                    mobSidebar.appendChild(mobSItem);
                 });
 
                 const currL = leagues[this.state.currentLeague];
                 document.getElementById('header-league-logo').src = currL.logo;
                 document.getElementById('header-league-name').innerText = currL.name;
                 document.getElementById('header-sport-name').innerText = this.state.sports[this.state.currentSport].name;
+                document.getElementById('mob-header-sport-name').innerText = this.state.sports[this.state.currentSport].name;
+                lucide.createIcons();
             },
 
             changeSport(s) {
@@ -329,6 +355,7 @@ const app = {
 
             changeLeague(l) {
                 this.state.currentLeague = l;
+                document.querySelectorAll('.dropdown-menu').forEach(e => e.classList.remove('open'));
                 this.renderNav();
                 this.loadLeague(l);
             },
@@ -340,14 +367,29 @@ const app = {
                 if(!wasOpen) el.classList.add('open');
             },
 
+            toggleMobileMenu() {
+                const sidebar = document.getElementById('mobile-sidebar');
+                const overlay = document.getElementById('mobile-sidebar-overlay');
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('hidden');
+            },
+
+            toggleMobileSearch() {
+                const overlay = document.getElementById('mobile-search-overlay');
+                overlay.classList.toggle('hidden');
+                if (!overlay.classList.contains('hidden')) {
+                    document.getElementById('mobile-search-input').focus();
+                }
+            },
+
             setView(v) {
                 this.state.view = v;
-                ['matches', 'standings', 'news', 'clubs', 'wiki'].forEach(id => {
+                ['matches', 'standings', 'news', 'clubs', 'wiki', 'featured-players'].forEach(id => {
                     document.getElementById('view-'+id).classList.toggle('hidden', id !== v);
                 });
-                
+
                 // Update active states
-                ['matches', 'standings', 'news', 'clubs'].forEach(type => {
+                ['matches', 'standings', 'news', 'clubs', 'players'].forEach(type => {
                     const mobBtn = document.getElementById('mob-'+type);
                     const deskBtn = document.getElementById('desk-'+type);
                     
@@ -361,8 +403,10 @@ const app = {
                     // Desktop
                     if(deskBtn) {
                         deskBtn.className = type === v
-                            ? "w-full text-left p-3 rounded-lg bg-white/10 flex items-center gap-3 font-semibold text-white"
-                            : "w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 hover:text-white";
+                            ? "w-full text-left p-3 rounded-lg bg-white/10 flex items-center gap-3 font-semibold text-white group"
+                            : "w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 hover:text-white group";
+                        const icon = deskBtn.querySelector('i');
+                        if(icon) icon.classList.toggle('text-[#d1ff4d]', type === v);
                     }
                 });
             },
@@ -390,9 +434,10 @@ const app = {
 
                 try {
                     const url = `${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}`;
-                    const [resScore, resNews] = await Promise.all([
+                    const [resScore, resNews, resLeaders] = await Promise.all([
                         fetch(`${url}/scoreboard?lang=pt&region=${this.state.region}`).then(r=>r.json()),
-                        fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json())
+                        fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json()),
+                        fetch(`${url}/leaders?lang=pt&region=${this.state.region}`).then(r=>r.json()).catch(e => null) // Gracefully fail
                     ]);
 
                     this.renderMatches(resScore.events || []);
@@ -400,6 +445,7 @@ const app = {
 
                     if(sport === 'soccer') {
                         this.loadStandings(sport, league.slug);
+                        this.renderFeaturedPlayers(resLeaders);
                     } else {
                          standingsContainer.innerHTML = '<p class="text-gray-500 text-center p-8 col-span-full">Tabela não disponível para este esporte.</p>';
                     }
@@ -414,6 +460,10 @@ const app = {
                 const grid = document.getElementById('matches-grid');
                 grid.innerHTML = '';
                 if(!events.length) { grid.innerHTML = '<p class="text-center text-gray-500">Sem jogos hoje.</p>'; return; }
+
+                // Clear old timers
+                Object.values(this.state.timers).forEach(timer => clearInterval(timer.interval));
+                this.state.timers = {};
 
                 // Determine Theme
                 const lKey = this.state.currentLeague;
@@ -434,10 +484,6 @@ const app = {
                     const away = comp.competitors.find(c => c.homeAway === 'away');
                     const status = ev.status;
                     const isLive = status.type.state === 'in';
-                    
-                    let timeText = status.type.shortDetail;
-                    if(isLive) timeText = status.displayClock.replace("'", "") + "<span class='blink'>'</span>";
-
                     let aggText = '';
                     if(comp.series && comp.series.summary) aggText = `<div class="tv-time-agg">${comp.series.summary}</div>`;
 
@@ -451,11 +497,19 @@ const app = {
                             <div class="tv-team-box text-right"><span class="truncate">${home.team.abbreviation || home.team.shortDisplayName}</span><img src="${home.team.logo}" class="w-8 h-8 object-contain ml-2"></div>
                             <div class="tv-score-box">${home.score} - ${away.score}</div>
                             <div class="tv-team-box text-left"><img src="${away.team.logo}" class="w-8 h-8 object-contain mr-2"><span class="truncate">${away.team.abbreviation || away.team.shortDisplayName}</span></div>
-                            <div class="tv-time-box"><div>${timeText}</div>${aggText}</div>
+                            <div class="tv-time-box">
+                                <div id="match-timer-${ev.id}" class="match-timer-main">${status.type.shortDetail}</div>
+                                <div id="match-stoppage-time-${ev.id}" class="match-timer-stoppage"></div>
+                                ${aggText}
+                            </div>
                         </div>
                         <div class="match-footer"><span>${ev.name}</span><span>${comp.venue?.fullName || ''}</span></div>
                     `;
                     grid.appendChild(card);
+
+                    if (isLive) {
+                        this.startMatchTimer(ev.id, status.displayClock, status.type.shortDetail);
+                    }
                 });
                 lucide.createIcons();
             },
@@ -563,6 +617,43 @@ const app = {
                 });
             },
 
+            renderFeaturedPlayers(data) {
+                const grid = document.getElementById('featured-players-grid');
+                if (!grid) return;
+                grid.innerHTML = '';
+
+                if (!data || !data.leaderboard || !data.leaderboard.leaders) {
+                    grid.innerHTML = '<p class="text-center text-gray-500 col-span-full py-10">Jogadores em destaque não disponíveis para esta liga.</p>';
+                    return;
+                }
+
+                const leaders = data.leaderboard.leaders.slice(0, 12); // Top 12
+
+                leaders.forEach((p, index) => {
+                    const player = p.athlete;
+                    const team = p.team;
+                    const rank = index + 1;
+
+                    grid.innerHTML += `
+                        <div class="player-card rank-${rank}">
+                            <span class="rank">${rank}</span>
+                            <img src="${player.headshot?.href || 'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png&w=110&h=110'}" class="player-img">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold text-white truncate">${player.displayName}</div>
+                                <div class="text-xs text-gray-400 flex items-center gap-2">
+                                    <img src="${team.logo}" class="team-logo">
+                                    <span>${player.position.abbreviation}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="stat-value">${p.value}</div>
+                                <div class="stat-label">${data.leaderboard.displayName}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            },
+
             renderClubs(children) {
                 const grid = document.getElementById('clubs-grid');
                 grid.innerHTML = '';
@@ -573,17 +664,80 @@ const app = {
                         seen.add(e.team.id);
                         grid.innerHTML += `
                             <div class="club-grid-item" onclick="app.openClub('${e.team.id}', '${e.team.displayName}')">
-                                <img src="${e.team.logos[0].href}" class="mb-2 mx-auto">
-                                <h4 class="text-sm text-white font-bold">${e.team.displayName}</h4>
+                                <img src="${e.team.logos[0].href}" class="h-12 mb-2 mx-auto object-contain">
+                                <h4 class="text-xs sm:text-sm text-white font-bold w-full truncate">${e.team.displayName}</h4>
                             </div>
                         `;
                     });
                 });
             },
 
+            filterClubs(query) {
+                const searchTerm = query.toLowerCase().trim();
+                const clubItems = document.querySelectorAll('#clubs-grid .club-grid-item');
+                
+                clubItems.forEach(item => {
+                    const clubName = item.querySelector('h4').textContent.toLowerCase();
+                    item.style.display = clubName.includes(searchTerm) ? 'block' : 'none';
+                });
+            },
+
+            startMatchTimer(matchId, initialClock, shortDetail) {
+                if (this.state.timers[matchId]) {
+                    clearInterval(this.state.timers[matchId].interval);
+                }
+
+                const timerEl = document.getElementById(`match-timer-${matchId}`);
+                const stoppageEl = document.getElementById(`match-stoppage-time-${matchId}`);
+                if (!timerEl || !stoppageEl) return; 
+
+                // Se o initialClock não tiver um formato de tempo válido (ex: "HT"), exibe o shortDetail e para.
+                if (!initialClock.includes(':')) {
+                    timerEl.textContent = shortDetail;
+                    stoppageEl.textContent = '';
+                    return;
+                }
+
+                let [minutes, seconds] = initialClock.replace("'", "").split(':').map(Number);
+                let stoppageMinutes = 0;
+
+                if (minutes > 90) {
+                    stoppageMinutes = minutes - 90;
+                    minutes = 90;
+                }
+
+                const interval = setInterval(() => {
+                    seconds++;
+                    if (seconds >= 60) {
+                        seconds = 0;
+                        if (minutes < 90) {
+                            minutes++;
+                        } else {
+                            stoppageMinutes++;
+                        }
+                    }
+
+                    if (minutes < 90) {
+                        timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    } else {
+                        timerEl.textContent = '90:00';
+                        stoppageEl.textContent = `+${stoppageMinutes}`;
+                    }
+
+                }, 1000);
+
+                this.state.timers[matchId] = {
+                    interval: interval,
+                    minutes: minutes,
+                    seconds: seconds,
+                    stoppage: stoppageMinutes
+                };
+            },
+
             // --- Modals ---
             async openMatch(id) {
                 const modal = document.getElementById('match-modal');
+                document.getElementById('bg-wrapper').style.filter = 'blur(8px)';
                 modal.classList.add('open');
                 this.setMatchTab('timeline');
                 
@@ -721,11 +875,11 @@ const app = {
                     const btn = document.getElementById('tab-btn-'+tab);
                     if(btn) {
                         if(t===tab) {
-                            btn.classList.add('border-[#d1ff4d]', 'text-white');
-                            btn.classList.remove('border-transparent', 'text-gray-500');
+                            btn.classList.add('active');
+                            btn.classList.remove('inactive');
                         } else {
-                            btn.classList.remove('border-[#d1ff4d]', 'text-white');
-                            btn.classList.add('border-transparent', 'text-gray-500');
+                            btn.classList.remove('active');
+                            btn.classList.add('inactive');
                         }
                     }
                 });
@@ -734,6 +888,7 @@ const app = {
             closeModal(id) { 
                 const el = document.getElementById(id);
                 if(el) el.classList.remove('open'); 
+                document.getElementById('bg-wrapper').style.filter = 'none';
             },
 
             // --- Search ---
@@ -767,6 +922,7 @@ const app = {
             // --- Clubs ---
             openClub(id, name) {
                 document.getElementById('club-modal').classList.add('open');
+                document.getElementById('bg-wrapper').style.filter = 'blur(8px)';
                 document.getElementById('club-modal-name').innerText = name;
                 this.state.currentClubId = id;
                 this.state.currentClubName = name;
@@ -778,6 +934,16 @@ const app = {
                 const squad = document.getElementById('club-view-squad');
                 if(hist) hist.classList.toggle('hidden', tab!=='history');
                 if(squad) squad.classList.toggle('hidden', tab!=='squad');
+
+                ['history', 'squad'].forEach(t => {
+                    const btn = document.getElementById(`club-tab-btn-${t}`);
+                    if (btn) {
+                        btn.classList.toggle('active', t === tab);
+                        btn.classList.toggle('inactive', t !== tab);
+                    }
+                });
+
+                this.setClubTabStyles();
                 
                 if(tab === 'history') this.openWiki(this.state.currentClubName);
                 if(tab === 'squad') {
@@ -796,6 +962,17 @@ const app = {
                         });
                     } catch(e) { cont.innerHTML='<p>Elenco indisponível.</p>'; }
                 }
+            },
+
+            setClubTabStyles() {
+                ['history', 'squad'].forEach(tab => {
+                    const btn = document.getElementById(`club-tab-btn-${tab}`);
+                    if (btn) {
+                        const isActive = !document.getElementById(`club-view-${tab}`).classList.contains('hidden');
+                        btn.classList.toggle('active', isActive);
+                        btn.classList.toggle('inactive', !isActive);
+                    }
+                });
             }
         };
 
