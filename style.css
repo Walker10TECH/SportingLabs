@@ -1,840 +1,196 @@
-/* ==========================================================================
-   1. Global Styles & Variables (Mobile-First)
-   ========================================================================== */
 :root {
-    --accent-color: #ffffff; /* Verde vibrante do OneFootball */
-    --accent-glow: rgba(0, 240, 160, 0.5);
-    --background-color: #121212;
-    --surface-color: #1a1a1a;
-    --border-color: rgba(255, 255, 255, 0.15);
+    --bg-app: #0e0e10;
+    --bg-card: #1a1b1e;
+    --bg-header: rgba(14, 14, 16, 0.95);
+    --accent-green: #d1ff4d;
     --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
+    --text-secondary: #8b9bb4;
+    --border-color: #2a2c33;
 }
 
 body {
-    font-family: 'Poppins', 'Inter', sans-serif;
-    background-color: var(--background-color);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-app);
     color: var(--text-primary);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    margin: 0; padding: 0; overflow-x: hidden;
 }
 
-.bg-fixed-wrapper {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-app); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* ==========================================================================
+   2. TV SCOREBOARD THEMES (LIGA POR LIGA)
+   ========================================================================== */
+
+/* Card Base */
+.match-card {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+.match-card:hover { transform: translateY(-2px); }
+
+.tv-scoreboard {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; padding: 0; font-family: 'Roboto Condensed', sans-serif; position: relative;
 }
 
-.bg-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(18, 18, 18, 0.7) 0%, var(--background-color) 70%);
+/* Layout Comum */
+.tv-logo-box { width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; }
+.tv-logo-box img { width: 32px; height: 32px; object-fit: contain; }
+
+.tv-team-box { flex: 1; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: -0.5px; padding: 0 10px; gap: 8px; }
+
+.tv-score-box { height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.8rem; padding: 0 15px; min-width: 80px; letter-spacing: 2px; }
+
+.tv-time-box { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 12px; font-size: 0.9rem; font-weight: 700; min-width: 70px; line-height: 1.1; }
+.tv-time-agg { font-size: 0.7rem; opacity: 0.8; }
+
+/* --- TEMA BRASILEIRÃO (Globo/Premiere) --- */
+.theme-brasileirao .tv-scoreboard { background-color: #ffffff; color: #000000; border-bottom: 2px solid #e5e5e5; }
+.theme-brasileirao .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; }
+.theme-brasileirao .tv-score-box { background-color: #000000; color: #ffffff; min-width: 90px; } 
+.theme-brasileirao .tv-time-box { background-color: #ccff00; color: #000000; }
+
+/* --- TEMA LIBERTADORES (Conmebol Dark) --- */
+.theme-libertadores .tv-scoreboard { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
+.theme-libertadores .tv-logo-box { background: #111; }
+.theme-libertadores .tv-score-box { background-color: #1a1a1a; color: #ffffff; border-left: 1px solid #333; border-right: 1px solid #333; }
+.theme-libertadores .tv-time-box { background-color: #d4af37; color: #000000; }
+
+/* --- TEMA SULAMERICANA --- */
+.theme-sulamericana .tv-scoreboard { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
+.theme-sulamericana .tv-score-box { background-color: rgba(255,255,255,0.1); }
+.theme-sulamericana .tv-time-box { background-color: #a0a0a0; color: #000000; }
+
+/* --- TEMA CHAMPIONS LEAGUE --- */
+.theme-champions .tv-scoreboard { background: linear-gradient(135deg, #001c55 0%, #043496 100%); color: #ffffff; border-radius: 0 0 12px 12px; }
+.theme-champions .tv-scoreboard::before { content: '★'; position: absolute; right: 60px; top: -10px; font-size: 4rem; color: rgba(255,255,255,0.05); pointer-events: none; }
+.theme-champions .tv-score-box { border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); }
+.theme-champions .tv-time-box { background: rgba(255,255,255,0.2); color: #fff; }
+
+/* --- TEMA PREMIER LEAGUE --- */
+.theme-premier .tv-scoreboard { background-color: #38003c; color: #ffffff; }
+.theme-premier .tv-logo-box { background: #00ff85; }
+.theme-premier .tv-score-box { background-color: #fff; color: #38003c; font-family: 'Inter', sans-serif; }
+.theme-premier .tv-time-box { background-color: #00ff85; color: #38003c; }
+
+/* --- TEMA LA LIGA --- */
+.theme-laliga .tv-scoreboard { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
+.theme-laliga .tv-score-box { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 2rem; }
+.theme-laliga .tv-time-box { background-color: #ff0040; color: white; }
+
+/* --- TEMA BUNDESLIGA --- */
+.theme-bundesliga .tv-scoreboard { background-color: #d20515; color: #ffffff; }
+.theme-bundesliga .tv-score-box { background-color: #ffffff; color: #000000; }
+.theme-bundesliga .tv-time-box { background-color: #a0000c; color: #ffffff; }
+
+/* --- TEMA SERIE A (ITÁLIA) --- */
+.theme-seriea .tv-scoreboard { background-color: #00458c; color: #ffffff; }
+.theme-seriea .tv-time-box { background-color: rgba(0,0,0,0.3); }
+
+/* --- TEMA SAUDITA --- */
+.theme-saudi .tv-scoreboard { background: linear-gradient(90deg, #006400, #004d00); color: white; }
+.theme-saudi .tv-time-box { background-color: rgba(255,255,255,0.2); }
+
+/* Match Info Footer */
+.match-footer {
+    padding: 8px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.75rem; color: #888;
+    background: #1a1b1e;
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 /* ==========================================================================
-   2. Navigation
+   3. Layout & Header
    ========================================================================== */
 .header-main {
-    background: var(--surface-color);
-    border-bottom: 1px solid var(--border-color);
-    position: fixed; /* Mantém o cabeçalho fixo no topo */
-    top: 0;
-    z-index: 100;
+    background: var(--bg-header); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color); height: 64px;
+    position: fixed; top: 0; width: 100%; z-index: 50;
 }
+.logo-text { font-weight: 800; font-size: 1.25rem; color: white; }
+.logo-text span { color: var(--accent-green); }
 
-.nav-link {
-    white-space: nowrap;
-    color: var(--text-secondary);
-    padding: 8px 16px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    transition: color 0.2s ease;
-    border-bottom: 2px solid transparent;
+.nav-pill {
+    background: transparent; color: var(--text-secondary); padding: 6px 12px; border-radius: 20px;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
 }
+.nav-pill:hover { color: white; background: rgba(255,255,255,0.05); }
 
-/* Estilos para os novos botões de Dropdown */
-.dropdown-btn {
-    background-color: #FFFFFF !important;
-    border: 1.3px solid #B8BBC2 !important; /* Cor do botão fechado */
-    color: #313144 !important;
-    border-radius: 8px !important;
-    padding: 8px 12px !important; /* Padding ajustado para mobile */
-    gap: 9px !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 500 !important;
-    font-size: 12px !important;
-    transition: border-color 0.2s ease !important;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-}
-.dropdown-btn:hover {
-    border-color: #215AFF !important; /* Cor azul no hover */
-}
-.dropdown-btn i {
-    color: #313144 !important; /* Cor do ícone de seta */
-}
-.dropdown-btn.wide {
-    min-width: 200px;
-    justify-content: space-between;
-}
-.dropdown-container.open .dropdown-btn {
-    border-color: #215AFF; /* Cor do botão aberto */
-    border-radius: 8px 8px 0 0 !important;
-}
-
-/* Estilos para Dropdown */
+/* Dropdowns */
 .dropdown-menu {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    pointer-events: none;
-    position: absolute;
-    top: 100%;
-    left: 0; 
-    background-color: #FFFFFF;
-    border: 1.3px solid #215AFF;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    z-index: 110;
-    width: 100%; /* Garante que o menu tenha a mesma largura do botão */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    position: absolute; top: 100%; left: 0; margin-top: 8px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 8px; min-width: 220px;
+    display: none; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-
-.dropdown-menu:not(.hidden) {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
+.dropdown-menu.open { display: block; }
 .dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 24px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    color: #313144;
-    transition: background-color 0.15s ease !important;
+    padding: 10px; color: #ccc; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; border-radius: 6px;
 }
-.dropdown-item:hover {
-    background-color: #C4CBDF;
-}
-.dropdown-item.active {
-    background-color: #e0e4f0; /* Um pouco mais claro para o item ativo */
-}
+.dropdown-item:hover { background: rgba(255,255,255,0.1); color: white; }
+.dropdown-item img { width: 20px; height: 20px; object-fit: contain; }
 
-.nav-link:hover {
-    color: var(--text-primary);
+/* Search */
+.search-input {
+    background: #2a2c33; border: none; color: white; padding: 8px 12px 8px 36px;
+    border-radius: 8px; width: 100%; font-size: 0.9rem;
 }
-.nav-link.active {
-    color: var(--text-primary);
-    border-bottom-color: var(--accent-color);
-    font-weight: 800;
-}
-
-.search-result-item {
-    transition: background-color 0.2s ease;
-}
-
-.search-result-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Estilos para a Barra de Pesquisa Global */
-#global-search-container {
-    position: relative;
-}
-
 #global-search-results {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90vw;
-    max-width: 500px;
-    background-color: #2a2a2a;
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    z-index: 200;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-.search-result-item {
-    transition: background-color 0.2s ease;
-}
-
-.search-result-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Estilo para o ícone de carregamento na barra de pesquisa */
-#global-search-container .search-loader {
-    display: none; /* Oculto por padrão */
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top-color: var(--accent-color);
-    border-right-color: var(--accent-color);
-    border-radius: 50%;
-    animation: rotation 0.8s linear infinite;
-}
-
-/* Mostra o loader quando a classe 'loading' está presente no input */
-#global-search-input.loading + .search-loader {
-    display: block;
-}
-
-/* Estilo para esconder o loader global */
-.loader-hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-
-/* ==========================================================================
-   3. Animations & Loaders
-   ========================================================================== */
- .loader {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    border: 3px solid;
-    border-color: #FFF #FFF transparent transparent;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-}
-.loader::after,
-.loader::before {
-    content: '';  
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    border: 3px solid;
-    border-color: transparent transparent var(--accent-color) var(--accent-color);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    animation: rotationBack 0.5s linear infinite;
-    transform-origin: center center;
-}
-.loader-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 4rem;
-    width: 100%;
-}
-.loader::before {
-    width: 40px;
-    height: 40px;
-    border-color: #FFF #FFF transparent transparent;
-    animation: rotation 1.5s linear infinite;
-}
-    
-@keyframes rotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-@keyframes rotationBack {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(-360deg); }
-}
-
-.live-pulse { animation: pulse-red 2s infinite; }
-@keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-/* ==========================================================================
-   4. Live Standings Update Animation
-   ========================================================================== */
-.live-update-pulse { animation: pulse-bg 2s ease-out; }
-@keyframes pulse-bg { 0% { background-color: rgba(45, 212, 191, 0.2); } 100% { background-color: transparent; } }
-
-/* ==========================================================================
-   5. Goal Celebration Animation
-   ========================================================================== */
-#goal-animation-overlay.show #goal-text {
-    animation: goal-celebration 2.5s forwards ease-out;
-}
-
-@keyframes goal-celebration {
-    0% {
-        transform: scale(0.5) rotate(-15deg);
-        opacity: 0;
-    }
-    25% {
-        transform: scale(1.2) rotate(5deg);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1.5);
-        opacity: 0;
-    }
-}
-
-/* Garante que todas as imagens dentro de links ou botões de time/liga não sejam cortadas */
-img {
-    object-fit: contain;
-}
-
-.game-card, .news-card {
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    transition: border-color 0.3s ease-out;
-    position: relative;
-    overflow: hidden;
-}
-
-.game-card:hover, .news-card:hover {
-    border-color: var(--accent-glow);
-}
-
-.game-card:hover:before, .news-card:hover:before {
-    background: linear-gradient(135deg, var(--red-glow), #E53738);
-}
-
-/* Animação de fade-in para conteúdo carregado */
-.content-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Estilo para o placar no card de jogo */
-.game-card-score {
-    color: var(--text-primary);
-    font-weight: 700; /* bold */
-    font-size: 1.125rem; /* text-lg */
-    min-width: 40px;
-    text-align: center;
-}
-.game-card-score.home {
-    color: var(--accent-color);
-}
-
-/* ==========================================================================
-   View Selector Nav (Placar, Tabela, etc.)
-   ========================================================================== */
-.view-selector-nav-container {
-    display: flex;
-    justify-content: flex-end; /* Alinha a navegação à direita */
-    align-items: center;
-    width: 100%; /* Garante que o container ocupe toda a largura */
-}
-
-.view-selector-nav {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    padding: 10px;
-    gap: 1rem; /* Espaçamento entre os botões */
-    background: transparent; /* Remove o fundo cinza */
-    box-shadow: none;
-    border-radius: 30px;
-    overflow-x: auto; /* Permite rolagem em telas pequenas */
-    max-width: 100%;
-}
-
-.view-btn {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    height: 41px;
-    border-radius: 30px;
-    font-weight: 400;
-    font-size: 1rem; /* Ajustado para melhor legibilidade */
-    line-height: 1;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    border: none;
-    cursor: pointer;
-    background: #E2E2E2;
-    color: #000000;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
-}
-
-.view-btn.active {
-    background: #828282;
-    color: #FFFFFF;
-    font-weight: 700;
-    box-shadow: none; /* Sombra removida no botão ativo */
-}
-
-/* --- Tailwind CSS Custom Classes --- */
-.bg-dark-bg { background-color: var(--background-color); }
-.bg-surface { background-color: var(--surface-color); }
-.bg-surface-light { background-color: #252525; } /* Manter para diferenciação */
-.border-border { border-color: var(--border-color); }
-.text-accent-red { color: var(--accent-color); } /* Mapeia a classe antiga para a nova cor */
-
-/* --- Pitch / Campo --- */
-.soccer-pitch {
-    background: linear-gradient(to bottom, #2e3b32, #1a221c);
-    border: 2px solid rgba(255,255,255,0.2);
-    position: relative; overflow: hidden; border-radius: 8px;
-    box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
-}
-.pitch-lines { position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.2); }
-.center-circle { position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); }
-.half-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
-.player-dot { transition: all 0.5s ease; z-index: 10; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.player-dot:hover { transform: scale(1.2) translate(-45%, -45%) !important; z-index: 50; }
-
-/* --- Form Badges --- */
-.form-badge { width: 6px; height: 6px; border-radius: 50%; margin-right: 2px; display: inline-block; }
-.form-W { background-color: #00cc99; }
-.form-D { background-color: #fbbf24; }
-.form-L { background-color: #ef4444; }
-
-.player-row {
-    cursor: default;
-}
-
-/* --- Modals --- */
-.modal-enter {
-    animation: modal-enter-anim 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes modal-enter-anim {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-#match-modal .flex-1.overflow-y-auto {
-    padding: 1.5rem; /* 24px */
-}
-
-/* Melhora o espaçamento e padding no modal de partida */
-#modal-view-stats {
-    padding: 1.5rem;
-}
-
-/* Flexbox para o conteúdo principal */
-#main-content {
-    flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço restante */
-    padding: 1.5rem;
-}
-
-/* Garante que o conteúdo principal não ultrapasse a largura da tela e o centraliza em telas grandes */
-#main-content {
-    width: 100%;
-    max-width: 1280px; /* Limite para melhor legibilidade em telas largas */
-    margin: 0 auto; /* Centraliza o conteúdo */
-}
-
-/* Layouts de Grid - Base Mobile (Coluna Única) */
-#view-matches,
-#view-standings,
-#view-news {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
-
-
-/* ==========================================================================
-   6. Responsive Design (Mobile-First)
-   ========================================================================== */
-
-/* --- TABLETS (e.g., iPad) --- */
-@media (min-width: 768px) {
-    /* Layout */
-    #main-content { padding: 2rem; }
-    #view-matches { grid-template-columns: repeat(2, 1fr); }
-    #view-standings { grid-template-columns: repeat(2, 1fr); }
-    #view-news { grid-template-columns: repeat(2, 1fr); }
-    #modal-view-stats { grid-template-columns: 2fr 1fr; } /* Retorna o layout de 2 colunas no modal */
-
-    /* Header */
-    .dropdown-btn { padding: 11px 18px !important; } /* Retorna o padding original */
-
-    /* Dropdowns - Retorna ao comportamento de menu flutuante */
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        height: auto;
-        background-color: #FFFFFF;
-        border: 1.3px solid #215AFF;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        backdrop-filter: none;
-        display: block;
-        padding: 0;
-    }
-
-    /* Modals */
-    #match-modal, #wiki-article-modal, #player-modal, #settings-modal {
-        padding: 1.5rem;
-    }
-    #match-modal .bg-dark-bg, #wiki-article-modal .modal-content {
-        height: 90vh;
-        border-radius: 1rem;
-    }
-
-    /* Typography */
-    #league-title { font-size: 2.25rem; }
-    #modal-score { font-size: 3rem; }
-    #modal-home, #modal-away { font-size: 1.5rem; }
-    #goal-text { font-size: 8rem; }
-}
-
-/* --- LAPTOPS & DESKTOPS --- */
-@media (min-width: 1024px) {
-    /* Layout */
-    #view-news { grid-template-columns: repeat(3, 1fr); }
-    #modal-view-stats { grid-template-columns: 2fr 1fr; }
-
-    /* Typography */
-    #league-title { font-size: 2.5rem; }
-}
-
-/* --- LARGE DESKTOPS --- */
-@media (min-width: 1280px) {
-    #view-standings #standings-container {
-        /* Se houver apenas uma tabela, centraliza. Se houver duas, elas ficam lado a lado. */
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        justify-content: center;
-    }
-}
-
-/* --- MOBILE-SPECIFIC OVERRIDES --- */
-@media (max-width: 767px) {
-    /* Dropdowns como overlay em tela cheia */
-    .dropdown-menu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(26, 26, 26, 0.9); /* Fundo escuro semitransparente */
-        backdrop-filter: blur(8px);
-        display: flex;
-        flex-direction: column; /* Empilha os itens verticalmente */
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        border-radius: 0;
-        border: none;
-        transform: translateY(0); /* Remove a animação de slide */
-    }
-    .dropdown-menu:not(.hidden) {
-        animation: fadeIn 0.2s ease-out; /* Animação de fade-in suave */
-    }
-    .dropdown-item {
-        background-color: var(--surface-color);
-        color: var(--text-primary);
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        width: 100%;
-        max-width: 320px; /* Limita a largura dos itens no overlay */
-        text-align: center;
-        justify-content: center;
-        padding: 1rem;
-        font-size: 1rem;
-    }
-    .dropdown-item:hover {
-        background-color: var(--accent-color);
-        color: var(--background-color);
-    }
-    .dropdown-item.active {
-        background-color: var(--accent-color);
-        color: var(--background-color);
-        font-weight: 700;
-    }
-
-    /* Modals em tela cheia */
-    #match-modal, #wiki-article-modal, #player-modal, #settings-modal {
-        padding: 0;
-    }
-    #match-modal .bg-dark-bg, #wiki-article-modal .modal-content, #player-modal .bg-surface, #settings-modal .settings-modal-container {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        max-height: none;
-    }
-}
-
-/* Animação para atualização do placar */
-.score-update-animation {
-    animation: score-pop 0.5s ease-out;
-}
-
-@keyframes score-pop {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.4);
-        color: #facc15; /* Amarelo Dourado */
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Estilo para o iframe da Wikipedia */
-iframe#wikipedia-frame {
-    background-color: #1e1e1e; /* Cor de fundo escura enquanto a página carrega */
-}
-
-/* Estilos para Resultados da Busca na Wikipedia */
-.wiki-result-card {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease-out;
-}
-.wiki-result-card:hover {
-    border-color: var(--red-glow);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-/* Estilos para o conteúdo do artigo da Wikipedia no Modal */
-#wiki-article-content {
-    /* Este ID pode ser usado para o container principal do modal */
-    font-size: 1rem; /* 16px */
-    line-height: 1.8;
-    color: #d1d5db; /* gray-300 */
-}
-
-.wiki-article-content p {
-    margin-bottom: 1.5em; /* Aumenta o espaço entre parágrafos para melhor leitura */
-}
-
-/* Unifica os seletores de título para consistência */
-.wiki-article-content h1,
-.wiki-article-content h2,
-.wiki-article-content h3,
-.wiki-article-content h4,
-.wiki-article-content h5 {
-    font-weight: 700;
-    color: #ffffff;
-    margin-top: 2em;
-    margin-bottom: 1em;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5em;
-}
-
-.wiki-article-content h1 { font-size: 2rem; }      /* 32px */
-.wiki-article-content h2 { font-size: 1.75rem; }   /* 28px */
-.wiki-article-content h3 { font-size: 1.375rem; }  /* 22px */
-.wiki-article-content h4 { font-size: 1.125rem; }  /* 18px */
-.wiki-article-content h5 { font-size: 1rem; border-bottom: none; } /* 16px */
-
-.wiki-article-content a {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid transparent;
-}
-.wiki-article-content a:hover {
-    border-bottom-color: var(--accent-color); /* Efeito de sublinhado sutil no hover */
-}
-
-.wiki-article-content ul,
-.wiki-article-content ol {
-    margin-left: 1.5rem;
-    margin-bottom: 1.5em;
-    padding-left: 1em; /* Adiciona um pouco de padding interno */
-}
-.wiki-article-content ul { list-style-type: disc; }
-.wiki-article-content ol { list-style-type: decimal; }
-
-.wiki-article-content blockquote {
-    border-left: 3px solid var(--accent-color);
-    padding: 0.5em 1.5rem;
-    margin: 1.5em 0;
-    color: #d1d5db; /* gray-300, para melhor contraste */
-    font-style: italic;
-    background-color: rgba(255, 255, 255, 0.03); /* Fundo sutil */
-}
-
-.wiki-article-content table { display: none; } /* Oculta tabelas complexas que quebram o layout */
-.wiki-article-content .infobox { display: none; } /* Oculta as caixas de informação laterais */
-
-/* Estilos para Tabela 3D de Artilheiros */
-.styled-table {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem; /* 12px */
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-/* Adiciona rolagem horizontal para tabelas de artilheiros em telas pequenas */
-.top-scorers-table-wrapper {
-    overflow-x: auto;
-}
-
-.styled-table thead th {
-    background: var(--surface-color);
-    color: white;
-    padding: 1rem;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-}
-
-.styled-table tbody tr {
-    background-color: var(--surface-color);
-    transition: all 0.2s ease-out;
-}
-.table-3d tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateZ(10px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-.styled-table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* Estilos para a Grade de Clubes */
-#clubs-grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-}
-
-.club-card {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: all 0.2s ease-out;
-}
-.club-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-glow);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-/* ==========================================================================
-   8. Player Squad View
-   ========================================================================== */
-.player-squad-card {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.2s ease-out;
-}
-.player-squad-card:hover {
-    border-color: var(--accent-glow);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-}
-.player-squad-card img {
-    width: 56px; /* w-14 */
-    height: 56px; /* h-14 */
-    border-radius: 9999px; /* rounded-full */
-    object-fit: cover;
-    background-color: #374151; /* gray-700 */
-    border: 2px solid var(--border-color);
-}
-
-/* ==========================================================================
-   7. Match Modal Enhancements (OneFootball Inspired)
-   ========================================================================== */
-
-/* Melhora o card de informações do jogo */
-#game-info {
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 1rem;
-}
-#game-info p {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.875rem;
-}
-#game-info p strong {
-    color: #9ca3af; /* gray-400 */
-    font-weight: 600;
-}
-
-/* Melhora a lista de incidentes */
-#incidents-list .incident-item {
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-    transition: background-color 0.2s ease;
-}
-#incidents-list .incident-item:hover {
-    background-color: rgba(255,255,255,0.1) !important;
-}
-
-/* Melhora as barras de estatísticas */
-.stat-bar-container {
-    display: flex;
-    align-items: center;
-    background-color: #333;
-    border-radius: 4px;
-    height: 8px;
-    overflow: hidden;
-}
-.stat-bar {
-    height: 100%;
-    transition: width 0.4s ease-out;
-    border-radius: 4px;
-}
-.stat-bar.home {
-    background-color: var(--accent-color);
-}
-.stat-bar.away {
-    background-color: var(--text-secondary);
-}
-
-/* Estilos para o novo seletor de clubes */
-.club-selector {
-    width: 100%;
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    font-size: 1rem;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
+    position: absolute; top: 100%; left: 0; width: 100%; background: #1a1b1e;
+    border: 1px solid #333; border-radius: 8px; margin-top: 4px; z-index: 60;
+}
+
+/* Content Layout */
+.section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--accent-green); padding-left: 10px; line-height: 1; }
+
+/* Loader */
+.loader-center { position: fixed; inset: 0; background: var(--bg-app); z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
+.spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-hidden { opacity: 0; pointer-events: none; }
+
+/* Modals */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200;
+    display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-content {
+    background: #121212; width: 100%; max-width: 900px; height: 85vh;
+    border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    border: 1px solid #333; transform: scale(0.95); transition: transform 0.3s;
+}
+.modal-overlay.open .modal-content { transform: scale(1); }
+
+/* Wiki & News */
+.wiki-content h2 { font-size: 1.5rem; color: white; margin: 1em 0 0.5em; }
+.wiki-content p { color: #ccc; line-height: 1.6; margin-bottom: 1em; }
+.news-card { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; }
+.news-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.news-card:hover img { transform: scale(1.05); }
+.news-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; align-items: flex-end; padding: 15px; }
+
+/* Clubs Grid */
+.club-grid-item { background: #1a1b1e; padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #333; }
+.club-grid-item:hover { border-color: var(--accent-green); }
+
+/* Timeline */
+.timeline-item { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; }
+.timeline-time { font-weight: bold; color: #888; width: 40px; text-align: right; }
+.timeline-text { color: white; }
+
+/* Tables */
+.std-row { display: flex; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; align-items: center; }
+.std-row:hover { background: rgba(255,255,255,0.05); }
