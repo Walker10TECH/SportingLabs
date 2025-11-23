@@ -19,15 +19,15 @@ Abaixo estão algumas telas que demonstram as principais funcionalidades e a int
 
 | Tela Principal (Destaques) | Resultados de uma Liga |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://drive.google.com/uc?export=view&id=1aAJUmooV-8XiqoL6Sv7hW3IYMgBn-F8z" alt="Tela Principal com Destaques" width="450"> | <img src="https://drive.google.com/uc?export=view&id=1vLf4ifEkI-W8xzxrC0Y1vDoRlGD23LRw" alt="Resultados de uma Liga" width="450"> |
+| <img src="https://drive.google.com/uc?export=view&id=1aAJUmooV-8XiqoL6Sv7hW3IYMgBn-F8z" alt="Tela Principal com Destaques" width="450">
 
 | Tabela de Classificação | Detalhes da Partida |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://drive.google.com/uc?export=view&id=1pd74Oai13jyYC2_Cu-nmQvwhpjusMx92" alt="Tabela de Classificação" width="450"> | <img src="https://drive.google.com/uc?export=view&id=17Eua4KZjVvodqK1cU_DKGHBQiIrSfA8G" alt="Detalhes da Partida" width="450"> |
+| <img src="https://drive.google.com/uc?export=view&id=1OX-DyJqaz-jtZfNlYrengl4cYcOjxpN1" alt="Tabela de Classificação" width="450">
 
-| Elenco do Time | Seção de Notícias |
+| Clubes e Elenco | Seção de Notícias |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://drive.google.com/uc?export=view&id=1F-_-LiWNprdHZdLuDSmXv9P0AqXfp_0-" alt="Elenco do Time" width="450"> | <img src="https://drive.google.com/uc?export=view&id=1AgF5__olOlwMA6HQli2C3jqTzX7IUu0h" alt="Seção de Notícias" width="450"> |
+| <img src="https://drive.google.com/uc?export=view&id=1pd74Oai13jyYC2_Cu-nmQvwhpjusMx92" alt="Clubes e Elenco" width="450"> 
 
 ---
 
