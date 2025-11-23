@@ -17,18 +17,17 @@ O **SportingLabs** é o braço de inovação esportiva da **W3labs**. Este repos
 
 Abaixo estão algumas telas que demonstram as principais funcionalidades e a interface da plataforma SportingLabs.
 
-<p align="center">
-  <img src="https://drive.google.com/uc?export=view&id=1aAJUmooV-8XiqoL6Sv7hW3IYMgBn-F8z" width="45%" />
-  <img src="https://drive.google.com/uc?export=view&id=1vLf4ifEkI-W8xzxrC0Y1vDoRlGD23LRw" width="45%" /> 
-</p>
-<p align="center">
-  <img src="https://drive.google.com/uc?export=view&id=1pd74Oai13jyYC2_Cu-nmQvwhpjusMx92" width="45%" />
-  <img src="https://drive.google.com/uc?export=view&id=17Eua4KZjVvodqK1cU_DKGHBQiIrSfA8G" width="45%" />
-</p>
-<p align="center">
-  <img src="https://drive.google.com/uc?export=view&id=1F-_-LiWNprdHZdLuDSmXv9P0AqXfp_0-" width="45%" />
-  <img src="https://drive.google.com/uc?export=view&id=1AgF5__olOlwMA6HQli2C3jqTzX7IUu0h" width="45%" />
-</p>
+| Tela Principal (Destaques) | Resultados de uma Liga |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://drive.google.com/uc?export=view&id=1aAJUmooV-8XiqoL6Sv7hW3IYMgBn-F8z" alt="Tela Principal com Destaques" width="450"> | <img src="https://drive.google.com/uc?export=view&id=1vLf4ifEkI-W8xzxrC0Y1vDoRlGD23LRw" alt="Resultados de uma Liga" width="450"> |
+
+| Tabela de Classificação | Detalhes da Partida |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://drive.google.com/uc?export=view&id=1pd74Oai13jyYC2_Cu-nmQvwhpjusMx92" alt="Tabela de Classificação" width="450"> | <img src="https://drive.google.com/uc?export=view&id=17Eua4KZjVvodqK1cU_DKGHBQiIrSfA8G" alt="Detalhes da Partida" width="450"> |
+
+| Elenco do Time | Seção de Notícias |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://drive.google.com/uc?export=view&id=1F-_-LiWNprdHZdLuDSmXv9P0AqXfp_0-" alt="Elenco do Time" width="450"> | <img src="https://drive.google.com/uc?export=view&id=1AgF5__olOlwMA6HQli2C3jqTzX7IUu0h" alt="Seção de Notícias" width="450"> |
 
 ---
 
@@ -72,7 +71,7 @@ Como este projeto é construído com tecnologias web front-end puras, você não
 
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/seu-usuario/SportingLabs.git
+    git clone https://github.com/Walker10TECH/SportingLabs.git
     ```
 
 2.  **Abra o arquivo `index.html`:**
