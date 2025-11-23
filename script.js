@@ -697,10 +697,13 @@ const app = {
                     
                     // Rows
                     let rows = '';
-                    const entries = group.standings.entries || [];
+                    let entries = group.standings.entries || [];
+
+                    // Ordena as entradas pela classificação (rank)
+                    entries.sort((a, b) => a.stats.find(s => s.name === 'rank')?.value - b.stats.find(s => s.name === 'rank')?.value);
                     
-                    entries.forEach((e, i) => {
-                        const stats = e.stats || [];
+                    entries.forEach(e => {
+                        const stats = e.stats || []; // A variável 'i' não é mais necessária aqui
                         const getStat = (n) => stats.find(s => s.name === n)?.value || 0;
                         const p = getStat('points');
                         const j = getStat('gamesPlayed');
@@ -708,16 +711,17 @@ const app = {
                         const emp = getStat('ties');
                         const d = getStat('losses');
                         const sg = getStat('pointDifferential');
+                        const rank = getStat('rank');
                         
                         // Colors for top positions
                         let posColor = 'text-gray-500';
-                        if (i === 0) posColor = 'text-[#d1ff4d] font-bold';
-                        else if (i < 4) posColor = 'text-blue-400 font-bold';
-                        else if (i >= entries.length - 4) posColor = 'text-red-400 font-bold';
+                        if (rank === 1) posColor = 'text-[#d1ff4d] font-bold';
+                        else if (rank <= 4) posColor = 'text-blue-400 font-bold';
+                        else if (rank >= entries.length - 3) posColor = 'text-red-400 font-bold';
 
                         rows += `
                             <div class="flex items-center px-2 py-2 border-b border-[#333] hover:bg-white/5 text-sm">
-                                <span class="w-8 text-center ${posColor}">${i+1}</span>
+                                <span class="w-8 text-center ${posColor}">${rank}</span>
                                 <div class="flex-1 flex items-center gap-2 px-2 min-w-0">
                                     <img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 object-contain">
                                     <span class="font-semibold text-white truncate">${e.team.shortDisplayName || e.team.displayName}</span>
