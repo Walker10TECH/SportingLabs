@@ -9,7 +9,7 @@
 }
 
 body {
-    font-family: 'Roboto Condensed', 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: var(--bg-app);
     color: var(--text-primary);
     margin: 0; padding: 0; overflow-x: hidden;
@@ -39,13 +39,18 @@ body {
 
 .tv-scoreboard {
     display: flex; align-items: center; justify-content: space-between;
-    height: 64px; padding: 0; font-family: 'Roboto Condensed', sans-serif; position: relative;
+    height: 64px; padding: 0; position: relative;
 }
 
 /* Layout Comum */
 .tv-logo-box { width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; }
 .tv-logo-box { width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
 .tv-logo-box img { width: 32px; height: 32px; object-fit: contain; }
+.tv-score-box, .tv-time-box, .match-timer-main, #modal-score {
+    font-family: 'Oxanium', sans-serif;
+    letter-spacing: 1px;
+}
+
 
 .tv-team-box { flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: -0.5px; padding: 0 10px; gap: 8px; min-width: 0; }
 
@@ -53,16 +58,37 @@ body {
 
 .tv-time-box { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 12px; font-size: 0.9rem; font-weight: 700; min-width: 70px; line-height: 1.1; }
 .tv-time-agg { font-size: 0.7rem; opacity: 0.8; }
-.match-timer-main { font-size: 1.1rem; font-weight: 700; line-height: 1; }
-.match-timer-stoppage { font-size: 0.75rem; font-weight: 700; color: #ffcc00; line-height: 1; margin-top: 2px; }
+.timer-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+.match-timer-main {
+    font-size: 1.2rem;
+    font-weight: 800; /* Mais forte */
+    line-height: 1;
+    text-shadow: 0 0 5px rgba(0,0,0,0.2); /* Sombra sutil */
+}
 
+.match-timer-stoppage {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ffdd00;
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    line-height: 1;
+    margin-top: 0;
+    box-shadow: none;
+    text-shadow: 0 0 8px rgba(255, 221, 0, 0.7); /* Efeito de brilho */
+}
 
 
 /* --- TEMA BRASILEIRÃO (Globo/Premiere) --- */
-.theme-brasileirao .tv-scoreboard { background-color: #ffffff; color: #000000; border-bottom: 2px solid #e5e5e5; }
+.theme-brasileirao .tv-scoreboard { background: linear-gradient(to bottom, #ffffff, #f0f0f0); color: #000000; border-bottom: 2px solid #e5e5e5; }
 .theme-brasileirao .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; }
 .theme-brasileirao .tv-score-box { background-color: #000000; color: #ffffff; min-width: 90px; } 
-.theme-brasileirao .tv-time-box { background-color: #ccff00; color: #000000; }
+.theme-brasileirao .tv-time-box { background: linear-gradient(to bottom, #d1ff4d, #b8e62e); color: #000000; }
 
 /* --- TEMA BRASILEIRÃO SÉRIE B --- */
 .theme-brasileiraob .tv-scoreboard { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
@@ -71,7 +97,7 @@ body {
 .theme-brasileiraob .tv-time-box { background-color: #00ff85; color: #003366; }
 
 /* --- TEMA LIBERTADORES (Conmebol Dark) --- */
-.theme-libertadores .tv-scoreboard { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
+.theme-libertadores .tv-scoreboard { background: linear-gradient(to bottom, #1a1a1a, #000000); color: #ffffff; border-bottom: 3px solid #d4af37; }
 .theme-libertadores .tv-logo-box { background: #111; }
 .theme-libertadores .tv-score-box { background-color: #1a1a1a; color: #ffffff; border-left: 1px solid #333; border-right: 1px solid #333; }
 .theme-libertadores .tv-time-box { background-color: #d4af37; color: #000000; }
@@ -88,39 +114,39 @@ body {
 .theme-champions .tv-time-box { background: rgba(255,255,255,0.2); color: #fff; }
 
 /* --- TEMA PREMIER LEAGUE --- */
-.theme-premier .tv-scoreboard { background-color: #38003c; color: #ffffff; }
+.theme-premier .tv-scoreboard { background: linear-gradient(135deg, #38003c, #5a005f); color: #ffffff; }
 .theme-premier .tv-logo-box { background: #00ff85; }
 .theme-premier .tv-score-box { background-color: #fff; color: #38003c; }
 .theme-premier .tv-time-box { background-color: #00ff85; color: #38003c; }
 
 /* --- TEMA LA LIGA --- */
-.theme-laliga .tv-scoreboard { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
+.theme-laliga .tv-scoreboard { background: linear-gradient(135deg, #1a1a1a, #000); color: #fff; border-bottom: 2px solid #ff0040; }
 .theme-laliga .tv-score-box { font-weight: 900; font-size: 2rem; }
 .theme-laliga .tv-time-box { background-color: #ff0040; color: white; }
 
 /* --- TEMA BUNDESLIGA --- */
-.theme-bundesliga .tv-scoreboard { background-color: #d20515; color: #ffffff; }
+.theme-bundesliga .tv-scoreboard { background: linear-gradient(135deg, #d20515, #e03e4b); color: #ffffff; }
 .theme-bundesliga .tv-score-box { background-color: #ffffff; color: #000000; }
 .theme-bundesliga .tv-time-box { background-color: #a0000c; color: #ffffff; }
 
 /* --- TEMA SERIE A (ITÁLIA) --- */
-.theme-seriea .tv-scoreboard { background-color: #00458c; color: #ffffff; }
+.theme-seriea .tv-scoreboard { background: linear-gradient(135deg, #00458c, #006ab5); color: #ffffff; }
 .theme-seriea .tv-time-box { background-color: rgba(0,0,0,0.3); }
 
 /* --- TEMA SAUDITA (Roshn League) --- */
-.theme-saudi .tv-scoreboard { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
+.theme-saudi .tv-scoreboard { background: linear-gradient(to bottom, #ffffff, #f5f5f5); color: #003d20; border-bottom: 2px solid #e5e5e5; }
 .theme-saudi .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; }
 .theme-saudi .tv-score-box { background-color: #003d20; color: #ffffff; }
-.theme-saudi .tv-time-box { background-color: #00b140; color: #ffffff; }
+.theme-saudi .tv-time-box { background: linear-gradient(to bottom, #00b140, #009a36); color: #ffffff; }
 
 /* --- TEMA ARGENTINA --- */
 .theme-argentina .tv-scoreboard { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
 .theme-argentina .tv-logo-box { background: #fff; }
 .theme-argentina .tv-score-box { background-color: #0d2c4c; color: #ffffff; }
-.theme-argentina .tv-time-box { background-color: #0d2c4c; color: #ffffff; }
+.theme-argentina .tv-time-box { background: linear-gradient(to bottom, #0d2c4c, #0a223a); color: #ffffff; }
 
 /* --- TEMA EREDIVISIE (HOLANDÊS) --- */
-.theme-eredivisie .tv-scoreboard { background-color: #e30613; color: #ffffff; }
+.theme-eredivisie .tv-scoreboard { background: linear-gradient(to bottom, #e30613, #c40411); color: #ffffff; }
 .theme-eredivisie .tv-logo-box { background: #fff; }
 .theme-eredivisie .tv-score-box { background-color: #ffffff; color: #000000; }
 .theme-eredivisie .tv-time-box { background-color: #000000; color: #ffffff; }
@@ -155,6 +181,28 @@ body {
 }
 
 /* ==========================================================================
+   STANDINGS TABLE THEMES
+   ========================================================================== */
+.standings-group-header { background-color: rgba(255,255,255,0.05); }
+.theme-brasileirao .standings-group-header { background: linear-gradient(to bottom, #ffffff, #f0f0f0); }
+.theme-brasileirao .standings-group-header span { color: #000; }
+.theme-brasileiraob .standings-group-header { background: linear-gradient(90deg, #003366, #004080); border-bottom: 3px solid #00ff85; }
+.theme-libertadores .standings-group-header { background: linear-gradient(to bottom, #1a1a1a, #000000); border-bottom: 3px solid #d4af37; }
+.theme-sulamericana .standings-group-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); border-bottom: 3px solid #a0a0a0; }
+.theme-champions .standings-group-header { background: linear-gradient(135deg, #001c55 0%, #043496 100%); }
+.theme-premier .standings-group-header { background: linear-gradient(135deg, #38003c, #5a005f); }
+.theme-laliga .standings-group-header { background: linear-gradient(135deg, #1a1a1a, #000); border-bottom: 2px solid #ff0040; }
+.theme-bundesliga .standings-group-header { background: linear-gradient(135deg, #d20515, #e03e4b); }
+.theme-seriea .standings-group-header { background: linear-gradient(135deg, #00458c, #006ab5); }
+.theme-saudi .standings-group-header { background: linear-gradient(to bottom, #ffffff, #f5f5f5); border-bottom: 2px solid #e5e5e5; }
+.theme-saudi .standings-group-header span { color: #003d20; }
+.theme-argentina .standings-group-header { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); border-bottom: 2px solid #75aadb; }
+.theme-argentina .standings-group-header span { color: #0d2c4c; }
+.theme-eredivisie .stand-group-header { background: linear-gradient(to bottom, #e30613, #c40411); }
+.theme-olympics .standings-group-header { background: linear-gradient(135deg, #0077c8, #005a9a); border-bottom: 3px solid #f4c300; }
+.theme-copaamerica .standings-group-header { background: linear-gradient(90deg, #00387b, #005c31); border-bottom: 3px solid #fdd116; }
+
+/* ==========================================================================
    3. Layout & Header
    ========================================================================== */
 .header-main {
@@ -183,14 +231,15 @@ body {
 .dropdown-item {
     padding: 10px; color: #ccc; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
     cursor: pointer; border-radius: 6px;
+    border-radius: 8px; /* Aumentando o arredondamento */
 }
 .dropdown-item:hover { background: rgba(255,255,255,0.1); color: white; }
 .dropdown-item img { width: 20px; height: 20px; object-fit: contain; }
 
 /* Search */
 .search-input {
-    background: #2a2c33; border: none; color: white; padding: 8px 12px 8px 36px;
-    border-radius: 8px; width: 100%; font-size: 0.9rem;
+    background: #2a2c33; border: none; color: white; padding: 10px 16px 10px 40px;
+    border-radius: 20px; width: 100%; font-size: 0.9rem;
 }
 #global-search-results {
     position: absolute; top: 100%; left: 0; width: 100%; background: #1a1b1e;
@@ -232,8 +281,8 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.modal-content.theme-brasileirao .modal-header { background-color: #ffffff; color: #000000; }
-.modal-content.theme-brasileirao #modal-score { background-color: #000000; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
+.modal-content.theme-brasileirao .modal-header { background-color: #000000; color: #ffffff; }
+.modal-content.theme-brasileirao #modal-score { background-color: #333; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
 
 .modal-content.theme-brasileiraob .modal-header { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
 .modal-content.theme-brasileiraob #modal-score { background-color: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 6px; }
@@ -246,17 +295,17 @@ body {
 
 .modal-content.theme-champions .modal-header { background: linear-gradient(135deg, #001c55 0%, #043496 100%); color: #ffffff; }
 
-.modal-content.theme-premier .modal-header { background-color: #38003c; color: #ffffff; }
+.modal-content.theme-premier .modal-header { background: linear-gradient(135deg, #38003c, #5a005f); color: #ffffff; }
 .modal-content.theme-premier #modal-score { background-color: #fff; color: #38003c; padding: 4px 12px; border-radius: 6px; }
 
-.modal-content.theme-laliga .modal-header { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
+.modal-content.theme-laliga .modal-header { background: linear-gradient(135deg, #1a1a1a, #000); color: #fff; border-bottom: 2px solid #ff0040; }
 
-.modal-content.theme-bundesliga .modal-header { background-color: #d20515; color: #ffffff; }
+.modal-content.theme-bundesliga .modal-header { background: linear-gradient(135deg, #d20515, #e03e4b); color: #ffffff; }
 .modal-content.theme-bundesliga #modal-score { background-color: #ffffff; color: #000000; padding: 4px 12px; border-radius: 6px; }
 
-.modal-content.theme-seriea .modal-header { background-color: #00458c; color: #ffffff; }
+.modal-content.theme-seriea .modal-header { background: linear-gradient(135deg, #00458c, #006ab5); color: #ffffff; }
 
-.modal-content.theme-saudi .modal-header { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
+.modal-content.theme-saudi .modal-header { background-color: #ffffff6e; color: #003d20; border-bottom: 2px solid #e5e5e5; }
 .modal-content.theme-saudi #modal-score { background-color: #003d20; color: #ffffff; padding: 4px 12px; border-radius: 6px; }
 
 .modal-content.theme-argentina .modal-header { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
@@ -276,11 +325,11 @@ body {
 .modal-content.theme-brasileiraob .club-modal-header { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
 .modal-content.theme-libertadores .club-modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
 .modal-content.theme-sulamericana .club-modal-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
-.modal-content.theme-champions .club-modal-header { background: linear-gradient(135deg, #001c55 0%, #043496 100%); color: #ffffff; }
-.modal-content.theme-premier .club-modal-header { background-color: #38003c; color: #ffffff; }
-.modal-content.theme-laliga .club-modal-header { background-color: #111; color: #fff; border-bottom: 2px solid #ff0040; }
-.modal-content.theme-bundesliga .club-modal-header { background-color: #d20515; color: #ffffff; }
-.modal-content.theme-seriea .club-modal-header { background-color: #00458c; color: #ffffff; }
+.modal-content.theme-champions .club-modal-header { background: linear-gradient(135deg, #001c55, #043496); color: #ffffff; }
+.modal-content.theme-premier .club-modal-header { background: linear-gradient(135deg, #38003c, #5a005f); color: #ffffff; }
+.modal-content.theme-laliga .club-modal-header { background: linear-gradient(135deg, #1a1a1a, #000); color: #fff; border-bottom: 2px solid #ff0040; }
+.modal-content.theme-bundesliga .club-modal-header { background: linear-gradient(135deg, #d20515, #e03e4b); color: #ffffff; }
+.modal-content.theme-seriea .club-modal-header { background: linear-gradient(135deg, #00458c, #006ab5); color: #ffffff; }
 .modal-content.theme-saudi .club-modal-header { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
 .modal-content.theme-argentina .club-modal-header { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
 .modal-content.theme-eredivisie .club-modal-header { background-color: #e30613; color: #ffffff; }
@@ -293,6 +342,10 @@ body {
     justify-content: space-between;
     padding: 12px;
     border-bottom: 1px solid var(--border-color);
+}
+
+.modal-overlay {
+    transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
 }
 
 .stat-bar-home {
@@ -340,7 +393,7 @@ body {
 
 /* Timeline */
 .timeline-item { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; }
-.timeline-time { font-weight: bold; color: #888; width: 40px; text-align: right; }
+.timeline-time { font-weight: bold; color: #888; width: 40px; text-align: right; flex-shrink: 0; }
 .timeline-text { color: white; }
 
 /* Modal Tabs */
@@ -354,3 +407,126 @@ body {
 /* Tables */
 .std-row { display: flex; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; align-items: center; }
 .std-row:hover { background: rgba(255,255,255,0.05); }
+.standings-table {
+    user-select: none; /* Impede a seleção de texto na tabela */
+}
+
+/* Animação de Gol */
+@keyframes goal-flash {
+    0% {
+        transform: scale(1);
+        color: #fff;
+        text-shadow: none;
+    }
+    50% {
+        transform: scale(1.5);
+        color: #d1ff4d; /* Cor de destaque */
+        text-shadow: 0 0 15px #d1ff4d, 0 0 25px #d1ff4d;
+    }
+    100% {
+        transform: scale(1);
+        color: #fff;
+        text-shadow: none;
+    }
+}
+.goal-animation {
+    display: inline-block; /* Necessário para transform funcionar corretamente */
+    animation: goal-flash 0.8s ease-in-out;
+}
+
+/* ==========================================================================
+   WIKIPEDIA CUSTOM DESIGN
+   ========================================================================== */
+.wiki-article-content {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* Ocultar elementos desnecessários da Wikipedia */
+.wiki-article-content .mw-editsection,
+.wiki-article-content .reference,
+.wiki-article-content .reflist,
+.wiki-article-content .navbox,
+.wiki-article-content .noprint,
+.wiki-article-content #toc,
+.wiki-article-content .sidebar {
+    display: none !important;
+}
+
+/* Tipografia */
+.wiki-article-content h1,
+.wiki-article-content h2,
+.wiki-article-content h3,
+.wiki-article-content h4 {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5em;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+.wiki-article-content h2 .mw-headline { font-size: 1.5rem; font-weight: 700; }
+.wiki-article-content a { color: var(--accent-green); text-decoration: none; }
+.wiki-article-content a:hover { text-decoration: underline; }
+
+/* Imagens */
+.wiki-article-content img { max-width: 100%; height: auto; border-radius: 8px; }
+.wiki-article-content .thumb { background: none; border: none; margin: 1em 0; }
+.wiki-article-content .thumbinner { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 12px; }
+.wiki-article-content .thumbcaption { color: var(--text-secondary); font-size: 0.8rem; padding-top: 8px; }
+
+/* Tabelas (Infobox) */
+.wiki-article-content .infobox {
+    float: right;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    width: 300px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    box-shadow: none;
+}
+.wiki-article-content .infobox .infobox-above,
+.wiki-article-content .infobox .infobox-header,
+.wiki-article-content .infobox caption {
+    background-color: rgba(255,255,255,0.05);
+    color: var(--text-primary);
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+}
+.wiki-article-content .infobox tr { border-top: 1px solid var(--border-color); }
+.wiki-article-content .infobox th,
+.wiki-article-content .infobox td { padding: 8px 12px; }
+.wiki-article-content .infobox th { background-color: transparent; text-align: left; }
+.wiki-article-content .infobox-data,
+.wiki-article-content .infobox-label { display: table-cell; }
+.wiki-article-content .infobox-image { padding: 12px; }
+
+/* Tabelas Genéricas (wikitable) */
+.wiki-article-content .wikitable {
+    width: 100%;
+    margin: 1.5em 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+.wiki-article-content .wikitable th,
+.wiki-article-content .wikitable td {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+.wiki-article-content .wikitable th {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    color: var(--text-primary);
+    font-weight: bold;
+}

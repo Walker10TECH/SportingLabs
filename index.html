@@ -8,7 +8,7 @@
     
     <!-- Bibliotecas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Oxanium:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="style.css">
@@ -154,7 +154,9 @@
             </div>
             <button class="text-gray-400" onclick="app.toggleMobileSearch()">Cancelar</button>
         </div>
-        <div id="mobile-search-results"></div>
+        <div id="mobile-search-results" class="overflow-y-auto h-[calc(100%-60px)]">
+            <!-- Resultados da busca mobile serão inseridos aqui -->
+        </div>
     </div>
 
     <!-- Main -->
@@ -227,13 +229,8 @@
     <!-- Match Modal -->
     <div id="match-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="flex justify-between items-center p-4 border-b border-[#333] bg-[#1a1b1e]">
-                <span class="font-bold text-white">Detalhes da Partida</span>
-                <button onclick="app.closeModal('match-modal')" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
-            </div>
-            
             <!-- Modal Score Header -->
-            <div class="bg-black p-6 flex flex-col items-center justify-center border-b border-[#333] relative">
+            <div class="modal-header p-6 flex flex-col items-center justify-center relative">
                 <div class="flex items-center justify-between w-full max-w-2xl relative z-10">
                     <div class="flex flex-col items-center w-1/3">
                         <img id="modal-home-logo" class="w-16 h-16 object-contain mb-2">
@@ -241,8 +238,8 @@
                     </div>
                     <div class="flex flex-col items-center">
                         <div id="modal-score" class="flex items-center justify-center text-4xl md:text-5xl font-black text-white tracking-tighter">
-                           <span id="modal-score-home">0</span>
-                           <div class="tv-score-divider text-2xl md:text-3xl mx-2 opacity-50"></div>
+                           <span id="modal-score-home" class="goal-animation-target">0</span>
+                           <span class="text-2xl md:text-3xl mx-2 opacity-50">-</span>
                            <span id="modal-score-away">0</span>
                         </div>
                         <span id="modal-status" class="text-[#d1ff4d] font-bold uppercase text-sm mt-1">LIVE</span>
@@ -254,6 +251,9 @@
                         <h2 id="modal-away" class="text-base md:text-lg font-bold text-white text-center">AWAY</h2>
                     </div>
                 </div>
+                 <button onclick="app.closeModal('match-modal')" class="absolute top-3 right-4 text-gray-400 hover:text-white z-20">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
 
             <div class="flex-1 overflow-y-auto bg-[#0e0e10] p-6">
