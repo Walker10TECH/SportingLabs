@@ -8,8 +8,12 @@
     
     <!-- Bibliotecas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Oxanium:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Flatpickr (Calendário) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
 
     <link rel="stylesheet" href="style.css">
     <style>
@@ -196,13 +200,19 @@
 
             <!-- Views -->
             <section id="view-matches">
-                <div class="section-title">Jogos de Hoje</div>
+                <div class="flex justify-between items-center mb-4">
+                    <div id="matches-date-title" class="section-title !mb-0">Jogos de Hoje</div>
+                    <div class="relative">
+                        <input type="text" id="date-picker" class="date-picker-input" placeholder="Selecionar data">
+                        <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
                 <div id="matches-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </section>
 
             <section id="view-standings" class="hidden">
                 <div class="section-title">Tabela de Classificação</div>
-                <div id="standings-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6 standings-table"></div>
+                <div id="standings-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
             </section>
 
             <section id="view-news" class="hidden">
@@ -226,6 +236,32 @@
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- About -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="logo-text mb-4">W3<span>Labs</span></div>
+                    <p class="text-gray-400 text-sm max-w-md">
+                        Fundada em Cascavel - PR, a W3Labs é apaixonada por tecnologia e inovação, criando soluções digitais que conectam e inspiram.
+                    </p>
+                </div>
+
+                <!-- Social -->
+                <div>
+                    <h3 class="footer-title">Siga-nos</h3>
+                    <div class="flex gap-4 mt-4">
+                        <a href="https://www.linkedin.com/in/willyan-walker-1a4b80237/" target="_blank" rel="noopener noreferrer" class="social-link"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="https://www.instagram.com/w3labsoficial/" target="_blank" rel="noopener noreferrer" class="social-link"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=100090616987571" target="_blank" rel="noopener noreferrer" class="social-link"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-[#2a2c33] pt-8 text-center text-gray-500 text-xs">&copy; 2025 W3Labs. Todos os direitos reservados.</div>
+        </div>
+    </footer>
+
     <!-- Match Modal -->
     <div id="match-modal" class="modal-overlay">
         <div class="modal-content">
@@ -238,9 +274,7 @@
                     </div>
                     <div class="flex flex-col items-center">
                         <div id="modal-score" class="flex items-center justify-center text-4xl md:text-5xl font-black text-white tracking-tighter">
-                           <span id="modal-score-home" class="goal-animation-target">0</span>
-                           <span class="text-2xl md:text-3xl mx-2 opacity-50">-</span>
-                           <span id="modal-score-away">0</span>
+                           0 - 0
                         </div>
                         <span id="modal-status" class="text-[#d1ff4d] font-bold uppercase text-sm mt-1">LIVE</span>
                         <div id="modal-pk-score" class="text-gray-400 text-xs mt-1 hidden"></div>
@@ -292,6 +326,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top-btn" class="fixed bottom-24 right-6 md:bottom-8 md:right-8 bg-[#d1ff4d] text-black p-3 rounded-full shadow-lg hover:bg-white z-50">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
 
     <script src="script.js" defer></script>
 </body>

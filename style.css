@@ -39,24 +39,19 @@ body {
 
 .tv-scoreboard {
     display: flex; align-items: center; justify-content: space-between;
-    height: 64px; padding: 0; position: relative;
+    height: 48px; padding: 0; position: relative;
 }
 
 /* Layout Comum */
-.tv-logo-box { width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; }
-.tv-logo-box { width: 50px; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-.tv-logo-box img { width: 32px; height: 32px; object-fit: contain; }
-.tv-score-box, .tv-time-box, .match-timer-main, #modal-score {
-    font-family: 'Oxanium', sans-serif;
-    letter-spacing: 1px;
-}
+.tv-logo-box { width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; }
+.tv-logo-box { width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
+.tv-logo-box img { width: 24px; height: 24px; object-fit: contain; }
 
+.tv-team-box { flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: -0.5px; padding: 0 8px; gap: 6px; min-width: 0; }
 
-.tv-team-box { flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: -0.5px; padding: 0 10px; gap: 8px; min-width: 0; }
+.tv-score-box { height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; padding: 0 10px; min-width: 48px; letter-spacing: 1px; }
 
-.tv-score-box { height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.8rem; padding: 0 15px; min-width: 80px; letter-spacing: 2px; }
-
-.tv-time-box { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 12px; font-size: 0.9rem; font-weight: 700; min-width: 70px; line-height: 1.1; }
+.tv-time-box { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 10px; font-size: 0.75rem; font-weight: 700; min-width: 56px; line-height: 1.1; }
 .tv-time-agg { font-size: 0.7rem; opacity: 0.8; }
 .timer-wrapper {
     display: flex;
@@ -64,10 +59,15 @@ body {
     gap: 4px;
 }
 .match-timer-main {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 800; /* Mais forte */
     line-height: 1;
     text-shadow: 0 0 5px rgba(0,0,0,0.2); /* Sombra sutil */
+}
+.live-timer .timer-separator {
+    animation: blink 1s infinite;
+    position: relative;
+    top: -1px; /* Ajuste fino de alinhamento */
 }
 
 .match-timer-stoppage {
@@ -86,8 +86,8 @@ body {
 
 /* --- TEMA BRASILEIRÃO (Globo/Premiere) --- */
 .theme-brasileirao .tv-scoreboard { background: linear-gradient(to bottom, #ffffff, #f0f0f0); color: #000000; border-bottom: 2px solid #e5e5e5; }
-.theme-brasileirao .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; }
-.theme-brasileirao .tv-score-box { background-color: #000000; color: #ffffff; min-width: 90px; } 
+.theme-brasileirao .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; } 
+.theme-brasileirao .tv-score-box { background-color: #000000; color: #ffffff; min-width: 56px; }
 .theme-brasileirao .tv-time-box { background: linear-gradient(to bottom, #d1ff4d, #b8e62e); color: #000000; }
 
 /* --- TEMA BRASILEIRÃO SÉRIE B --- */
@@ -250,6 +250,53 @@ body {
 .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--accent-green); padding-left: 10px; line-height: 1; }
 
 /* Loader */
+.date-picker-input {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 12px 8px 36px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 150px;
+}
+.date-picker-input:hover { background-color: #333; color: var(--text-primary); }
+
+/* Tema escuro para o Flatpickr */
+.flatpickr-calendar {
+    background: #1a1b1e;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    color: var(--text-primary);
+}
+.flatpickr-months .flatpickr-month { color: var(--text-primary); fill: var(--text-primary); }
+.flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month {
+    color: var(--text-secondary);
+    fill: var(--text-secondary);
+}
+.flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover {
+    color: var(--accent-green);
+    fill: var(--accent-green);
+}
+.flatpickr-weekdays { background: rgba(255,255,255,0.05); }
+.flatpickr-weekday { color: var(--text-secondary); font-weight: bold; }
+.flatpickr-day { color: var(--text-secondary); }
+.flatpickr-day:hover, .flatpickr-day:focus {
+    background: rgba(255,255,255,0.1);
+    border-color: transparent;
+    color: var(--text-primary);
+}
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: #000;
+}
+.flatpickr-day.today { border-color: var(--accent-green); color: var(--accent-green); }
+.flatpickr-day.disabled, .flatpickr-day.disabled:hover { color: #444; }
+
 .loader-center { position: fixed; inset: 0; background: var(--bg-app); z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
 .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -279,6 +326,11 @@ body {
     background-color: var(--bg-card);
     color: var(--text-primary);
     transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-header img {
+    /* Garante que os logos não mudem de tamanho durante animações do elemento pai */
+    transform: scale(1) !important;
 }
 
 .modal-content.theme-brasileirao .modal-header { background-color: #000000; color: #ffffff; }
@@ -349,7 +401,7 @@ body {
 }
 
 .stat-bar-home {
-    transition: background-color 0.3s, width 0.5s;
+    transition: width 0.7s ease-out;
 }
 
 @media (max-width: 768px) {
@@ -363,8 +415,29 @@ body {
 /* Wiki & News */
 .wiki-content h2 { font-size: 1.5rem; color: white; margin: 1em 0 0.5em; }
 .wiki-content p { color: #ccc; line-height: 1.6; margin-bottom: 1em; }
-.news-card { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; }
-.news-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.news-card { 
+    position: relative; 
+    aspect-ratio: 16/9; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    background-color: #2a2c33; /* Cor de fundo do placeholder */
+}
+.news-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: shimmer 1.5s infinite;
+}
+.news-card.is-loaded::after {
+    animation: none;
+    display: none;
+}
+.news-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s, opacity 0.5s; opacity: 0; }
+.news-card img.loaded { opacity: 1; }
 .news-card:hover img { transform: scale(1.05); }
 .news-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; align-items: flex-end; padding: 15px; }
 
@@ -405,10 +478,46 @@ body {
 .modal-tab-btn.inactive { color: var(--text-secondary); }
 
 /* Tables */
-.std-row { display: flex; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; align-items: center; }
+.std-row { 
+    display: flex; 
+    padding: 10px; 
+    border-bottom: 1px solid #333; 
+    font-size: 0.9rem; 
+    align-items: center; 
+    height: 45px; /* Altura fixa para a animação */
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s; /* Transição suave */
+}
 .std-row:hover { background: rgba(255,255,255,0.05); }
 .standings-table {
     user-select: none; /* Impede a seleção de texto na tabela */
+    position: relative;
+}
+.standings-table-body {
+    position: relative;
+}
+
+.std-row.rank-up::after,
+.std-row.rank-down::after {
+    content: '';
+    position: absolute;
+    left: 3rem; /* Posição da seta, após o número do rank */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.std-row.rank-up::after {
+    /* Seta triangular para cima (verde) */
+    border-width: 0 5px 8px 5px;
+    border-color: transparent transparent #4ade80 transparent;
+}
+
+.std-row.rank-down::after {
+    /* Seta triangular para baixo (vermelha) */
+    border-width: 8px 5px 0 5px;
+    border-color: #f87171 transparent transparent transparent;
 }
 
 /* Animação de Gol */
@@ -433,7 +542,54 @@ body {
     display: inline-block; /* Necessário para transform funcionar corretamente */
     animation: goal-flash 0.8s ease-in-out;
 }
+/* Animação para o cronômetro piscar */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
 
+/* Animação de carregamento de imagem */
+@keyframes shimmer {
+    100% {
+        left: 100%;
+    }
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.site-footer {
+    background-color: #121214;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 10;
+}
+.footer-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.footer-link { color: var(--text-secondary); transition: color 0.2s; font-size: 0.9rem; }
+.footer-link:hover { color: var(--accent-green); }
+.social-link { color: var(--text-secondary); transition: color 0.2s; }
+.social-link:hover { color: var(--text-primary); }
+
+/* Back to Top Button */
+#back-to-top-btn {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+}
+#back-to-top-btn.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
 /* ==========================================================================
    WIKIPEDIA CUSTOM DESIGN
    ========================================================================== */

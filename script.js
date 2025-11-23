@@ -7,9 +7,13 @@ const app = {
                 timers: {},
                 matchRefreshInterval: null,
                 scoreboardRefreshInterval: null, // Novo: para atualizar a lista de jogos
+                currentDate: new Date(), // Para o filtro de data
                 playerCache: {},
                 teamWikiDb: {},
-                sports: {}
+                sports: {},
+                previousStandings: {}, // Para a animação da tabela
+                isFirstStandingsRender: true, // Para evitar animação na primeira carga
+                liveStandingsData: null // Para a classificação ao vivo
             },
             proxy: 'https://corsproxy.io/?',
 
@@ -66,6 +70,34 @@ const app = {
                     if(!e.target.closest('.dropdown-container')) document.querySelectorAll('.dropdown-menu').forEach(el=>el.classList.remove('open'));
                     if(!e.target.closest('#search-container')) document.getElementById('global-search-results').classList.add('hidden');
                 };
+
+                // Inicializa o calendário (Flatpickr)
+                flatpickr("#date-picker", {
+                    dateFormat: "d/m/Y",
+                    defaultDate: "today",
+                    locale: "pt",
+                    onChange: (selectedDates) => {
+                        if (selectedDates[0]) {
+                            this.changeDate(selectedDates[0]);
+                        }
+                    }
+                });
+
+                // Lógica do botão "Voltar ao Topo"
+                const backToTopBtn = document.getElementById('back-to-top-btn');
+                if (backToTopBtn) {
+                    window.onscroll = () => {
+                        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                            backToTopBtn.classList.add('visible');
+                        } else {
+                            backToTopBtn.classList.remove('visible');
+                        }
+                    };
+
+                    backToTopBtn.onclick = () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+                }
             },
 
             debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; },
@@ -143,6 +175,15 @@ const app = {
                 this.loadLeague(l);
             },
 
+            changeDate(newDate) {
+                this.state.currentDate = newDate;
+                this.loadLeague(this.state.currentLeague);
+            },
+
+            formatDateForAPI(date) {
+                return date.toISOString().split('T')[0].replace(/-/g, '');
+            },
+
             toggleDropdown(id) {
                 const el = document.getElementById(id);
                 const wasOpen = el.classList.contains('open');
@@ -208,6 +249,8 @@ const app = {
             },
 
             async loadLeague(key) {
+                this.state.isFirstStandingsRender = true; // Reseta ao trocar de liga
+                if (this.state.view !== 'matches') this.state.currentDate = new Date(); // Reseta a data se não estiver na aba de jogos
                 this.setView('matches');
                 const sport = this.state.currentSport;
                 const league = this.state.sports[sport].leagues[key];
@@ -251,9 +294,21 @@ const app = {
                 }
 
                 try {
+                    const formattedDate = this.formatDateForAPI(this.state.currentDate);
+                    const today = new Date();
+                    const isToday = this.state.currentDate.toDateString() === today.toDateString();
+
+                    // Atualiza o título da data
+                    const dateTitle = document.getElementById('matches-date-title');
+                    if (isToday) {
+                        dateTitle.textContent = 'Jogos de Hoje';
+                    } else {
+                        dateTitle.textContent = `Jogos de ${this.state.currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}`;
+                    }
+
                     const url = `${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}`;
                     const [resScore, resNews] = await Promise.all([
-                        fetch(`${url}/scoreboard?lang=pt&region=${this.state.region}`).then(r=>r.json()),
+                        fetch(`${url}/scoreboard?lang=pt&region=${this.state.region}&dates=${formattedDate}`).then(r=>r.json()),
                         fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json())
                     ]);
 
@@ -261,15 +316,18 @@ const app = {
                     this.renderNews(resNews.articles || []);
 
                     if(sport === 'soccer') {
-                        // Inicia a atualização automática de placares
-                        this.state.matchRefreshInterval = setInterval(() => {
-                            this.updateScores(sport, league.slug);
-                        }, 20000); // Atualiza a cada 20 segundos
+                        // Só atualiza automaticamente se a data selecionada for hoje
+                        if (isToday) {
+                            this.state.matchRefreshInterval = setInterval(() => {
+                                this.updateScores(sport, league.slug);
+                            }, 20000); // Atualiza a cada 20 segundos
 
-                        // Novo: Inicia a atualização da lista de jogos
-                        this.state.scoreboardRefreshInterval = setInterval(() => {
-                            this.loadLeague(this.state.currentLeague, false); // `false` para não resetar a view
-                        }, 60000); // Atualiza a lista de jogos a cada 60 segundos
+                            this.state.scoreboardRefreshInterval = setInterval(() => {
+                                this.loadLeague(this.state.currentLeague, false);
+                            }, 60000); // Atualiza a lista de jogos a cada 60 segundos
+                        } else {
+                            if (this.state.matchRefreshInterval) clearInterval(this.state.matchRefreshInterval);
+                        }
 
                         this.loadStandings(sport, league.slug);
                     } else {
@@ -423,10 +481,10 @@ const app = {
 
                     card.innerHTML = `
                         <div class="tv-scoreboard">
-                            <div class="tv-logo-box"><img src="${this.state.sports[this.state.currentSport].leagues[this.state.currentLeague].logo}" alt="League Logo"></div>
-                            <div class="tv-team-box text-right"><span class="truncate">${home.team.abbreviation || home.team.shortDisplayName}</span><img src="${home.team.logo}" class="w-8 h-8 object-contain ml-2" alt="Home Team Logo"></div>
-                            <div class="tv-score-box" data-match-id="${ev.id}"><span data-score-home>${home.score}</span> - <span data-score-away>${away.score}</span></div>
-                            <div class="tv-team-box text-left"><img src="${away.team.logo}" class="w-8 h-8 object-contain mr-2" alt="Away Team Logo"><span class="truncate">${away.team.abbreviation || away.team.shortDisplayName}</span></div>
+                            <div class="tv-logo-box"><img src="${this.state.sports[this.state.currentSport].leagues[this.state.currentLeague].logo}" alt="League Logo"></div> 
+                            <div class="tv-team-box text-right"><span class="truncate">${home.team.abbreviation || home.team.shortDisplayName}</span><img src="${home.team.logo}" class="w-6 h-6 object-contain ml-2" alt="Home Team Logo"></div>
+                            <div class="tv-score-box" data-match-id="${ev.id}">${home.score} - ${away.score}</div>
+                            <div class="tv-team-box text-left"><img src="${away.team.logo}" class="w-6 h-6 object-contain mr-2" alt="Away Team Logo"><span class="truncate">${away.team.abbreviation || away.team.shortDisplayName}</span></div>
                             <div class="tv-time-box" id="time-box-${ev.id}">
                                 <div class="timer-wrapper">
                                     <div id="match-timer-${ev.id}" class="match-timer-main">${status.type.shortDetail}</div>
@@ -463,24 +521,22 @@ const app = {
                         const scoreBox = document.querySelector(`.tv-score-box[data-match-id="${event.id}"]`);
                         if (!scoreBox) return;
 
-                        const homeScoreEl = scoreBox.querySelector('[data-score-home]');
-                        const awayScoreEl = scoreBox.querySelector('[data-score-away]');
-                        const oldHomeScore = parseInt(homeScoreEl.textContent, 10);
-                        const oldAwayScore = parseInt(awayScoreEl.textContent, 10);
+                        const [oldHomeScore, oldAwayScore] = scoreBox.textContent.split('-').map(s => parseInt(s.trim(), 10));
+                        const newHomeScore = parseInt(home.score, 10);
+                        const newAwayScore = parseInt(away.score, 10);
 
-                        if (home.score > oldHomeScore) {
-                            homeScoreEl.classList.add('goal-animation');
+                        if (newHomeScore > oldHomeScore || newAwayScore > oldAwayScore) {
+                            scoreBox.classList.add('goal-animation');
                             this.playGoalSound();
-                            setTimeout(() => homeScoreEl.classList.remove('goal-animation'), 800);
-                        }
-                        if (away.score > oldAwayScore) {
-                            awayScoreEl.classList.add('goal-animation');
-                            this.playGoalSound();
-                            setTimeout(() => awayScoreEl.classList.remove('goal-animation'), 800);
+                            setTimeout(() => scoreBox.classList.remove('goal-animation'), 800);
                         }
 
-                        homeScoreEl.textContent = home.score;
-                        awayScoreEl.textContent = away.score;
+                        scoreBox.textContent = `${home.score} - ${away.score}`;
+
+                        // Apenas atualiza a tabela se houver mudança no placar
+                        if (newHomeScore !== oldHomeScore || newAwayScore !== oldAwayScore) {
+                            this.updateLiveStandings(home.team.id, away.team.id, oldHomeScore, oldAwayScore, newHomeScore, newAwayScore);
+                        }
                     });
                 } catch (e) { console.error("Erro ao atualizar placares:", e); }
             },
@@ -497,6 +553,7 @@ const app = {
                     
                     if (data.children && data.children.length > 0) {
                         this.renderStandingsTable(data.children);
+                        this.state.liveStandingsData = data.children; // Armazena os dados para atualização ao vivo
                         this.renderClubs(data.children);
                     } else {
                         container.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Classificação indisponível no momento.</p>';
@@ -508,7 +565,12 @@ const app = {
             },
 
             renderStandingsTable(children) {
+                if (!children) return; // Guarda de segurança
+
                 const container = document.getElementById('standings-container');
+                const newStandingsState = {};
+                const ROW_HEIGHT = 45; // Altura da linha em pixels para o cálculo da animação
+
                 container.innerHTML = '';
                 const themeClass = this.getThemeClassForLeague();
                 
@@ -516,6 +578,9 @@ const app = {
                     const div = document.createElement('div');
                     div.className = `bg-[#1a1b1e] rounded-xl border border-[#333] overflow-hidden h-fit ${themeClass}`;
                     
+                    const groupName = group.name;
+                    newStandingsState[groupName] = {};
+
                     // Header
                     let html = `
                         <div class="p-3 flex justify-between items-center standings-group-header">
@@ -533,15 +598,21 @@ const app = {
                         </div>
                     `;
                     
-                    // Rows
-                    let rows = '';
+                    const tableBody = document.createElement('div');
+                    tableBody.className = 'standings-table-body';
+
                     let entries = group.standings.entries || [];
 
                     // Ordena as entradas pela classificação (rank)
                     entries.sort((a, b) => a.stats.find(s => s.name === 'rank')?.value - b.stats.find(s => s.name === 'rank')?.value);
                     
-                    entries.forEach(e => {
+                    entries.forEach((e, index) => {
                         const stats = e.stats || []; // A variável 'i' não é mais necessária aqui
+                        const teamId = e.team.id;
+                        const newRank = index + 1;
+                        newStandingsState[groupName][teamId] = newRank;
+                        const oldRank = this.state.previousStandings[groupName]?.[teamId];
+
                         const getStat = (n) => stats.find(s => s.name === n)?.value || 0;
                         const p = getStat('points');
                         const j = getStat('gamesPlayed');
@@ -551,14 +622,22 @@ const app = {
                         const sg = getStat('pointDifferential');
                         const rank = getStat('rank');
                         
+                        const rankDifference = (oldRank !== undefined && !this.state.isFirstStandingsRender) ? oldRank - newRank : 0;
+                        const initialYOffset = rankDifference * ROW_HEIGHT;
+                        const animationClass = rankDifference !== 0 ? (rankDifference > 0 ? 'rank-up' : 'rank-down') : '';
+
                         // Colors for top positions
                         let posColor = 'text-gray-500';
                         if (rank === 1) posColor = 'text-[#d1ff4d] font-bold';
                         else if (rank <= 4) posColor = 'text-blue-400 font-bold';
                         else if (rank >= entries.length - 3) posColor = 'text-red-400 font-bold';
 
-                        rows += `
-                            <div class="flex items-center px-2 py-2 border-b border-[#333] hover:bg-white/5 text-sm">
+                        const row = document.createElement('div');
+                        row.className = `std-row ${animationClass}`;
+                        row.dataset.teamId = teamId;
+                        row.style.transform = `translateY(${initialYOffset}px)`;
+
+                        row.innerHTML = `
                                 <span class="w-8 text-center ${posColor}">${rank}</span>
                                 <div class="flex-1 flex items-center gap-2 px-2 min-w-0">
                                     <img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 object-contain">
@@ -571,25 +650,47 @@ const app = {
                                 <span class="w-8 text-center text-gray-500">${d}</span>
                                 <span class="w-8 text-center text-gray-500 hidden sm:block">${sg}</span>
                             </div>
-                        `;
+                        `;                        
+                        tableBody.appendChild(row);
                     });
                     
-                    div.innerHTML = html + rows;
+                    div.innerHTML = html;
+                    div.appendChild(tableBody);
                     container.appendChild(div);
+
+                    // Força a animação
+                    setTimeout(() => {
+                        tableBody.querySelectorAll('.std-row').forEach(row => {
+                            row.style.transform = 'translateY(0)';
+                        });
+                    }, 50); // Pequeno delay para garantir que a transformação inicial seja aplicada
                 });
+                this.state.previousStandings = newStandingsState;
+                this.state.isFirstStandingsRender = false;
+                this.state.liveStandingsData = children; // Garante que os dados ao vivo estão sempre sincronizados
             },
 
             renderNews(articles) {
                 const grid = document.getElementById('news-grid');
                 grid.innerHTML = '';
-                articles.slice(0, 6).forEach(n => {
-                    if(!n.images[0]) return;
-                    grid.innerHTML += `
-                        <a href="${n.links.web.href}" target="_blank" class="news-card group">
-                            <img src="${n.images[0].url}">
-                            <div class="news-overlay"><h3 class="text-white font-bold text-lg leading-tight group-hover:text-[#d1ff4d]">${n.headline}</h3></div>
-                        </a>
-                    `;
+                articles.slice(0, 9).forEach(n => {
+                    if (!n.images || !n.images[0]) return;
+
+                    const card = document.createElement('a');
+                    card.href = n.links.web.href;
+                    card.target = '_blank';
+                    card.className = 'news-card group';
+
+                    const img = document.createElement('img');
+                    img.src = n.images[0].url;
+                    img.onload = () => {
+                        img.classList.add('loaded');
+                        card.classList.add('is-loaded');
+                    };
+
+                    card.innerHTML = `<div class="news-overlay"><h3 class="text-white font-bold text-lg leading-tight group-hover:text-[#d1ff4d]">${n.headline}</h3></div>`;
+                    card.prepend(img);
+                    grid.appendChild(card);
                 });
             },
 
@@ -666,6 +767,11 @@ const app = {
                 const stoppageEl = document.getElementById(`match-stoppage-time-${matchId}`);
                 if (!timerEl || !stoppageEl) return; 
         
+                // Adiciona a classe para a animação do cronômetro
+                const timeBox = document.getElementById(`time-box-${matchId}`);
+                if (timeBox) {
+                    timeBox.classList.add('live-timer');
+                }
                 stoppageEl.textContent = '';
         
                 if (!initialClock || !initialClock.includes(':')) {
@@ -724,7 +830,6 @@ const app = {
                     interval: interval,
                     minutes: minutes,
                     seconds: seconds,
-                    stoppage: stoppageMinutes
                 };
             },
 
@@ -903,14 +1008,25 @@ const app = {
                     const numA = parseFloat(valA)||0;
                     const total = numH+numA;
                     const pct = total > 0 ? (numH/total)*100 : 50;
-
+                    
+                    // Adiciona um ID único para a barra para poder animá-la
                     cont.innerHTML += `
                         <div class="mb-4">
                             <div class="flex justify-between text-xs text-gray-400 font-bold mb-1 uppercase"><span>${valH}</span><span>${s.label}</span><span>${valA}</span></div>
-                            <div class="flex h-2 bg-gray-800 rounded-full overflow-hidden"><div class="stat-bar-home" style="width: ${pct}%; background-color: #${teamColor};"></div><div class="bg-gray-600 flex-1"></div></div>
+                            <div class="flex h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="stat-bar-home" style="width: 0%; background-color: ${teamColor}; transition: width 0.7s ease-out;" data-pct="${pct}"></div>
+                                <div class="bg-gray-600 flex-1"></div>
+                            </div>
                         </div>
                     `;
                 });
+
+                // Anima as barras de estatísticas
+                setTimeout(() => {
+                    cont.querySelectorAll('.stat-bar-home').forEach(bar => {
+                        bar.style.width = `${bar.getAttribute('data-pct')}%`;
+                    });
+                }, 100); // Pequeno delay para garantir a renderização antes da transição
             },
 
             setMatchTab(t) {
@@ -1100,6 +1216,74 @@ const app = {
                         btn.classList.toggle('inactive', !isActive);
                     }
                 });
+            },
+
+            updateLiveStandings(homeId, awayId, oldHomeScore, oldAwayScore, newHomeScore, newAwayScore) {
+                if (!this.state.liveStandingsData) return;
+
+                // Encontra os times nos dados da classificação
+                let homeTeamEntry = null;
+                let awayTeamEntry = null;
+                let groupIndex = -1;
+
+                this.state.liveStandingsData.forEach((group, gIndex) => {
+                    group.standings.entries.forEach(entry => {
+                        if (entry.team.id === homeId) {
+                            homeTeamEntry = entry;
+                            groupIndex = gIndex;
+                        }
+                        if (entry.team.id === awayId) {
+                            awayTeamEntry = entry;
+                        }
+                    });
+                });
+
+                if (!homeTeamEntry || !awayTeamEntry || groupIndex === -1) return;
+
+                const getStat = (team, name) => team.stats.find(s => s.name === name);
+
+                // 1. Reverte o resultado antigo
+                const oldPointsHome = getStat(homeTeamEntry, 'points');
+                const oldPointsAway = getStat(awayTeamEntry, 'points');
+                if (oldHomeScore > oldAwayScore) { // Vitória do time da casa
+                    oldPointsHome.value -= 3;
+                } else if (oldAwayScore > oldHomeScore) { // Vitória do visitante
+                    oldPointsAway.value -= 3;
+                } else { // Empate
+                    oldPointsHome.value -= 1;
+                    oldPointsAway.value -= 1;
+                }
+
+                // 2. Aplica o novo resultado
+                const newPointsHome = getStat(homeTeamEntry, 'points');
+                const newPointsAway = getStat(awayTeamEntry, 'points');
+                if (newHomeScore > newAwayScore) { // Nova vitória do time da casa
+                    newPointsHome.value += 3;
+                } else if (newAwayScore > newHomeScore) { // Nova vitória do visitante
+                    newPointsAway.value += 3;
+                } else { // Novo empate
+                    newPointsHome.value += 1;
+                    newPointsAway.value += 1;
+                }
+
+                // 3. Atualiza o saldo de gols
+                const goalDiffHome = getStat(homeTeamEntry, 'pointDifferential');
+                const goalDiffAway = getStat(awayTeamEntry, 'pointDifferential');
+                goalDiffHome.value += (newHomeScore - oldHomeScore) - (newAwayScore - oldAwayScore);
+                goalDiffAway.value += (newAwayScore - oldAwayScore) - (newHomeScore - oldHomeScore);
+
+                // 4. Reordena o grupo específico
+                const entries = this.state.liveStandingsData[groupIndex].standings.entries;
+                entries.sort((a, b) => {
+                    const pointsA = getStat(a, 'points').value;
+                    const pointsB = getStat(b, 'points').value;
+                    if (pointsB !== pointsA) return pointsB - pointsA;
+                    return getStat(b, 'pointDifferential').value - getStat(a, 'pointDifferential').value;
+                });
+                entries.forEach((entry, index) => getStat(entry, 'rank').value = index + 1);
+
+                // 5. Renderiza a tabela novamente com os dados atualizados
+                this.renderStandingsTable(this.state.liveStandingsData);
             }
         };
 
