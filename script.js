@@ -247,7 +247,13 @@ const app = {
                         }
                     },
                     'basketball': { name: 'Basquete', leagues: { 'nba': { id: 'nba', slug: 'nba', name: 'NBA', logo: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png' } } },
-                    'football': { name: 'Fut. Americano', leagues: { 'nfl': { id: 'nfl', slug: 'nfl', name: 'NFL', logo: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png' } } }
+                    'football': { name: 'Fut. Americano', leagues: { 'nfl': { id: 'nfl', slug: 'nfl', name: 'NFL', logo: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png' } } },
+                    'olympics': {
+                        name: 'Eventos',
+                        leagues: {
+                            'summer-olympics': { id: 'summer-olympics', slug: 'olympics-2024', name: 'Olimpíadas', logo: 'https://www.infoescola.com/wp-content/uploads/2007/10/jogos-olimpicos.png', bg: 'https://img.olympicchannel.com/images/image/private/t_social_share_thumb/f_auto/primary/v0bsurl2v5g5pgasjh5r', wiki: 'https://pt.wikipedia.org/wiki/Jogos_Ol%C3%ADmpicos_de_Ver%C3%A3o_de_2024' }
+                        }
+                    }
                 }
             },
             proxy: 'https://corsproxy.io/?',
@@ -384,8 +390,20 @@ const app = {
 
             setView(v) {
                 this.state.view = v;
-                ['matches', 'standings', 'news', 'clubs', 'wiki', 'featured-players'].forEach(id => {
+                ['matches', 'standings', 'news', 'clubs', 'wiki'].forEach(id => {
                     document.getElementById('view-'+id).classList.toggle('hidden', id !== v);
+                });
+
+                // Garante que as abas olímpicas ocultas não sejam selecionadas
+                if (this.state.currentSport === 'olympics' && (v === 'news' || v === 'clubs')) {
+                    this.setView('matches');
+                    return; // Impede a re-renderização da aba errada
+                }
+
+                // Ajusta a visibilidade dos botões de navegação
+                ['matches', 'standings', 'news', 'clubs'].forEach(type => {
+                    const mobBtn = document.getElementById('mob-' + type);
+                    if (mobBtn) mobBtn.style.display = (this.state.currentSport === 'olympics' && (type === 'news' || type === 'clubs')) ? 'none' : 'flex';
                 });
 
                 // Update active states
@@ -415,6 +433,13 @@ const app = {
                 this.setView('matches');
                 const sport = this.state.currentSport;
                 const league = this.state.sports[sport].leagues[key];
+
+                // Controla a visibilidade das abas de desktop
+                const olympicsSelected = sport === 'olympics';
+                ['desk-news', 'desk-clubs'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if(btn) btn.style.display = olympicsSelected ? 'none' : 'flex';
+                });
                 
                 document.getElementById('page-league-logo').src = league.logo;
                 document.getElementById('page-league-name').innerText = league.name;
@@ -432,12 +457,18 @@ const app = {
                      standingsContainer = document.getElementById('standings-container');
                 }
 
+                if (sport === 'olympics') {
+                    this.loadOlympicEvents();
+                    this.loadOlympicMedalTable();
+                    this.renderNews([]); // Limpa as notícias pois a API não fornece
+                    return;
+                }
+
                 try {
                     const url = `${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}`;
-                    const [resScore, resNews, resLeaders] = await Promise.all([
+                    const [resScore, resNews] = await Promise.all([
                         fetch(`${url}/scoreboard?lang=pt&region=${this.state.region}`).then(r=>r.json()),
-                        fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json()),
-                        fetch(`${url}/leaders?lang=pt&region=${this.state.region}`).then(r=>r.json()).catch(e => null) // Gracefully fail
+                        fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json())
                     ]);
 
                     this.renderMatches(resScore.events || []);
@@ -445,7 +476,6 @@ const app = {
 
                     if(sport === 'soccer') {
                         this.loadStandings(sport, league.slug);
-                        this.renderFeaturedPlayers(resLeaders);
                     } else {
                          standingsContainer.innerHTML = '<p class="text-gray-500 text-center p-8 col-span-full">Tabela não disponível para este esporte.</p>';
                     }
@@ -453,6 +483,100 @@ const app = {
                 } catch(e) {
                     document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar.</p>';
                 }
+            },
+
+            async loadOlympicEvents() {
+                const grid = document.getElementById('matches-grid');
+                grid.innerHTML = '<div class="text-center text-gray-500 py-10">Carregando eventos olímpicos...</div>';
+                try {
+                    const res = await fetch('https://apis.codante.io/olympic-games/events');
+                    const data = await res.json();
+                    this.renderOlympicEvents(data.data || []);
+                } catch (e) {
+                    grid.innerHTML = '<p class="text-center text-red-500">Erro ao carregar eventos olímpicos.</p>';
+                }
+            },
+
+            async loadOlympicMedalTable() {
+                const container = document.getElementById('standings-container');
+                container.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Carregando quadro de medalhas...</p>';
+                try {
+                    const res = await fetch('https://apis.codante.io/olympic-games/countries');
+                    const data = await res.json();
+                    this.renderOlympicMedalTable(data.data || []);
+                } catch (e) {
+                    container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Não foi possível carregar o quadro de medalhas.</p>';
+                }
+            },
+
+            renderOlympicEvents(events) {
+                const grid = document.getElementById('matches-grid');
+                grid.innerHTML = '';
+                if (!events.length) {
+                    grid.innerHTML = '<p class="text-center text-gray-500">Sem eventos olímpicos hoje.</p>';
+                    return;
+                }
+
+                events.forEach(ev => {
+                    if (ev.competitors.length < 2) return;
+
+                    const home = ev.competitors.find(c => c.position === 0) || ev.competitors[0];
+                    const away = ev.competitors.find(c => c.position === 1) || ev.competitors[1];
+                    const status = ev.is_live ? 'AO VIVO' : ev.status;
+                    const matchName = ev.detailed_event_name || ev.event_name || 'Evento Olímpico';
+
+                    const card = document.createElement('div');
+                    card.className = 'match-card theme-olympics';
+
+                    card.innerHTML = `
+                        <div class="tv-scoreboard">
+                            <div class="tv-logo-box"><img src="${ev.discipline_pictogram}"></div>
+                            <div class="tv-team-box text-right"><span class="truncate">${home.competitor_name}</span><img src="${home.country_flag_url}" class="w-8 h-8 object-cover rounded-full ml-2"></div>
+                            <div class="tv-score-box">${home.result_mark || 0} - ${away.result_mark || 0}</div>
+                            <div class="tv-team-box text-left"><img src="${away.country_flag_url}" class="w-8 h-8 object-cover rounded-full mr-2"><span class="truncate">${away.competitor_name}</span></div>
+                            <div class="tv-time-box">
+                                <div class="match-timer-main">${status}</div>
+                            </div>
+                        </div>
+                        <div class="match-footer"><span>${matchName}</span><span>${ev.venue_name || ''}</span></div>
+                    `;
+                    grid.appendChild(card);
+                });
+            },
+
+            renderOlympicMedalTable(countries) {
+                const container = document.getElementById('standings-container');
+                container.innerHTML = '';
+
+                const tableHtml = `
+                    <div class="bg-[#1a1b1e] rounded-xl border border-[#333] overflow-hidden h-fit col-span-full medal-table">
+                        <div class="p-3 bg-white/5">
+                            <h3 class="text-base font-bold text-white">Quadro de Medalhas</h3>
+                        </div>
+                        <div class="flex text-[10px] text-gray-500 px-2 py-2 border-b border-[#333] uppercase font-bold">
+                            <span class="w-8 text-center">#</span>
+                            <span class="flex-1 px-2">País</span>
+                            <span class="w-8 text-center" title="Ouro">🥇</span>
+                            <span class="w-8 text-center" title="Prata">🥈</span>
+                            <span class="w-8 text-center" title="Bronze">🥉</span>
+                            <span class="w-10 text-center font-bold">Total</span>
+                        </div>
+                        ${countries.map(c => `
+                            <div class="flex items-center px-2 py-2 border-b border-[#333] hover:bg-white/5 text-sm">
+                                <span class="w-8 text-center font-bold">${c.rank}</span>
+                                <div class="flex-1 px-2 country-cell">
+                                    <img src="${c.flag_url}" alt="${c.name}">
+                                    <span class="font-semibold text-white truncate">${c.name}</span>
+                                </div>
+                                <span class="w-8 text-center gold font-semibold">${c.gold_medals}</span>
+                                <span class="w-8 text-center silver font-semibold">${c.silver_medals}</span>
+                                <span class="w-8 text-center bronze font-semibold">${c.bronze_medals}</span>
+                                <span class="w-10 text-center font-bold text-white">${c.total_medals}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.innerHTML = tableHtml;
             },
 
             /* --- RENDER MATCHES (TV STYLE) --- */
@@ -469,13 +593,17 @@ const app = {
                 const lKey = this.state.currentLeague;
                 let themeClass = 'theme-brasileirao'; // Default
                 
-                if (lKey.includes('libertadores')) themeClass = 'theme-libertadores';
+                if (lKey.includes('brasileiraob')) themeClass = 'theme-brasileiraob';
+                else if (lKey.includes('libertadores')) themeClass = 'theme-libertadores';
                 else if (lKey.includes('champions')) themeClass = 'theme-champions';
                 else if (lKey.includes('premier')) themeClass = 'theme-premier';
                 else if (lKey.includes('laliga')) themeClass = 'theme-laliga';
                 else if (lKey.includes('bundesliga')) themeClass = 'theme-bundesliga';
                 else if (lKey.includes('seriea')) themeClass = 'theme-seriea';
                 else if (lKey.includes('saudi')) themeClass = 'theme-saudi';
+                else if (lKey.includes('argentina')) themeClass = 'theme-argentina';
+                else if (lKey.includes('eredivisie')) themeClass = 'theme-eredivisie';
+                else if (lKey.includes('olympics')) themeClass = 'theme-olympics';
                 else if (lKey.includes('sulamericana')) themeClass = 'theme-sulamericana';
 
                 events.forEach(ev => {
@@ -486,6 +614,7 @@ const app = {
                     const isLive = status.type.state === 'in';
                     let aggText = '';
                     if(comp.series && comp.series.summary) aggText = `<div class="tv-time-agg">${comp.series.summary}</div>`;
+                    const matchName = ev.name.replace(' em ', ' VS ');
 
                     const card = document.createElement('div');
                     card.className = `match-card ${themeClass}`;
@@ -503,7 +632,7 @@ const app = {
                                 ${aggText}
                             </div>
                         </div>
-                        <div class="match-footer"><span>${ev.name}</span><span>${comp.venue?.fullName || ''}</span></div>
+                        <div class="match-footer"><span>${matchName}</span><span>${comp.venue?.fullName || ''}</span></div>
                     `;
                     grid.appendChild(card);
 
@@ -613,43 +742,6 @@ const app = {
                             <img src="${n.images[0].url}">
                             <div class="news-overlay"><h3 class="text-white font-bold text-lg leading-tight group-hover:text-[#d1ff4d]">${n.headline}</h3></div>
                         </a>
-                    `;
-                });
-            },
-
-            renderFeaturedPlayers(data) {
-                const grid = document.getElementById('featured-players-grid');
-                if (!grid) return;
-                grid.innerHTML = '';
-
-                if (!data || !data.leaderboard || !data.leaderboard.leaders) {
-                    grid.innerHTML = '<p class="text-center text-gray-500 col-span-full py-10">Jogadores em destaque não disponíveis para esta liga.</p>';
-                    return;
-                }
-
-                const leaders = data.leaderboard.leaders.slice(0, 12); // Top 12
-
-                leaders.forEach((p, index) => {
-                    const player = p.athlete;
-                    const team = p.team;
-                    const rank = index + 1;
-
-                    grid.innerHTML += `
-                        <div class="player-card rank-${rank}">
-                            <span class="rank">${rank}</span>
-                            <img src="${player.headshot?.href || 'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png&w=110&h=110'}" class="player-img">
-                            <div class="flex-1 min-w-0">
-                                <div class="font-bold text-white truncate">${player.displayName}</div>
-                                <div class="text-xs text-gray-400 flex items-center gap-2">
-                                    <img src="${team.logo}" class="team-logo">
-                                    <span>${player.position.abbreviation}</span>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="stat-value">${p.value}</div>
-                                <div class="stat-label">${data.leaderboard.displayName}</div>
-                            </div>
-                        </div>
                     `;
                 });
             },

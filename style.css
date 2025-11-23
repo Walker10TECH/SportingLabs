@@ -2,7 +2,7 @@
     --bg-app: #0e0e10;
     --bg-card: #1a1b1e;
     --bg-header: rgba(14, 14, 16, 0.95);
-    --accent-green: #b4f500;
+    --accent-green: #a7db18;
     --text-primary: #ffffff;
     --text-secondary: #8b9bb4;
     --border-color: #2a2c33;
@@ -64,6 +64,12 @@ body {
 .theme-brasileirao .tv-score-box { background-color: #000000; color: #ffffff; min-width: 90px; } 
 .theme-brasileirao .tv-time-box { background-color: #ccff00; color: #000000; }
 
+/* --- TEMA BRASILEIRÃO SÉRIE B --- */
+.theme-brasileiraob .tv-scoreboard { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
+.theme-brasileiraob .tv-logo-box { background: #fff; }
+.theme-brasileiraob .tv-score-box { background-color: rgba(255,255,255,0.1); }
+.theme-brasileiraob .tv-time-box { background-color: #00ff85; color: #003366; }
+
 /* --- TEMA LIBERTADORES (Conmebol Dark) --- */
 .theme-libertadores .tv-scoreboard { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
 .theme-libertadores .tv-logo-box { background: #111; }
@@ -101,9 +107,43 @@ body {
 .theme-seriea .tv-scoreboard { background-color: #00458c; color: #ffffff; }
 .theme-seriea .tv-time-box { background-color: rgba(0,0,0,0.3); }
 
-/* --- TEMA SAUDITA --- */
-.theme-saudi .tv-scoreboard { background: linear-gradient(90deg, #006400, #004d00); color: white; }
-.theme-saudi .tv-time-box { background-color: rgba(255,255,255,0.2); }
+/* --- TEMA SAUDITA (Roshn League) --- */
+.theme-saudi .tv-scoreboard { background-color: #ffffff; color: #003d20; border-bottom: 2px solid #e5e5e5; }
+.theme-saudi .tv-logo-box { background: #f0f0f0; border-right: 1px solid #e5e5e5; }
+.theme-saudi .tv-score-box { background-color: #003d20; color: #ffffff; }
+.theme-saudi .tv-time-box { background-color: #00b140; color: #ffffff; }
+
+/* --- TEMA ARGENTINA --- */
+.theme-argentina .tv-scoreboard { background: linear-gradient(90deg, #75aadb 0%, #ffffff 100%); color: #0d2c4c; border-bottom: 2px solid #75aadb; }
+.theme-argentina .tv-logo-box { background: #fff; }
+.theme-argentina .tv-score-box { background-color: #0d2c4c; color: #ffffff; }
+.theme-argentina .tv-time-box { background-color: #0d2c4c; color: #ffffff; }
+
+/* --- TEMA EREDIVISIE (HOLANDÊS) --- */
+.theme-eredivisie .tv-scoreboard { background-color: #e30613; color: #ffffff; }
+.theme-eredivisie .tv-logo-box { background: #fff; }
+.theme-eredivisie .tv-score-box { background-color: #ffffff; color: #000000; }
+.theme-eredivisie .tv-time-box { background-color: #000000; color: #ffffff; }
+
+/* --- TEMA OLIMPÍADAS --- */
+.theme-olympics .tv-scoreboard { background: linear-gradient(135deg, #0077c8, #005a9a); color: white; border-bottom: 3px solid #f4c300; }
+.theme-olympics .tv-logo-box { background: #fff; }
+.theme-olympics .tv-score-box { background-color: rgba(0,0,0,0.2); font-size: 1.5rem; }
+.theme-olympics .tv-time-box { background-color: #f4c300; color: #005a9a; }
+.theme-olympics .tv-team-box img { border: 1px solid #eee; }
+
+/* Medal Table */
+.medal-table .gold { color: #ffd700; }
+.medal-table .silver { color: #c0c0c0; }
+.medal-table .bronze { color: #cd7f32; }
+.medal-table .country-cell { display: flex; align-items: center; gap: 8px; }
+.medal-table .country-cell img { width: 24px; border: 1px solid #444; }
+
+/* --- TEMA COPA AMÉRICA --- */
+.theme-copaamerica .tv-scoreboard { background: linear-gradient(90deg, #00387b, #005c31); color: white; border-bottom: 3px solid #fdd116; }
+.theme-copaamerica .tv-logo-box { background: #fff; }
+.theme-copaamerica .tv-score-box { background-color: rgba(0,0,0,0.2); }
+.theme-copaamerica .tv-time-box { background-color: #fdd116; color: #00387b; }
 
 /* Match Info Footer */
 .match-footer {
@@ -223,6 +263,14 @@ body {
 .timeline-item { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; }
 .timeline-time { font-weight: bold; color: #888; width: 40px; text-align: right; }
 .timeline-text { color: white; }
+
+/* Modal Tabs */
+.modal-tab-btn {
+    padding: 0 4px 12px 4px; font-weight: 600; border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+.modal-tab-btn.active { color: var(--text-primary); border-bottom-color: var(--accent-green); }
+.modal-tab-btn.inactive { color: var(--text-secondary); }
 
 /* Tables */
 .std-row { display: flex; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; align-items: center; }

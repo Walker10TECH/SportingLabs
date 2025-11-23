@@ -14,6 +14,38 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* Transitions and Animations */
+        @keyframes goal-flash {
+            0% {
+                transform: scale(1);
+                color: #fff;
+                text-shadow: none;
+            }
+            50% {
+                transform: scale(1.4);
+                color: #d1ff4d;
+                text-shadow: 0 0 20px #d1ff4d, 0 0 30px #d1ff4d;
+            }
+            100% {
+                transform: scale(1);
+                color: #fff;
+                text-shadow: none;
+            }
+        }
+
+        @keyframes event-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .goal-animation { animation: goal-flash 0.8s ease-in-out; }
+        .event-animation { animation: event-fade-in 0.5s ease forwards; }
+
         .modal-overlay {
             transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
         }
@@ -176,11 +208,6 @@
                 <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <section id="view-featured-players" class="hidden">
-                <div class="section-title">Jogadores em Destaque</div>
-                <div id="featured-players-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </section>
-
             <section id="view-clubs" class="hidden">
                 <div class="section-title">Clubes</div>
                 <div class="relative w-full mb-4">
@@ -213,7 +240,11 @@
                         <h2 id="modal-home" class="text-base md:text-lg font-bold text-white text-center">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span id="modal-score" class="text-4xl md:text-5xl font-black text-white tracking-tighter">0-0</span>
+                        <div id="modal-score" class="flex items-center justify-center text-4xl md:text-5xl font-black text-white tracking-tighter">
+                           <span id="modal-score-home">0</span>
+                           <div class="tv-score-divider text-2xl md:text-3xl mx-2 opacity-50"></div>
+                           <span id="modal-score-away">0</span>
+                        </div>
                         <span id="modal-status" class="text-[#d1ff4d] font-bold uppercase text-sm mt-1">LIVE</span>
                         <div id="modal-pk-score" class="text-gray-400 text-xs mt-1 hidden"></div>
                         <div id="modal-agg-score" class="bg-gray-800 text-white px-2 py-0.5 rounded text-[10px] md:text-xs mt-2 hidden">AGG 0-0</div>
@@ -232,7 +263,7 @@
                 </div>
 
                 <div id="match-tab-timeline">
-                    <div id="timeline-container"></div>
+                    <div id="timeline-container" class="space-y-4"></div>
                 </div>
 
                 <div id="match-tab-stats" class="hidden">
