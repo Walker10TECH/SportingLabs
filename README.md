@@ -35,7 +35,7 @@ Abaixo, algumas telas que demonstram as principais funcionalidades e a interface
 
 *   **Placares ao Vivo:** Acompanhe os resultados dos jogos em tempo real, com atualizações automáticas de placar e animações de gol.
 *   **Classificação Dinâmica:** Tabelas de classificação que se atualizam ao vivo conforme os resultados das partidas em andamento.
-*   **Cobertura Ampla:** Suporte para múltiplos esportes e dezenas de ligas, incluindo Brasileirão (A e B), Premier League, La Liga, Champions League, Libertadores, NBA, NFL e eventos especiais como as Olimpíadas.
+*   **Cobertura Ampla:** Suporte para múltiplos esportes e dezenas de ligas, incluindo Brasileirão (A e B), Premier League, La Liga, Champions League, Libertadores, NBA e NFL!
 *   **Notícias Esportivas:** Acesse as últimas notícias relacionadas a cada liga, diretamente da ESPN.
 *   **Detalhes da Partida:** Explore a linha do tempo de cada jogo com os principais eventos (gols, cartões, substituições) e estatísticas comparativas (posse de bola, finalizações, etc.).
 *   **Informações de Clubes:** Navegue pelos times de cada liga, visualize seus elencos e mergulhe na história de cada clube com artigos integrados da Wikipedia.

@@ -79,9 +79,16 @@ const app = {
                     dateFormat: "d/m/Y",
                     defaultDate: "today",
                     locale: "pt",
+                    static: true, // Garante que o calendário apareça abaixo do input
                     onChange: (selectedDates) => {
                         if (selectedDates[0]) {
                             this.changeDate(selectedDates[0]);
+                        }
+                    },
+                    onOpen: (selectedDates, dateStr, instance) => {
+                        const themeClass = this.getThemeClassForLeague();
+                        if (themeClass) {
+                            instance.calendarContainer.classList.add(themeClass);
                         }
                     }
                 });
@@ -1041,10 +1048,17 @@ const app = {
                     const total = numH+numA;
                     const pct = total > 0 ? (numH/total)*100 : 50;
                     
+                    let statLabel = s.label;
+                    if (s.label.toLowerCase() === 'gols') {
+                        statLabel = `<div class="flex items-center justify-center gap-2">${s.label} <img src="https://e7.pngegg.com/pngimages/746/955/png-clipart-football-goal-futsal-soccer-white-and-black-soccer-ball-on-net-angle-happy-birthday-vector-images.png" class="w-4 h-4"></div>`;
+                    } else {
+                        statLabel = `<span>${s.label}</span>`;
+                    }
+
                     // Adiciona um ID único para a barra para poder animá-la
                     cont.innerHTML += `
                         <div class="mb-4">
-                            <div class="flex justify-between text-xs text-gray-400 font-bold mb-1 uppercase"><span>${valH}</span><span>${s.label}</span><span>${valA}</span></div>
+                            <div class="flex justify-between items-center text-xs text-gray-400 font-bold mb-1 uppercase"><span>${valH}</span>${statLabel}<span>${valA}</span></div>
                             <div class="flex h-2 bg-gray-800 rounded-full overflow-hidden">
                                 <div class="stat-bar-home" style="width: 0%; background-color: ${teamColor}; transition: width 0.7s ease-out;" data-pct="${pct}"></div>
                                 <div class="bg-gray-600 flex-1"></div>
