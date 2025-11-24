@@ -102,6 +102,12 @@ body {
 .theme-libertadores .tv-score-box { background-color: #1a1a1a; color: #ffffff; border-left: 1px solid #333; border-right: 1px solid #333; }
 .theme-libertadores .tv-time-box { background-color: #d4af37; color: #000000; }
 
+/* --- TEMA MUNDIAL DE CLUBES (Preto, Cinza, Dourado) --- */
+.theme-mundial-de-clubes .tv-scoreboard { background: linear-gradient(to bottom, #222222, #000000); color: #ffffff; border-bottom: 3px solid #d4af37; }
+.theme-mundial-de-clubes .tv-logo-box { background: #111; }
+.theme-mundial-de-clubes .tv-score-box { background-color: #1a1a1a; color: #ffffff; border-left: 1px solid #333; border-right: 1px solid #333; }
+.theme-mundial-de-clubes .tv-time-box { background-color: #d4af37; color: #000000; }
+
 /* --- TEMA SULAMERICANA --- */
 .theme-sulamericana .tv-scoreboard { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
 .theme-sulamericana .tv-score-box { background-color: rgba(255,255,255,0.1); }
@@ -186,6 +192,7 @@ body {
 .standings-group-header { background-color: rgba(255,255,255,0.05); }
 .theme-brasileirao .standings-group-header { background: linear-gradient(to bottom, #ffffff, #f0f0f0); }
 .theme-brasileirao .standings-group-header span { color: #000; }
+.theme-mundial-de-clubes .standings-group-header { background: linear-gradient(to bottom, #1a1a1a, #000000); border-bottom: 3px solid #d4af37; }
 .theme-brasileiraob .standings-group-header { background: linear-gradient(90deg, #003366, #004080); border-bottom: 3px solid #00ff85; }
 .theme-libertadores .standings-group-header { background: linear-gradient(to bottom, #1a1a1a, #000000); border-bottom: 3px solid #d4af37; }
 .theme-sulamericana .standings-group-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); border-bottom: 3px solid #a0a0a0; }
@@ -342,6 +349,9 @@ body {
 .modal-content.theme-libertadores .modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
 .modal-content.theme-libertadores #modal-score { background-color: #1a1a1a; padding: 4px 12px; border-radius: 6px; }
 
+.modal-content.theme-mundial-de-clubes .modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
+.modal-content.theme-mundial-de-clubes #modal-score { background-color: #1a1a1a; padding: 4px 12px; border-radius: 6px; }
+
 .modal-content.theme-sulamericana .modal-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
 .modal-content.theme-sulamericana #modal-score { background-color: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 6px; }
 
@@ -375,6 +385,7 @@ body {
 /* Club Modal Header Themes */
 .modal-content.theme-brasileirao .club-modal-header { background-color: #ffffff; color: #000000; }
 .modal-content.theme-brasileiraob .club-modal-header { background: linear-gradient(90deg, #003366, #004080); color: white; border-bottom: 3px solid #00ff85; }
+.modal-content.theme-mundial-de-clubes .club-modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
 .modal-content.theme-libertadores .club-modal-header { background-color: #000000; color: #ffffff; border-bottom: 3px solid #d4af37; }
 .modal-content.theme-sulamericana .club-modal-header { background: linear-gradient(90deg, #0a1e40 0%, #000000 100%); color: #ffffff; border-bottom: 3px solid #a0a0a0; }
 .modal-content.theme-champions .club-modal-header { background: linear-gradient(135deg, #001c55, #043496); color: #ffffff; }

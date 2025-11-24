@@ -13,7 +13,10 @@ const app = {
                 sports: {},
                 previousStandings: {}, // Para a animação da tabela
                 isFirstStandingsRender: true, // Para evitar animação na primeira carga
-                liveStandingsData: null // Para a classificação ao vivo
+                liveStandingsData: null, // Para a classificação     ao vivo
+                apiConfig: {
+                    espnBase: 'https://site.api.espn.com/apis',
+                }
             },
             proxy: 'https://corsproxy.io/?',
 
@@ -226,7 +229,7 @@ const app = {
                 });
 
                 // Update active states
-                ['matches', 'standings', 'news', 'clubs', 'players'].forEach(type => {
+                ['matches', 'standings', 'news', 'clubs'].forEach(type => {
                     const mobBtn = document.getElementById('mob-'+type);
                     const deskBtn = document.getElementById('desk-'+type);
                     
@@ -276,16 +279,6 @@ const app = {
                     document.getElementById('bg-wrapper').style.backgroundImage = `url('${league.bg}')`;
                 }
                 
-                document.getElementById('matches-grid').innerHTML = '<div class="text-center text-gray-500 py-10">Carregando jogos...</div>';
-                
-                const viewStandings = document.getElementById('view-standings');
-                let standingsContainer = document.getElementById('standings-container');
-
-                if (!standingsContainer) {
-                     viewStandings.innerHTML = '<div class="section-title">Tabela de Classificação</div><div id="standings-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>';
-                     standingsContainer = document.getElementById('standings-container');
-                }
-
                 if (sport === 'olympics') {
                     this.loadOlympicEvents();
                     this.loadOlympicMedalTable();
@@ -293,49 +286,74 @@ const app = {
                     return;
                 }
 
+                // Limpa os dados da grade de partidas
+                document.getElementById('matches-grid').innerHTML = '<div class="text-center text-gray-500 py-10">Carregando jogos...</div>';
+
+                // Limpa os dados da tabela de classificação
+                let standingsContainer = document.getElementById('standings-container');
+                if (!standingsContainer) {
+                    const viewStandings = document.getElementById('view-standings');
+                    viewStandings.innerHTML = '<div class="section-title">Tabela de Classificação</div><div id="standings-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>';
+                    standingsContainer = document.getElementById('standings-container');
+                }
+                if (standingsContainer) {
+                    standingsContainer.innerHTML = '<div class="text-center text-gray-500 py-10 col-span-full">Carregando tabela...</div>';
+                }
+
                 try {
                     const formattedDate = this.formatDateForAPI(this.state.currentDate);
                     const today = new Date();
                     const isToday = this.state.currentDate.toDateString() === today.toDateString();
-
-                    // Atualiza o título da data
+                    
                     const dateTitle = document.getElementById('matches-date-title');
                     if (isToday) {
                         dateTitle.textContent = 'Jogos de Hoje';
                     } else {
                         dateTitle.textContent = `Jogos de ${this.state.currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}`;
                     }
+                    
+                    // Carrega notícias (apenas da ESPN por enquanto)
+                    this.loadNews(sport, league.slug);
 
-                    const url = `${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}`;
-                    const [resScore, resNews] = await Promise.all([
-                        fetch(`${url}/scoreboard?lang=pt&region=${this.state.region}&dates=${formattedDate}`).then(r=>r.json()),
-                        fetch(`${url}/news?lang=pt&region=${this.state.region}`).then(r=>r.json())
-                    ]);
-
-                    this.renderMatches(resScore.events || []);
-                    this.renderNews(resNews.articles || []);
-
-                    if(sport === 'soccer') {
-                        // Só atualiza automaticamente se a data selecionada for hoje
-                        if (isToday) {
-                            this.state.matchRefreshInterval = setInterval(() => {
-                                this.updateScores(sport, league.slug);
-                            }, 20000); // Atualiza a cada 20 segundos
-
-                            this.state.scoreboardRefreshInterval = setInterval(() => {
-                                this.loadLeague(this.state.currentLeague, false);
-                            }, 60000); // Atualiza a lista de jogos a cada 60 segundos
-                        } else {
-                            if (this.state.matchRefreshInterval) clearInterval(this.state.matchRefreshInterval);
-                        }
-
-                        this.loadStandings(sport, league.slug);
-                    } else {
-                         standingsContainer.innerHTML = '<p class="text-gray-500 text-center p-8 col-span-full">Tabela não disponível para este esporte.</p>';
-                    }
+                    // Carrega placar e classificação com fallback
+                    this.loadScoreboardWithFallback(sport, league, formattedDate, isToday);
+                    this.loadStandings(sport, league);
 
                 } catch(e) {
-                    document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar.</p>';
+                    document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar a liga.</p>';
+                    console.error("Erro fatal ao carregar a liga:", e);
+                }
+            },
+
+            async loadNews(sport, leagueSlug) {
+                try {
+                    const url = `${this.proxy}${this.state.apiConfig.espnBase}/site/v2/sports/${sport}/${leagueSlug}/news?lang=pt&region=${this.state.region}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    this.renderNews(data.articles || []);
+                } catch (e) {
+                    console.warn("Não foi possível carregar notícias da ESPN.", e);
+                    this.renderNews([]); // Limpa a seção de notícias em caso de erro
+                }
+            },
+
+            async loadScoreboardWithFallback(sport, league, formattedDate, isToday) {
+                const espnUrl = `${this.proxy}${this.state.apiConfig.espnBase}/site/v2/sports/${sport}/${league.slug}/scoreboard?lang=pt&region=${this.state.region}&dates=${formattedDate}`;
+
+                try {
+                    const res = await fetch(espnUrl);
+                    if (!res.ok) throw new Error(`ESPN scoreboard failed with status: ${res.status}`);
+                    const data = await res.json();
+                    this.renderMatches(data.events || []);
+
+                    if (sport === 'soccer' && isToday) {
+                        this.state.matchRefreshInterval = setInterval(() => this.updateScores(sport, league.slug), 20000);
+                        this.state.scoreboardRefreshInterval = setInterval(() => this.loadLeague(this.state.currentLeague, false), 60000);
+                    }
+
+                } catch (e) {
+                    console.error("Falha ao carregar jogos da ESPN.", e);
+                    document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar os jogos. Tente novamente mais tarde.</p>';
                 }
             },
 
@@ -447,6 +465,7 @@ const app = {
                 if (lKey.includes('argentina')) return 'theme-argentina';
                 if (lKey.includes('eredivisie')) return 'theme-eredivisie';
                 if (lKey.includes('olympics')) return 'theme-olympics';
+                if (lKey.includes('mundial-de-clubes')) return 'theme-mundial-de-clubes';
                 if (lKey.includes('sulamericana')) return 'theme-sulamericana';
                 
                 return 'theme-brasileirao'; // Default
@@ -546,26 +565,33 @@ const app = {
                 } catch (e) { console.error("Erro ao atualizar placares:", e); }
             },
 
-            async loadStandings(sport, slug) {
+            async loadStandings(sport, league) {
                 const container = document.getElementById('standings-container');
                 if(!container) return;
 
                 container.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Carregando tabela...</p>';
                 
                 try {
-                    const res = await fetch(`${this.proxy}https://site.api.espn.com/apis/v2/sports/${sport}/${slug}/standings?lang=pt`);
-                    const data = await res.json();
-                    
-                    if (data.children && data.children.length > 0) {
-                        this.renderStandingsTable(data.children);
-                        this.state.liveStandingsData = data.children; // Armazena os dados para atualização ao vivo
-                        this.renderClubs(data.children);
-                    } else {
+                    const res = await fetch(`${this.proxy}https://site.api.espn.com/apis/v2/sports/${sport}/${league.slug}/standings?lang=pt`);
+                    if (!res.ok) throw new Error(`ESPN standings failed with status: ${res.status}`);
+                    const data = await res.json();                    
+                    this.handleStandingsResponse(data.children);
+                } catch (e) {
+                    console.error('Falha ao carregar a tabela da ESPN.', e);
+                    container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Não foi possível carregar a tabela.</p>';
+                }
+            },
+
+            handleStandingsResponse(standingsData) {
+                const container = document.getElementById('standings-container');
+                if (standingsData && standingsData.length > 0) {
+                    this.renderStandingsTable(standingsData);
+                    this.state.liveStandingsData = standingsData;
+                    this.renderClubs(standingsData);
+                } else {
+                    if (container) {
                         container.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Classificação indisponível no momento.</p>';
                     }
-                } catch(e) {
-                    console.error('Erro standings:', e);
-                    container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Não foi possível carregar a tabela.</p>';
                 }
             },
 
@@ -674,6 +700,7 @@ const app = {
                 this.state.isFirstStandingsRender = false;
                 this.state.liveStandingsData = children; // Garante que os dados ao vivo estão sempre sincronizados
             },
+
 
             renderNews(articles) {
                 const grid = document.getElementById('news-grid');
@@ -850,7 +877,7 @@ const app = {
 
                 // Limpa temas antigos e aplica o novo
                 if (modalContent) {
-                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana'];
+                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana', 'theme-mundial-de-clubes'];
                     modalContent.classList.remove(...themes);
                     modalContent.classList.add(themeClass);
                 }
@@ -1164,7 +1191,7 @@ const app = {
 
                 // Limpa temas antigos e aplica o novo
                 if (modalContent) {
-                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana'];
+                    const themes = ['theme-brasileirao', 'theme-brasileiraob', 'theme-libertadores', 'theme-champions', 'theme-premier', 'theme-laliga', 'theme-bundesliga', 'theme-seriea', 'theme-saudi', 'theme-argentina', 'theme-eredivisie', 'theme-olympics', 'theme-sulamericana', 'theme-mundial-de-clubes'];
                     modalContent.classList.remove(...themes);
                     modalContent.classList.add(themeClass);
                 }
@@ -1189,7 +1216,7 @@ const app = {
                 this.setClubTabStyles();
                 
                 if(tab === 'history') {
-                    const wikiTerm = this.state.teamWikiDb[this.state.currentLeague]?.[this.state.currentClubName] || this.state.currentClubName;
+                    const wikiTerm = this.state.teamWikiDb[this.state.currentLeague]?.[this.state.currentClubName] || this.state.teamWikiDb['mundial-de-clubes']?.[this.state.currentClubName] || this.state.currentClubName;
                      this.openWiki(wikiTerm, 'club-view-history');
                 }
 
@@ -1289,7 +1316,7 @@ const app = {
 
                 // 5. Renderiza a tabela novamente com os dados atualizados
                 this.renderStandingsTable(this.state.liveStandingsData);
-            }
+            },
         };
 
         document.addEventListener('DOMContentLoaded', () => app.init());

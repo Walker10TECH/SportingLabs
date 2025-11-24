@@ -455,4 +455,38 @@
         "Quilmes": "Quilmes_Atlético_Club",
         "Ferro Carril Oeste": "Club_Ferro_Carril_Oeste"
     }
+    ,
+    "mundial-de-clubes": {
+        "Al-Ain": "Al-Ain_FC",
+        "Al-Hilal": "Al-Hilal_SFC",
+        "Urawa Red Diamonds": "Urawa_Red_Diamonds",
+        "Ulsan HD": "Ulsan_HD_FC",
+        "Al Ahly": "Al_Ahly_SC",
+        "Wydad AC": "Wydad_AC",
+        "Espérance de Tunis": "Espérance_Sportive_de_Tunis",
+        "Mamelodi Sundowns": "Mamelodi_Sundowns_F.C.",
+        "Monterrey": "Club_de_Fútbol_Monterrey",
+        "Seattle Sounders FC": "Seattle_Sounders_FC",
+        "Club León": "Club_León",
+        "Pachuca": "C.F._Pachuca",
+        "Palmeiras": "Sociedade_Esportiva_Palmeiras",
+        "Flamengo": "Clube_de_Regatas_do_Flamengo",
+        "Fluminense": "Fluminense_Football_Club",
+        "River Plate": "Club_Atlético_River_Plate",
+        "Boca Juniors": "Club_Atlético_Boca_Juniors",
+        "Chelsea": "Chelsea_F.C.",
+        "Real Madrid": "Real_Madrid_Club_de_Fútbol",
+        "Manchester City": "Manchester_City_F.C.",
+        "Bayern Munich": "Fußball-Club_Bayern_München",
+        "Paris Saint-Germain": "Paris_Saint-Germain_Football_Club",
+        "Inter": "Football_Club_Internazionale_Milano",
+        "FC Porto": "Futebol_Clube_do_Porto",
+        "Benfica": "Sport_Lisboa_e_Benfica",
+        "Borussia Dortmund": "Ballspielverein_Borussia_09_e._V._Dortmund",
+        "Juventus": "Juventus_Football_Club",
+        "Atlético Madrid": "Club_Atlético_de_Madrid",
+        "FC Red Bull Salzburg": "FC_Red_Bull_Salzburg",
+        "Auckland City": "Auckland_City_FC",
+        "Oakland Roots": "Oakland_Roots_SC"
+    }
 }
