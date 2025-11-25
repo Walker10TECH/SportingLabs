@@ -12,13 +12,9 @@ const app = {
                 teamWikiDb: {},
                 sports: {},
                 previousStandings: {}, // Para a animação da tabela
-                isFirstStandingsRender: true, // Para evitar animação na primeira carga
-                liveStandingsData: null, // Para a classificação     ao vivo
-                apiConfig: {
-                    espnBase: 'https://site.api.espn.com/apis',
-                }
+                isFirstStandingsRender: true, // Para evitar animação na primeira carga 
+                liveStandingsData: null // Para a classificação ao vivo
             },
-            proxy: 'https://corsproxy.io/?',
 
             async init() {
                 try {
@@ -27,6 +23,7 @@ const app = {
                         this.loadTeamWikiDb(),
                         this.loadSportsDb()
                     ]);
+                this._loadAdSenseScript(); // Carrega o script do Google AdSense
                     this.renderNav();
                     this.loadLeague(this.state.currentLeague);
                 } catch(e) { console.log(e); }
@@ -35,6 +32,15 @@ const app = {
                     lucide.createIcons();
                     this.setupEvents();
                 }
+            },
+
+            _loadAdSenseScript() {
+                const script = document.createElement('script');
+                script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5064368958997852';
+                script.async = true;
+                script.crossOrigin = 'anonymous';
+                document.head.appendChild(script);
+                console.log('Script do Google AdSense carregado dinamicamente.');
             },
 
             async loadTeamWikiDb() {
@@ -218,19 +224,19 @@ const app = {
 
             setView(v) {
                 this.state.view = v;
-                ['matches', 'standings', 'news', 'clubs', 'wiki'].forEach(id => {
+                ['matches', 'standings', 'news', 'scorers', 'clubs', 'wiki'].forEach(id => {
                     document.getElementById('view-'+id).classList.toggle('hidden', id !== v);
                     if (id === 'clubs') this.addWikiFilterToggle(); // Adiciona o toggle se não existir
                 });
 
                 // Garante que as abas olímpicas ocultas não sejam selecionadas
-                if (this.state.currentSport === 'olympics' && (v === 'news' || v === 'clubs')) {
+                if (this.state.currentSport === 'olympics' && ['news', 'clubs', 'scorers'].includes(v)) {
                     this.setView('matches');
                     return; // Impede a re-renderização da aba errada
                 }
 
                 // Ajusta a visibilidade dos botões de navegação
-                ['matches', 'standings', 'news', 'clubs'].forEach(type => {
+                ['matches', 'standings', 'news', 'scorers', 'clubs'].forEach(type => {
                     const mobBtn = document.getElementById('mob-' + type);
                     if (mobBtn) mobBtn.style.display = (this.state.currentSport === 'olympics' && (type === 'news' || type === 'clubs')) ? 'none' : 'flex';
                 });
@@ -265,6 +271,12 @@ const app = {
                 const sport = this.state.currentSport;
                 const league = this.state.sports[sport].leagues[key];
 
+                if (!league.slug) {
+                    console.error(`Erro de configuração: O 'slug' da liga '${league.name}' (chave: ${key}) não foi encontrado em sports-db.json.`);
+                    document.getElementById('matches-grid').innerHTML = `<p class="text-center text-red-500">Erro de configuração para esta liga. Verifique o console.</p>`;
+                    return;
+                }
+
                 // Limpa o intervalo de atualização anterior
                 if (this.state.matchRefreshInterval) clearInterval(this.state.matchRefreshInterval);
                 this.state.matchRefreshInterval = null;
@@ -274,7 +286,7 @@ const app = {
 
 
                 // Controla a visibilidade das abas de desktop
-                const olympicsSelected = sport === 'olympics';
+                const olympicsSelected = sport === 'olympics' || !['soccer', 'football'].includes(sport);
                 ['desk-news', 'desk-clubs'].forEach(id => {
                     const btn = document.getElementById(id);
                     if(btn) btn.style.display = olympicsSelected ? 'none' : 'flex';
@@ -325,6 +337,7 @@ const app = {
                     // Carrega placar e classificação com fallback
                     this.loadScoreboardWithFallback(sport, league, formattedDate, isToday);
                     this.loadStandings(sport, league);
+                    this.loadScorers(sport, league.slug);
 
                 } catch(e) {
                     document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar a liga.</p>';
@@ -334,18 +347,22 @@ const app = {
 
             async loadNews(sport, leagueSlug) {
                 try {
-                    const url = `${this.proxy}${this.state.apiConfig.espnBase}/site/v2/sports/${sport}/${leagueSlug}/news?lang=pt&region=${this.state.region}`;
+                    const url = API_CONFIG.getNewsUrl(sport, leagueSlug, this.state.region);
                     const res = await fetch(url);
                     const data = await res.json();
                     this.renderNews(data.articles || []);
-                } catch (e) {
-                    console.warn("Não foi possível carregar notícias da ESPN.", e);
+                } catch (error) {
+                    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                        API_CONFIG._reportFailedProxy();
+                        return this.loadNews(sport, leagueSlug); // Tenta novamente com o novo proxy
+                    }
+                    console.warn("Não foi possível carregar notícias da ESPN.", error);
                     this.renderNews([]); // Limpa a seção de notícias em caso de erro
                 }
             },
 
             async loadScoreboardWithFallback(sport, league, formattedDate, isToday) {
-                const espnUrl = `${this.proxy}${this.state.apiConfig.espnBase}/site/v2/sports/${sport}/${league.slug}/scoreboard?lang=pt&region=${this.state.region}&dates=${formattedDate}`;
+                const espnUrl = API_CONFIG.getScoreboardUrl(sport, league.slug, formattedDate);
 
                 try {
                     const res = await fetch(espnUrl);
@@ -358,8 +375,12 @@ const app = {
                         this.state.scoreboardRefreshInterval = setInterval(() => this.loadLeague(this.state.currentLeague, false), 60000);
                     }
 
-                } catch (e) {
-                    console.error("Falha ao carregar jogos da ESPN.", e);
+                } catch (error) {
+                    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                        API_CONFIG._reportFailedProxy();
+                        return this.loadScoreboardWithFallback(sport, league, formattedDate, isToday); // Tenta novamente
+                    }
+                    console.error("Falha ao carregar jogos da ESPN.", error);
                     document.getElementById('matches-grid').innerHTML = '<p class="text-center text-red-500">Erro ao carregar os jogos. Tente novamente mais tarde.</p>';
                 }
             },
@@ -512,6 +533,7 @@ const app = {
 
                     card.innerHTML = `
                         <div class="tv-scoreboard">
+                            <div class="tv-scoreboard-bg"></div>
                             <div class="tv-logo-box"><img src="${this.state.sports[this.state.currentSport].leagues[this.state.currentLeague].logo}" alt="League Logo"></div> 
                             <div class="tv-team-box text-right"><span class="truncate">${home.team.abbreviation || home.team.shortDisplayName}</span><img src="${home.team.logo}" class="w-6 h-6 object-contain ml-2" alt="Home Team Logo"></div>
                             <div class="tv-score-box" data-match-id="${ev.id}">${home.score} - ${away.score}</div>
@@ -537,7 +559,7 @@ const app = {
 
             async updateScores(sport, slug) {
                 try {
-                    const url = `${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${slug}/scoreboard?lang=pt&region=${this.state.region}`;
+                    const url = API_CONFIG.getScoreboardUrl(sport, slug, this.formatDateForAPI(this.state.currentDate));
                     const res = await fetch(url);
                     const data = await res.json();
 
@@ -579,12 +601,16 @@ const app = {
                 container.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Carregando tabela...</p>';
                 
                 try {
-                    const res = await fetch(`${this.proxy}https://site.api.espn.com/apis/v2/sports/${sport}/${league.slug}/standings?lang=pt`);
+                    const res = await fetch(API_CONFIG.getStandingsUrl(sport, league.slug));
                     if (!res.ok) throw new Error(`ESPN standings failed with status: ${res.status}`);
                     const data = await res.json();                    
                     this.handleStandingsResponse(data.children);
-                } catch (e) {
-                    console.error('Falha ao carregar a tabela da ESPN.', e);
+                } catch (error) {
+                    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                        API_CONFIG._reportFailedProxy();
+                        return this.loadStandings(sport, league); // Tenta novamente
+                    }
+                    console.error('Falha ao carregar a tabela da ESPN.', error);
                     container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Não foi possível carregar a tabela.</p>';
                 }
             },
@@ -708,6 +734,109 @@ const app = {
                 this.state.liveStandingsData = children; // Garante que os dados ao vivo estão sempre sincronizados
             },
 
+            async loadScorers(sport, leagueSlug, year = new Date().getFullYear()) {
+                const container = document.getElementById('scorers-grid');
+                if (!container) return;
+
+                // Oculta a aba se o esporte não for futebol ou fut. americano
+                const isSupported = sport === 'soccer' || sport === 'football';
+                document.getElementById('desk-scorers').style.display = isSupported ? 'flex' : 'none';
+                document.getElementById('mob-scorers').style.display = isSupported ? 'flex' : 'none';
+
+                if (!isSupported) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                container.innerHTML = '<div class="text-center text-gray-500 py-10 col-span-full">Carregando artilheiros...</div>';
+
+                try {
+                    // 1. Obter todos os IDs de jogos da temporada
+                    const scheduleUrl = API_CONFIG.getLeagueLeadersUrl(sport, leagueSlug); // Reutilizando a função que busca por ano
+                    const scheduleRes = await fetch(scheduleUrl);
+                    if (!scheduleRes.ok) {
+                        // Se a busca da agenda falhar, joga um erro para ser pego pelo catch
+                        throw new Error(`Schedule fetch failed: ${scheduleRes.status}`);
+                    }
+                    const scheduleData = await scheduleRes.json();
+                    
+                    const gameIds = scheduleData.events
+                        .filter(event => event.status.type.completed) // Apenas jogos concluídos
+                        .map(event => event.id);
+
+                    if (gameIds.length === 0) {
+                        this.renderScorers([]);
+                        return;
+                    }
+
+                    // 2. Buscar o sumário de cada jogo em paralelo
+                    const summaryPromises = gameIds.map(id => 
+                        fetch(API_CONFIG.getGameSummaryWithLeadersUrl(sport, leagueSlug, id))
+                            .then(res => res.ok ? res.json() : null)
+                    );
+                    
+                    const summaries = await Promise.all(summaryPromises);
+
+                    // 3. Agregar os artilheiros de todos os jogos
+                    const playerGoals = {};
+                    summaries.forEach(summary => {
+                        if (!summary || !summary.leaders) return;
+
+                        summary.leaders.forEach(leaderType => {
+                            if (leaderType.shortDisplayName === 'Gols') {
+                                leaderType.leaders.forEach(playerLeader => {
+                                    const playerId = playerLeader.athlete.id;
+                                    if (!playerGoals[playerId]) {
+                                        playerGoals[playerId] = {
+                                            player: playerLeader.athlete,
+                                            team: playerLeader.team,
+                                            goals: 0
+                                        };
+                                    }
+                                    playerGoals[playerId].goals += parseInt(playerLeader.value, 10);
+                                });
+                            }
+                        });
+                    });
+
+                    const sortedScorers = Object.values(playerGoals).sort((a, b) => b.goals - a.goals);
+                    this.renderScorers(sortedScorers);
+
+                } catch (error) {
+                    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                        API_CONFIG._reportFailedProxy();
+                        return this.loadScorers(sport, leagueSlug, year); // Tenta novamente
+                    }
+                    console.error('Falha ao carregar artilheiros da ESPN.', error);
+                    container.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Artilharia indisponível no momento.</p>';
+                }
+            },
+            
+            renderScorers(scorers) {
+                const grid = document.getElementById('scorers-grid');
+                if (!grid) return;
+                grid.innerHTML = '';
+
+                if (!scorers || scorers.length === 0) {
+                    grid.innerHTML = '<p class="text-center text-gray-500 py-10 col-span-full">Nenhum artilheiro encontrado.</p>';
+                    return;
+                }
+
+                scorers.slice(0, 50).forEach((scorer, index) => {
+                    const { player, team, goals } = scorer;
+                    grid.innerHTML += `
+                        <div class="scorer-card" onclick="app.openWiki('${player.fullName}')">
+                            <span class="scorer-rank">${index + 1}</span>
+                            <img src="${player.headshot?.href || 'https://a.espncdn.com/i/headshots/nophoto.png'}" alt="${player.displayName}" class="scorer-img">
+                            <div class="scorer-info">
+                                <div class="scorer-name">${player.displayName}</div>
+                                <div class="scorer-club">${team?.displayName || 'Sem clube'}</div>
+                            </div>
+                            <div class="scorer-goals">${goals}</div>
+                        </div>
+                    `;
+                });
+            },
 
             renderNews(articles) {
                 const grid = document.getElementById('news-grid');
@@ -901,7 +1030,7 @@ const app = {
                 const league = this.state.sports[sport].leagues[this.state.currentLeague];
 
                 try {
-                    const res = await fetch(`${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/summary?event=${id}&lang=pt`);
+                    const res = await fetch(API_CONFIG.getGameSummaryUrl(sport, league.slug, id));
                     const data = await res.json();
                     const header = data.header.competitions[0];
                     const home = header.competitors.find(c=>c.homeAway==='home');
@@ -916,7 +1045,7 @@ const app = {
                     safeSetSrc('modal-home-logo', home.team.logos?.[0]?.href);
                     safeSetSrc('modal-away-logo', away.team.logos?.[0]?.href);
                     safeSetText('modal-score', `${home.score || 0}-${away.score || 0}`);
-                    safeSetText('modal-score-home', home.score || 0);
+                    safeSetText('modal-score-home', home.score || 0); 
                     safeSetText('modal-score-away', away.score || 0);
                     safeSetText('modal-status', header.status.type.description);
 
@@ -986,7 +1115,7 @@ const app = {
                         if (lowerText.includes('contra') || lowerText.includes('own goal')) {
                             iconHtml = '<i data-lucide="shield-alert" class="w-5 h-5 text-red-400"></i>';
                         } else {
-                            iconHtml = '<i data-lucide="soccer" class="w-5 h-5 text-white"></i>';
+                            iconHtml = '<i data-lucide="futbol" class="w-5 h-5 text-white"></i>';
                         }
                     } else if (lowerText.includes('pênalti') || lowerText.includes('penalty')) {
                         if (lowerText.includes('perdido') || lowerText.includes('missed')) {
@@ -1000,8 +1129,8 @@ const app = {
                         iconHtml = '<i data-lucide="square" class="w-5 h-5 text-red-500 fill-current"></i>';
                     } else if (lowerText.includes('substituição') || lowerText.includes('substitution')) {
                         iconHtml = '<i data-lucide="arrow-left-right" class="w-5 h-5 text-blue-400"></i>';
-                    } else if (lowerText.includes('início') || lowerText.includes('fim') || lowerText.includes('start') || lowerText.includes('end') || lowerText.includes('half-time')) {
-                        iconHtml = '<i data-lucide="whistle" class="w-5 h-5 text-gray-400"></i>';
+                    } else if (lowerText.includes('início') || lowerText.includes('fim') || lowerText.includes('start') || lowerText.includes('end') || lowerText.includes('intervalo') || lowerText.includes('half-time')) {
+                        iconHtml = '<i data-lucide="circle-dot" class="w-5 h-5 text-gray-400"></i>';
                     } else if (lowerText.includes('var')) {
                         iconHtml = '<i data-lucide="tv" class="w-5 h-5 text-cyan-400"></i>';
                     } else if (lowerText.includes('lesão') || lowerText.includes('injury')) {
@@ -1118,9 +1247,9 @@ const app = {
                 if(q.length < 3) { resDiv.classList.add('hidden'); return; }
                 
                 if (!isMobile) resDiv.classList.remove('hidden');
-                resDiv.innerHTML = '<div class="p-4 text-center text-gray-500">Buscando...</div>';
-                
-                const wRes = await fetch(`https://pt.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(q)}&limit=5&format=json`);
+                resDiv.innerHTML = '<div class="p-4 text-center text-gray-500">Buscando...</div>'; 
+
+                const wRes = await fetch(API_CONFIG.getWikiSearchUrl(q));
                 const wData = await wRes.json();
                 let html = '';
                 
@@ -1142,7 +1271,7 @@ const app = {
                 const cont = document.getElementById(containerId);
                 cont.innerHTML = '<div class="spinner mx-auto"></div>';
                 try {
-                    const res = await fetch(`https://pt.wikipedia.org/w/api.php?origin=*&action=parse&page=${encodeURIComponent(term)}&prop=text&formatversion=2&format=json`);
+                    const res = await fetch(API_CONFIG.getWikiParseUrl(term));
                     const data = await res.json();
                     cont.innerHTML = `<h2 class="text-2xl font-bold text-white mb-4 ${containerId !== 'wiki-content' ? 'hidden' : ''}">${data.parse.title}</h2><div class="wiki-article-content">${data.parse.text}</div>`;
                 } catch(e) { cont.innerHTML = `<p class="text-red-500">Erro ao carregar artigo da Wikipedia para "${term}".</p>`; }
@@ -1156,7 +1285,7 @@ const app = {
                 const league = this.state.sports[sport].leagues[this.state.currentLeague];
 
                 try {
-                    const res = await fetch(`${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${sport}/${league.slug}/summary?event=${matchId}&lang=pt`);
+                    const res = await fetch(API_CONFIG.getGameSummaryUrl(sport, league.slug, matchId));
                     const data = await res.json();
                     const header = data.header.competitions[0];
                     const home = header.competitors.find(c => c.homeAway === 'home');
@@ -1167,16 +1296,16 @@ const app = {
                     const oldHomeScore = parseInt(homeScoreEl.textContent, 10);
                     const oldAwayScore = parseInt(awayScoreEl.textContent, 10);
                     
-                    if (homeScoreEl && home.score > oldHomeScore) {
+                    if (homeScoreEl && parseInt(home.score) > oldHomeScore) {
                         homeScoreEl.classList.add('goal-animation');
                         this.playGoalSound(); // Toca o som
                     }
-                    if (awayScoreEl && away.score > oldAwayScore) {
+                    if (awayScoreEl && parseInt(away.score) > oldAwayScore) {
                         awayScoreEl.classList.add('goal-animation');
                         this.playGoalSound();
                     }
 
-                    homeScoreEl.textContent = home.score || 0;
+                    homeScoreEl.textContent = home.score || 0; 
                     awayScoreEl.textContent = away.score || 0;
                     document.getElementById('modal-status').textContent = header.status.type.description;
 
@@ -1242,7 +1371,7 @@ const app = {
                     const s = this.state.currentSport;
                     const l = this.state.sports[s].leagues[this.state.currentLeague];
                     try {
-                        const r = await fetch(`${this.proxy}https://site.api.espn.com/apis/site/v2/sports/${s}/${l.slug}/teams/${this.state.currentClubId}/roster`);
+                        const r = await fetch(API_CONFIG.getTeamRosterUrl(s, l.slug, this.state.currentClubId));
                         const d = await r.json();
                         cont.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>';
                         const grid = cont.firstElementChild;

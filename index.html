@@ -127,6 +127,7 @@
         <button class="flex flex-col items-center gap-1 text-xs text-white" onclick="app.setView('matches')" id="mob-matches"><i data-lucide="calendar-days" class="w-5 h-5"></i>Jogos</button>
         <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('standings')" id="mob-standings"><i data-lucide="trophy" class="w-5 h-5"></i>Tabela</button>
         <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('news')" id="mob-news"><i data-lucide="newspaper" class="w-5 h-5"></i>Notícias</button>
+        <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('scorers')" id="mob-scorers"><i data-lucide="award" class="w-5 h-5"></i>Artilheiros</button>
         <button class="flex flex-col items-center gap-1 text-xs text-gray-500" onclick="app.setView('clubs')" id="mob-clubs"><i data-lucide="shield" class="w-5 h-5"></i>Clubes</button>
     </div>
 
@@ -180,10 +181,14 @@
                 <button onclick="app.setView('news')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-news">
                     <i data-lucide="newspaper" class="text-gray-400 group-hover:text-white"></i> Notícias
                 </button>
+                <button onclick="app.setView('scorers')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-scorers">
+                    <i data-lucide="award" class="text-gray-400 group-hover:text-white"></i> Artilheiros
+                </button>
                 <button onclick="app.setView('clubs')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center gap-3 font-semibold text-gray-400 group" id="desk-clubs">
                     <i data-lucide="shield" class="text-gray-400 group-hover:text-white"></i> Clubes
                 </button>
             </div>
+
             <h3 class="text-xs font-bold text-gray-500 uppercase px-2 mb-2">Atalhos</h3>
             <div id="sidebar-league-list" class="space-y-1"></div>
         </aside>
@@ -225,6 +230,11 @@
                 <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
+            <section id="view-scorers" class="hidden">
+                <div class="section-title">Artilheiros</div>
+                <div id="scorers-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </section>
+
             <section id="view-clubs" class="hidden">
                 <div class="section-title">Clubes</div>
                 <div class="relative w-full mb-4">
@@ -238,6 +248,19 @@
                 <div class="bg-[#1a1b1e] p-8 rounded-xl border border-[#333] wiki-content" id="wiki-content"></div>
             </section>
 
+            <!-- Horizontal Ad Placeholder -->
+            <section class="mt-12">
+                <div class="ad-placeholder" aria-label="Espaço para Publicidade">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-5064368958997852"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </section>
         </div>
     </main>
 
@@ -279,8 +302,10 @@
                         <h2 id="modal-home" class="text-base md:text-lg font-bold text-white text-center">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
-                        <div id="modal-score" class="flex items-center justify-center text-4xl md:text-5xl font-black text-white tracking-tighter">
-                           0 - 0
+                        <div id="modal-score" class="flex items-center justify-center text-4xl md:text-5xl font-black text-white tracking-tighter gap-4">
+                           <span id="modal-score-home">0</span>
+                           <span>-</span>
+                           <span id="modal-score-away">0</span>
                         </div>
                         <span id="modal-status" class="text-[#d1ff4d] font-bold uppercase text-sm mt-1">LIVE</span>
                         <div id="modal-pk-score" class="text-gray-400 text-xs mt-1 hidden"></div>
@@ -338,6 +363,7 @@
         <i data-lucide="arrow-up" class="w-6 h-6"></i>
     </button>
 
+    <script src="api-config.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

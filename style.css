@@ -227,6 +227,13 @@ body {
 .theme-copaamerica .standings-group-header { background: linear-gradient(90deg, #00387b, #005c31); border-bottom: 3px solid #fdd116; }
 
 /* ==========================================================================
+   STANDINGS CONTAINER LAYOUT
+   ========================================================================== */
+#standings-container {
+    display: flex;
+    justify-content: center; /* Centraliza a(s) tabela(s) */
+}
+/* ==========================================================================
    3. Layout & Header
    ========================================================================== */
 .header-main {
@@ -470,6 +477,20 @@ body {
     transition: width 0.7s ease-out;
 }
 
+.modal-content.theme-champions .modal-header-bg {
+    background-image: url('https://wallpapercave.com/wp/wp12864467.jpg');
+    opacity: 0.1;
+}
+
+.modal-content.theme-bundesliga .modal-header-bg {
+    background-image: url('https://images.alphacoders.com/134/1340070.png');
+    opacity: 0.1;
+}
+.modal-content.theme-seriea .modal-header-bg {
+    background-image: url('https://img.besthqwallpapers.com/uploads/2018/09/23/serie-a-glitter-logo-italian-football-championship-blue-background-serie-a-logo-football-italy-besthqwallpapers.com-1024x768.jpg');
+    opacity: 0.1;
+}
+
 @media (max-width: 768px) {
     .modal-content {
         height: 100vh;
@@ -604,7 +625,7 @@ body {
         text-shadow: none;
     }
 }
-.goal-animation {
+.goal-animation { 
     display: inline-block; /* Necessário para transform funcionar corretamente */
     animation: goal-flash 0.8s ease-in-out;
 }
@@ -816,4 +837,17 @@ body {
     font-size: 1.125rem;
     font-weight: bold;
     color: var(--accent-green);
+}
+
+/* ==========================================================================
+   ADVERTISEMENT PLACEHOLDER
+   ========================================================================== */
+.ad-placeholder {
+    width: 100%;
+    min-width: 320px; /* Garante uma largura mínima para o AdSense, corrigindo o erro availableWidth=0 */
+    height: 90px; /* Altura padrão para um banner horizontal (leaderboard) */
+    background-color: var(--bg-card);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    overflow: hidden; /* Garante que o conteúdo do anúncio respeite as bordas arredondadas */
 }
