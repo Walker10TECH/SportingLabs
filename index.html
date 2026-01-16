@@ -782,81 +782,11 @@
                 // Cria o script de invocação do Adsterra
                 const scriptInvoke = document.createElement('script');
                 scriptInvoke.type = 'text/javascript';
-                scriptInvoke.src = `//www.highperformancedformats.com/${this.adConfig.key}/invoke.js`;
+                scriptInvoke.src = 'https://www.highperformanceformat.com/9d3aedd69475dcae677afe86847f32cc/invoke.js'; // URL de exemplo, substitua pela correta do Adsterra se diferente
                 container.appendChild(scriptInvoke);
 
                 console.log('W3Ads: Adsterra integrated.');
             }
-        };
-
-        /**
-         * Objeto para interagir com a API de Publishers da Adsterra.
-         * Baseado na documentação fornecida.
-         */
-        const AdsterraAPI = {
-            // IMPORTANTE: Substitua 'YOUR_ADSTERRA_API_KEY' pela sua chave de API real do painel Adsterra.
-            API_KEY: '82e48754817fbcaf08d478de3b4f0b72', 
-            BASE_URL: 'https://api3.adsterratools.com/publisher',
-
-            /**
-             * Função genérica para fazer chamadas à API Adsterra.
-             * @param {string} endpoint - O endpoint da API (ex: 'stats.json').
-             * @param {object} params - Parâmetros de query para a URL.
-             * @returns {Promise<object>} - A resposta da API em JSON.
-             */
-            async _fetch(endpoint, params = {}) {
-                const url = new URL(`${this.BASE_URL}/${endpoint}`);
-                // A API aceita arrays em group_by como 'group_by[]'
-                for (const key in params) {
-                    if (Array.isArray(params[key])) {
-                        params[key].forEach(value => url.searchParams.append(`${key}[]`, value));
-                    } else {
-                        url.searchParams.append(key, params[key]);
-                    }
-                }
-
-                if (this.API_KEY === 'YOUR_ADSTERRA_API_KEY') {
-                    const errorMsg = 'Adsterra API: Chave de API não configurada. Por favor, substitua "YOUR_ADSTERRA_API_KEY".';
-                    console.warn(errorMsg);
-                    return { error: errorMsg, items: [] };
-                }
-
-                try {
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-API-Key': this.API_KEY
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Erro na API Adsterra: ${response.status} ${response.statusText}`);
-                    }
-                    return await response.json();
-                } catch (error) {
-                    console.error(error);
-                    return { error: error.message, items: [] };
-                }
-            },
-
-            /**
-             * Retorna estatísticas.
-             * @param {object} options - Opções para a busca.
-             * @param {string} options.startDate - Data de início (formato 'YYYY-MM-DD').
-             * @param {string} options.finishDate - Data de fim (formato 'YYYY-MM-DD').
-             * @param {string|string[]} [options.groupBy='date'] - Entidade para agrupar (ex: 'date', ['date', 'domain']).
-             * @param {object} [options.filters={}] - Filtros adicionais como { domain: 123, country: 'BR' }.
-             * @returns {Promise<object>}
-             */
-            async getStats({ startDate, finishDate, groupBy = 'date', filters = {} }) {
-                const endpoint = 'stats.json';
-                const params = { start_date: startDate, finish_date: finishDate, group_by: groupBy, ...filters };
-                return this._fetch(endpoint, params);
-            },
-            
-            async getDomains() { return this._fetch('domains.json'); },
-            async getPlacements(domainId) { return this._fetch(`domain/${domainId}/placements.json`); }
         };
 
         const app = {
@@ -1086,10 +1016,7 @@
             /* --- AI FEATURES --- */
             async callGeminiAPI(prompt) {
                 if(!apiKey) return "**Erro:** Chave da API Gemini não configurada. Por favor, configure a chave no código.";
-                // W3Labs Fix: Using a stable model 'gemini-2.5-flash' instead of a dated preview model.
-                // This prevents potential errors if the preview model is deprecated, which can cause script errors.
-                // The 'gemini-2.5-flash' model is a stable and efficient choice for this kind of task.
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 const payload = { contents: [{ parts: [{ text: prompt }] }] };
                 try {
                     const response = await fetch(url, {
