@@ -7,36 +7,83 @@
     
     <!-- Bibliotecas Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Chakra+Petch:wght@600;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
-    <!-- Markdown Parser para respostas da AI -->
+    <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
         /* =========================================
-           1. DESIGN SYSTEM - "NEON GLASS"
+           1. DESIGN SYSTEM - THEMING
            ========================================= */
         :root {
+            /* DARK MODE (DEFAULT) VARIABLES */
             --bg-deep: #050507;
-            --bg-glass: rgba(255, 255, 255, 0.03);
-            --bg-glass-heavy: rgba(20, 20, 23, 0.85);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --accent: #d1ff4d;
-            --accent-glow: rgba(209, 255, 77, 0.4);
-            --ai-color: #a855f7; /* Roxo para AI */
-            --ai-glow: rgba(168, 85, 247, 0.4);
+            --bg-overlay-opacity: 0.6;
+            --bg-overlay-color: #000;
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
             --text-primary: #ffffff;
             --text-muted: #9ca3af;
+            --text-invert: #000000;
             
-            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --header-bg: rgba(5, 5, 7, 0.9);
+            --nav-item-bg: rgba(255, 255, 255, 0.05);
+            --nav-item-hover: rgba(255, 255, 255, 0.1);
+            
+            --card-bg-gradient: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            
+            --input-bg: rgba(0,0,0,0.4);
+            --input-border: var(--glass-border);
+
+            /* Cores Fixas */
+            --accent: #d1ff4d;
+            --ai-color: #a855f7;
+            --ai-glow: rgba(168, 85, 247, 0.4);
             --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Zonas da Tabela */
+            --zone-libertadores: #4285f4;
+            --zone-prelibertadores: #00bfff;
+            --zone-sulamericana: #fbbc05;
+            --zone-rebaixamento: #ea4335;
+            --zone-acesso: #34a853;
+            --zone-neutra: rgba(128,128,128,0.2);
         }
 
+        /* LIGHT MODE VARIABLES */
+        body.light-mode {
+            --bg-deep: #f3f4f6;
+            --bg-overlay-opacity: 0.85;
+            --bg-overlay-color: #fff;
+            
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            
+            --text-primary: #111827;
+            --text-muted: #6b7280;
+            --text-invert: #ffffff;
+            
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --nav-item-bg: rgba(0, 0, 0, 0.05);
+            --nav-item-hover: rgba(0, 0, 0, 0.1);
+            
+            --card-bg-gradient: #ffffff;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: rgba(0,0,0,0.1);
+        }
+
+        /* === GLOBAL STYLES === */
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-deep);
@@ -44,13 +91,25 @@
             margin: 0; padding: 0; 
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(29, 78, 216, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(209, 255, 77, 0.08) 0%, transparent 40%);
-            background-attachment: fixed;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        #app-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            filter: blur(16px);
+            transform: scale(1.1);
+            transition: background-image 0.8s ease-in-out;
+        }
+        #app-background::after {
+            content: ''; position: absolute; inset: 0;
+            background-color: var(--bg-overlay-color);
+            opacity: var(--bg-overlay-opacity);
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        ::-webkit-scrollbar { width: 6px; background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
 
         /* Loader */
         #global-loader { 
@@ -62,649 +121,442 @@
             width: 60px; height: 60px; border-radius: 50%;
             border: 2px solid transparent; border-top-color: var(--accent);
             animation: spin 0.8s linear infinite;
-            filter: drop-shadow(0 0 10px var(--accent-glow));
         }
         .loader-hidden { opacity: 0; pointer-events: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* =========================================
-           2. UI COMPONENTS (Glassmorphism)
-           ========================================= */
-        
+        /* UI Components */
         .glass-panel {
-            background: var(--bg-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: var(--glass-bg); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            box-shadow: var(--card-shadow);
         }
 
-        /* Header */
         .header-main {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-            height: 70px;
-            background: rgba(5, 5, 7, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-glass);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px;
+            background: var(--header-bg); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            transition: background 0.3s;
         }
 
         .logo-text { 
             font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em; 
-            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .logo-text span { 
             color: var(--accent); -webkit-text-fill-color: var(--accent);
-            text-shadow: 0 0 20px var(--accent-glow);
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
         .nav-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-glass);
-            color: var(--text-primary);
-            padding: 8px 16px; border-radius: 100px;
-            font-size: 0.85rem; font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
+            background: var(--nav-item-bg); border: 1px solid var(--glass-border);
+            color: var(--text-primary); padding: 8px 16px; border-radius: 100px;
+            font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px;
             transition: all 0.3s var(--ease-smooth);
         }
         .nav-pill:hover, .nav-pill.active {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: translateY(-1px);
+            background: var(--nav-item-hover); border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            color: var(--text-primary);
         }
+        body.light-mode .nav-pill:hover, body.light-mode .nav-pill.active { box-shadow: 0 0 5px var(--accent); }
 
         .search-input {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border-glass);
-            padding: 10px 16px 10px 44px;
-            border-radius: 16px;
-            color: white; font-family: 'Outfit';
+            width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+            padding: 12px 20px 12px 48px; border-radius: 16px; color: var(--text-primary); font-family: 'Outfit';
             transition: all 0.3s;
         }
         .search-input:focus {
-            background: rgba(0,0,0,0.6);
-            border-color: var(--accent);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(209, 255, 77, 0.1);
+            border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.1);
         }
 
-        /* Dropdowns */
-        .dropdown-menu {
-            position: absolute; top: 120%; right: 0;
-            width: 260px;
-            background: #111;
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            padding: 8px;
-            display: none; z-index: 100;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            animation: slideIn 0.2s var(--ease-smooth);
+        .theme-toggle-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--nav-item-bg); border: 1px solid var(--glass-border);
+            color: var(--text-primary); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s;
         }
-        .dropdown-menu.open { display: block; }
-        @keyframes slideIn { from { opacity:0; transform: translateY(-10px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .theme-toggle-btn:hover { background: var(--nav-item-hover); color: var(--accent); }
 
-        .dropdown-item {
-            padding: 12px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px;
-            font-size: 0.9rem; font-weight: 500; color: #ccc;
-            cursor: pointer; transition: background 0.2s;
-        }
-        .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .dropdown-item img { width: 24px; height: 24px; object-fit: contain; }
-
-        /* =========================================
-           3. CARD & SCOREBOARD STYLES + ANIMATIONS
-           ========================================= */
-        
-        @keyframes shine {
-            0% { transform: skewX(-20deg) translateX(-150%); }
-            100% { transform: skewX(-20deg) translateX(150%); }
-        }
-
-        @keyframes fade-slide-up {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* === TV SCOREBOARD BASE & THEMES === */
         .match-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--border-glass);
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s;
-            margin-bottom: 16px;
-            
-            animation: fade-slide-up 0.6s var(--ease-smooth) forwards;
-            opacity: 0;
+            background: var(--card-bg-gradient);
+            border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden;
+            position: relative; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            margin-bottom: 16px; animation: fade-slide-up 0.6s var(--ease-smooth) forwards; opacity: 0;
+            box-shadow: var(--card-shadow);
         }
+        .match-card:hover { transform: translateY(-4px) scale(1.01); border-color: var(--accent); z-index: 10; }
+        @keyframes fade-slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .match-card:nth-child(1) { animation-delay: 0.1s; }
-        .match-card:nth-child(2) { animation-delay: 0.2s; }
-        .match-card:nth-child(3) { animation-delay: 0.3s; }
-        .match-card:nth-child(4) { animation-delay: 0.4s; }
-        .match-card:nth-child(5) { animation-delay: 0.5s; }
-        .match-card:nth-child(n+6) { animation-delay: 0.6s; }
-
-        .match-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.6);
-            border-color: rgba(255,255,255,0.3);
-            z-index: 10;
+        .tv-scoreboard { 
+            display: flex; align-items: center; justify-content: space-between; 
+            height: 90px; position: relative; background: #151515; overflow: hidden; padding: 0 16px; 
+            font-family: 'Outfit', sans-serif;
         }
-
-        .match-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-20deg) translateX(-150%);
-            transition: none;
-            pointer-events: none;
-        }
-        .match-card:hover::after {
-            animation: shine 0.8s ease-in-out;
-        }
-
-        .tv-scoreboard {
-            display: grid;
-            grid-template-columns: 50px 1fr 80px 1fr; 
-            align-items: center; height: 64px;
-            position: relative; background: #222;
-            overflow: hidden; 
-        }
-        .tv-logo-box { display: flex; justify-content: center; align-items: center; height: 100%; background: rgba(255,255,255,0.05); }
-        .tv-logo-box img { width: 28px; height: 28px; object-fit: contain; transition: transform 0.4s var(--ease-elastic); }
-        .match-card:hover .tv-logo-box img { transform: rotate(15deg) scale(1.2); }
-
-        .tv-team-box { display: flex; align-items: center; padding: 0 12px; font-weight: 700; font-size: 0.9rem; color: white; letter-spacing: -0.02em; height: 100%; }
+        .tv-scoreboard-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+        
+        .tv-team-box { display: flex; align-items: center; gap: 12px; font-weight: 700; color: white; z-index: 2; width: 38%; font-size: 0.95rem; }
         .tv-team-box.home { justify-content: flex-end; text-align: right; }
         .tv-team-box.away { justify-content: flex-start; text-align: left; }
-        .tv-team-box img { width: 24px; height: 24px; object-fit: contain; margin: 0 8px; }
+        .tv-team-box img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
         
-        .tv-score-box { 
-            display: flex; justify-content: center; align-items: center; 
-            font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.4rem; 
-            height: 100%; letter-spacing: 2px; z-index: 2;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        .tv-score-center { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            width: 24%; height: 100%; position: relative; z-index: 2; 
         }
+        /* Aumentado o tamanho da fonte em 25% (de 2rem para 2.5rem) */
+        .tv-score { font-weight: 800; font-size: 2.5rem; color: #fff; letter-spacing: 2px; line-height: 1; }
+        .tv-time { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-top: 6px; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
         
-        .tv-time-box { 
-            position: absolute; top: 0; right: 0; bottom: 0; width: 50px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            font-size: 0.7rem; font-weight: 700; line-height: 1.1; 
+        .match-footer { 
+            padding: 10px 20px; background: rgba(0,0,0,0.05); border-top: 1px solid var(--glass-border); 
+            display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; 
         }
+
+        /* Modal Score Display (Adicionado) */
+        .modal-score-display { 
+            font-size: 5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; 
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #fff; margin-bottom: 10px;
+        }
+        body.light-mode .modal-score-display { color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        /* THEMES */
+        .theme-brasileirao .tv-scoreboard { background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%); border-bottom: 4px solid #d1ff4d; }
+        .theme-brasileirao .tv-team-box { color: #111; font-weight: 800; text-transform: uppercase; }
+        .theme-brasileirao .tv-score { color: #111; background: #fff; padding: 4px 12px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .theme-brasileirao .tv-time { background: #d1ff4d; color: #004d00; }
+        body:not(.light-mode) .theme-brasileirao .tv-scoreboard { background: #1a1a1a; }
+        body:not(.light-mode) .theme-brasileirao .tv-team-box { color: #fff; }
+        body:not(.light-mode) .theme-brasileirao .tv-score { background: #333; color: #fff; }
+
+        .theme-brasileiraob .tv-scoreboard { background: linear-gradient(180deg, #0a2342 0%, #001020 100%); border-bottom: 4px solid #00ff85; }
+        .theme-brasileiraob .tv-time { background: #00ff85; color: #003366; }
+
+        .theme-premier .tv-scoreboard { background: #38003c; color: white; }
+        .theme-premier .tv-scoreboard-bg { background-image: radial-gradient(circle at 10% 20%, rgba(0, 255, 133, 0.15) 0%, transparent 20%); }
+        .theme-premier .tv-score { color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+        .theme-premier .tv-time { background: #00ff85; color: #38003c; font-weight: 900; border-radius: 2px; }
+
+        .theme-laliga .tv-scoreboard { background: #111; border-bottom: 3px solid #ff4b4b; }
+        .theme-laliga .tv-team-box { font-family: 'Teko', sans-serif; font-size: 1.4rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        /* Aumentado para La Liga também */
+        .theme-laliga .tv-score { font-family: 'Teko', sans-serif; font-size: 3.5rem; font-weight: 500; }
+        .theme-laliga .tv-time { color: #ff4b4b; background: transparent; font-family: 'Teko', sans-serif; font-size: 1.1rem; }
+
+        .theme-champions .tv-scoreboard { background: radial-gradient(circle, #0e1e5b 0%, #030b2e 100%); border: 1px solid #3d6aff; }
+        .theme-champions .tv-score { color: #fff; font-family: serif; font-weight: 400; }
+        .theme-champions .tv-time { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+
+        .theme-libertadores .tv-scoreboard { background: #000; border-bottom: 2px solid #d4af37; border-top: 1px solid #d4af37; }
+        .theme-libertadores .tv-score { color: #d4af37; font-family: 'Times New Roman', serif; font-style: italic; }
+        .theme-libertadores .tv-time { background: #d4af37; color: #000; font-weight: 800; border-radius: 0; }
         
-        .match-footer {
-            padding: 10px 16px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.03);
-            display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; font-weight: 500;
-        }
+        .theme-bundesliga .tv-scoreboard { background: #f2f2f2; color: #000; }
+        body:not(.light-mode) .theme-bundesliga .tv-scoreboard { background: #1a1a1a; color: #fff; }
+        .theme-bundesliga .tv-score { background: #d20515; color: white; padding: 2px 10px; transform: skewX(-10deg); }
+        .theme-bundesliga .tv-score span { display: block; transform: skewX(10deg); }
+        .theme-bundesliga .tv-time { color: #d20515; background: transparent; font-weight: 800; }
 
-        /* Themes (Same as before) */
-        .theme-champions .tv-scoreboard { background: linear-gradient(90deg, #0e1e5b 0%, #030b2e 100%); border-bottom: 2px solid #3d6aff; }
-        .theme-champions .tv-score-box { color: #fff; background: rgba(0,0,0,0.3); }
-        .theme-champions .tv-time-box { background: #3d6aff; color: #fff; }
+        .theme-saudi .tv-scoreboard { background: linear-gradient(90deg, #004d26 0%, #002b15 100%); border-bottom: 2px solid #c9b037; }
+        .theme-saudi .tv-time { color: #c9b037; }
+
+        .theme-seriea .tv-scoreboard { background: #00396e; clip-path: polygon(0 0, 100% 0, 100% 85%, 98% 100%, 2% 100%, 0 85%); }
+        .theme-seriea .tv-time { background: #fff; color: #00396e; border-radius: 10px; }
+
+        /* General Tables/Grids */
+        .std-table-container { overflow-x: auto; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass-bg); box-shadow: var(--card-shadow); }
+        .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05); align-items: center; text-align: center; }
+        .std-table-header div:nth-child(2) { text-align: left; } /* Club name align left */
         
-        .theme-brasileirao .tv-scoreboard { background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%); }
-        .theme-brasileirao .tv-logo-box { background: #fff; }
-        .theme-brasileirao .tv-team-box { color: #111; font-weight: 800; }
-        .theme-brasileirao .tv-score-box { background: #111; color: #fff; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); width: 90px; margin: 0 auto; }
-        .theme-brasileirao .tv-time-box { background: linear-gradient(180deg, #d1ff4d 0%, #a7db18 100%); color: #111; }
-
-        .theme-premier .tv-scoreboard { background: #38003c; }
-        .theme-premier .tv-logo-box { background: #00ff85; }
-        .theme-premier .tv-score-box { background: #fff; color: #38003c; border-radius: 4px; height: 80%; margin: auto 0; }
-        .theme-premier .tv-time-box { background: #00ff85; color: #38003c; font-weight: 900; }
-
-        .theme-laliga .tv-scoreboard { background: linear-gradient(90deg, #111 0%, #222 100%); border-bottom: 3px solid #ff4b4b; }
-        .theme-laliga .tv-score-box { font-size: 2rem; font-weight: 900; color: #fff; }
-        .theme-laliga .tv-time-box { background: #ff4b4b; color: #fff; }
-
-        .theme-libertadores .tv-scoreboard { background: linear-gradient(90deg, #000 0%, #1a1a1a 100%); border-bottom: 2px solid #d4af37; }
-        .theme-libertadores .tv-score-box { color: #d4af37; font-family: 'serif'; border-left: 1px solid #333; border-right: 1px solid #333; }
-        .theme-libertadores .tv-time-box { background: #d4af37; color: #000; }
-
-        .theme-sulamericana .tv-scoreboard { background: linear-gradient(90deg, #000 0%, #1a1a1a 100%); border-bottom: 2px solid #a0a0a0; }
-        .theme-sulamericana .tv-score-box { color: #fff; border: 1px solid #333; }
-        .theme-sulamericana .tv-time-box { background: #a0a0a0; color: #000; }
-
-        .theme-brasileiraob .tv-scoreboard { background: linear-gradient(90deg, #003366 0%, #004080 100%); border-bottom: 3px solid #00ff85; }
-        .theme-brasileiraob .tv-time-box { background: #00ff85; color: #003366; }
-
-        .theme-saudi .tv-scoreboard { background: linear-gradient(to bottom, #ffffff, #f5f5f5); color: #003d20; border-bottom: 2px solid #e5e5e5; }
-        .theme-saudi .tv-logo-box { background: #f0f0f0; }
-        .theme-saudi .tv-score-box { background-color: #003d20; color: #ffffff; }
-        .theme-saudi .tv-team-box { color: #003d20; font-weight: 800; }
-        .theme-saudi .tv-time-box { background: linear-gradient(to bottom, #00b140, #009a36); color: #ffffff; }
-
-        .theme-mundial .tv-scoreboard { background: linear-gradient(135deg, #002347 0%, #001021 100%); border-bottom: 2px solid #ffd700; }
-        .theme-mundial .tv-score-box { color: #ffd700; background: rgba(255,255,255,0.1); }
-        .theme-mundial .tv-time-box { background: #ffd700; color: #002347; }
-
-        /* =========================================
-           4. LAYOUT
-           ========================================= */
-        main { display: flex; gap: 24px; min-height: 100vh; }
-
-        .sidebar {
-            width: 280px; flex-shrink: 0;
-            position: sticky; top: 90px; height: calc(100vh - 110px);
-            display: flex; flex-direction: column; gap: 20px;
-        }
+        .std-row { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; transition: background 0.2s; color: var(--text-primary); text-align: center; }
+        .std-row:hover { background: rgba(128,128,128,0.05); }
+        .std-row:last-child { border-bottom: none; }
+        .std-row .team-cell { display: flex; align-items: center; gap: 12px; font-weight: 600; text-align: left; overflow: hidden; }
+        .std-row .team-cell img { width: 28px; height: 28px; object-fit: contain; }
         
-        .nav-card {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            border-radius: 20px; padding: 12px;
-        }
-
-        .nav-btn {
-            width: 100%; text-align: left;
-            padding: 12px 16px; border-radius: 12px;
-            color: var(--text-muted); font-weight: 600; font-size: 0.95rem;
-            display: flex; align-items: center; gap: 12px;
-            transition: all 0.2s;
-        }
-        .nav-btn:hover, .nav-btn.active { background: rgba(255, 255, 255, 0.05); color: #fff; }
-        .nav-btn.active i { color: var(--accent); filter: drop-shadow(0 0 5px var(--accent-glow)); }
-
-        .feed { flex: 1; min-width: 0; padding-top: 90px; padding-bottom: 100px; }
-
-        .league-header {
-            display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
-            padding: 24px; border-radius: 24px;
-            background: linear-gradient(to right, rgba(0,0,0,0.6), transparent);
-            border: 1px solid var(--border-glass);
-            position: relative; overflow: hidden;
-        }
-        .league-header::before {
-            content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
-            background: var(--accent); box-shadow: 0 0 20px var(--accent);
-        }
-        .league-logo-large { 
-            width: 80px; height: 80px; object-fit: contain; 
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); 
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 16px;
-        }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px;
-            background: rgba(20, 20, 23, 0.9); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 100px;
-            padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
-            z-index: 90; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-        .bottom-nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: #666; font-size: 0.7rem; font-weight: 600;
-            background: none; border: none; cursor: pointer; transition: all 0.3s;
-        }
-        .bottom-nav-item.active { color: var(--accent); }
-        .bottom-nav-item.active i { transform: translateY(-2px); filter: drop-shadow(0 0 8px var(--accent-glow)); }
+        /* Rank Badge Customization */
+        .rank-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .rank-cell { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-muted); }
         
-        /* =========================================
-           5. OTHER VIEWS
-           ========================================= */
-        .std-row {
-            display: grid; grid-template-columns: 40px 1fr 30px 30px 30px 30px 30px; 
-            align-items: center; padding: 14px 10px; border-bottom: 1px solid var(--border-glass);
-            font-size: 0.9rem;
-        }
-        .std-row:hover { background: rgba(255,255,255,0.02); }
-        .team-cell { display: flex; align-items: center; gap: 12px; font-weight: 600; text-align: left; }
-        .team-cell img { width: 24px; height: 24px; }
+        /* Colors for Zonas */
+        .zone-libertadores { color: var(--zone-libertadores); }
+        .bg-libertadores { background-color: var(--zone-libertadores); }
+        .zone-prelibertadores { color: var(--zone-prelibertadores); }
+        .bg-prelibertadores { background-color: var(--zone-prelibertadores); }
+        .zone-sulamericana { color: var(--zone-sulamericana); }
+        .bg-sulamericana { background-color: var(--zone-sulamericana); }
+        .zone-rebaixamento { color: var(--zone-rebaixamento); }
+        .bg-rebaixamento { background-color: var(--zone-rebaixamento); }
+        .zone-acesso { color: var(--zone-acesso); }
+        .bg-acesso { background-color: var(--zone-acesso); }
+        .zone-neutra { color: var(--text-muted); }
+        .bg-neutra { background-color: var(--zone-neutra); }
 
-        .scorer-card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);
-            border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px;
-            transition: 0.2s;
-        }
-        .scorer-card:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-glow); }
-        .scorer-rank { font-size: 1.8rem; font-weight: 800; color: rgba(255,255,255,0.1); width: 40px; }
-        .scorer-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
-        .scorer-goals { font-size: 1.4rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        /* Legend */
+        .table-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; border-top: 1px solid var(--glass-border); }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        .news-card {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: 0.3s;
-        }
-        .news-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); }
-        .news-img { width: 100%; height: 180px; object-fit: cover; }
-        .news-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .news-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
-        .news-meta { margin-top: auto; font-size: 0.8rem; color: #666; }
-
-        /* =========================================
-           6. GEMINI AI FEATURES
-           ========================================= */
+        /* News & Clubs */
+        .news-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: all 0.3s; box-shadow: var(--card-shadow); }
+        .news-card:hover { transform: translateY(-8px); border-color: var(--accent); }
+        .news-img-wrapper { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; }
+        .news-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .news-card:hover .news-img { transform: scale(1.1); }
+        .news-content { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05)); }
+        .news-category { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+        .news-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-primary); }
+        .news-footer { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
         
-        /* AI Button in Modal */
-        .ai-btn {
-            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-            color: white; font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 20px; border-radius: 12px;
-            display: flex; align-items: center; gap: 8px;
-            cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 0 20px var(--ai-glow);
-        }
+        .club-grid-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: var(--card-shadow); }
+        .club-grid-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .club-grid-card img { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); transition: transform 0.3s; }
+        .club-grid-card:hover img { transform: scale(1.1); }
+        .club-grid-card span { font-weight: 700; text-align: center; font-size: 1.1rem; color: var(--text-primary); }
+
+        .scorer-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; transition: 0.2s; box-shadow: var(--card-shadow); }
+        .scorer-card:hover { border-color: var(--accent); }
+        .scorer-rank { font-size: 1.5rem; font-weight: 800; color: var(--accent); width: 30px; text-align: center; }
+        .scorer-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); }
+        .scorer-goals { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
+        body.light-mode .scorer-goals { color: var(--accent); }
+
+        /* AI & Chat */
+        .ai-btn { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); color: white; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 20px var(--ai-glow); width: 100%; }
         .ai-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--ai-glow); }
-        .ai-btn:disabled { opacity: 0.7; cursor: wait; }
+        .ai-response-box { background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px; padding: 20px; margin-top: 16px; position: relative; }
+        .ai-content { font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); }
+        body:not(.light-mode) .ai-content { color: #e9d5ff; }
 
-        /* AI Response Box */
-        .ai-response-box {
-            background: rgba(168, 85, 247, 0.05);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 16px; padding: 20px; margin-top: 16px;
-            position: relative;
-        }
-        .ai-response-box::before {
-            content: 'W3AI ANALYST'; position: absolute; top: -10px; left: 20px;
-            background: #0f0f11; padding: 0 10px; font-size: 0.7rem; 
-            font-weight: 800; color: #a855f7; letter-spacing: 0.1em;
-        }
-        .ai-content { font-size: 0.9rem; line-height: 1.6; color: #e9d5ff; }
-        .ai-content strong { color: #fff; font-weight: 700; }
-
-        /* Floating AI Chat */
-        .floating-chat-btn {
-            position: fixed; bottom: 100px; right: 20px;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px var(--ai-glow); z-index: 80;
-            cursor: pointer; transition: transform 0.2s;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
+        .floating-chat-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px var(--ai-glow); z-index: 90; cursor: pointer; transition: transform 0.2s; border: 2px solid rgba(255,255,255,0.2); }
         .floating-chat-btn:hover { transform: scale(1.1); }
-        
-        .chat-window {
-            position: fixed; bottom: 170px; right: 20px;
-            width: 350px; height: 500px; max-height: 70vh;
-            background: #111; border: 1px solid var(--border-glass);
-            border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            z-index: 81; display: none; flex-direction: column; overflow: hidden;
-            transform-origin: bottom right; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; max-height: 70vh; background: var(--bg-deep); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 91; display: none; flex-direction: column; overflow: hidden; transform-origin: bottom right; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .chat-window.open { display: flex; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
-        .chat-header {
-            padding: 16px; background: rgba(168, 85, 247, 0.1);
-            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .chat-header { padding: 16px; background: rgba(168, 85, 247, 0.1); border-bottom: 1px solid rgba(168, 85, 247, 0.2); display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-input-area { padding: 12px; border-top: 1px solid var(--border-glass); background: #1a1a1a; display: flex; gap: 8px; }
-        .chat-input {
-            flex: 1; background: #222; border: 1px solid #333; padding: 10px 16px;
-            border-radius: 20px; color: white; outline: none; font-size: 0.9rem;
-        }
-        .msg { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.4; }
+        .chat-input-area { padding: 12px; border-top: 1px solid var(--glass-border); background: var(--nav-item-bg); display: flex; gap: 8px; }
+        .chat-input { flex: 1; background: var(--input-bg); border: 1px solid var(--glass-border); padding: 10px 16px; border-radius: 20px; color: var(--text-primary); outline: none; font-size: 0.9rem; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.4; }
         .msg.user { align-self: flex-end; background: #333; color: white; border-bottom-right-radius: 2px; }
-        .msg.ai { align-self: flex-start; background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.2); border-bottom-left-radius: 2px; }
+        .msg.ai { align-self: flex-start; background: rgba(168, 85, 247, 0.2); color: var(--text-primary); border: 1px solid rgba(168, 85, 247, 0.2); border-bottom-left-radius: 2px; }
 
         /* Modal */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            z-index: 200; display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: 0.4s var(--ease-smooth);
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
-        .modal-content {
-            background: #0f0f11; width: 100%; max-width: 800px; height: 85vh;
-            border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); 
-            display: flex; flex-direction: column; overflow: hidden;
-            transform: scale(0.95) translateY(20px); transition: 0.4s var(--ease-elastic);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-        }
+        .modal-content { background: #0f0f11; width: 100%; max-width: 900px; height: 90vh; border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.95) translateY(20px); transition: 0.4s; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
         .modal-header-bg { position: absolute; inset: 0; opacity: 0.2; background-size: cover; background-position: center; filter: blur(40px); }
-        .modal-score-display { font-size: 4rem; font-weight: 900; letter-spacing: -2px; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* Monetization - Native Banner */
-        .ad-network-container {
-            width: 100%; min-height: 90px;
-            display: flex; justify-content: center; align-items: center;
-            margin: 2rem 0; background: rgba(255,255,255,0.02);
-            border: 1px dashed var(--border-glass); border-radius: 12px;
-            overflow: hidden; position: relative;
-        }
+        main { display: flex; gap: 30px; min-height: 100vh; max-width: 1600px; margin: 0 auto; }
+        .sidebar { width: 280px; flex-shrink: 0; position: sticky; top: 90px; height: calc(100vh - 110px); display: flex; flex-direction: column; gap: 20px; }
+        .nav-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px; box-shadow: var(--card-shadow); }
+        .nav-btn { width: 100%; text-align: left; padding: 14px 18px; border-radius: 16px; color: var(--text-muted); font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 14px; transition: all 0.2s; }
+        .nav-btn:hover, .nav-btn.active { background: var(--nav-item-hover); color: var(--text-primary); }
+        .nav-btn.active i { color: var(--accent); }
+        .feed { flex: 1; min-width: 0; padding-top: 90px; padding-bottom: 100px; }
 
-        .ad-label {
-            position: absolute; top: 4px; right: 8px; font-size: 0.6rem;
-            color: #555; text-transform: uppercase; letter-spacing: 1px; z-index: 5;
-        }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: var(--header-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 80; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; background: none; border: none; cursor: pointer; transition: all 0.3s; }
+        .bottom-nav-item.active { color: var(--accent); }
 
         @media (max-width: 1024px) {
             .sidebar { display: none; }
             .header-main { padding: 0 16px; }
-            main { padding-top: 60px; }
+            main { padding-top: 60px; gap: 0; }
             .feed { padding-top: 20px; }
-            .tv-scoreboard { grid-template-columns: 40px 1fr 60px 1fr; font-size: 0.8rem; }
             .modal-content { height: 92vh; width: 100vw; border-radius: 32px 32px 0 0; position: absolute; bottom: 0; }
-            .modal-overlay { align-items: flex-end; }
-            .modal-overlay.open .modal-content { transform: translateY(0); }
-            .floating-chat-btn { bottom: 90px; } /* Adjust for mobile nav */
-            .chat-window { bottom: 150px; right: 5%; width: 90%; }
+            .club-grid-card img { width: 48px; height: 48px; }
+            .std-table-header, .std-row { grid-template-columns: 40px minmax(120px, 3fr) repeat(7, 1fr); font-size: 0.75rem; padding: 10px; }
+            .tv-scoreboard { height: 80px; padding: 0 10px; }
+            .floating-chat-btn { bottom: 100px; right: 20px; }
+            .chat-window { bottom: 170px; right: 5%; width: 90%; }
         }
     </style>
 </head>
 <body>
 
-    <div id="global-loader">
-        <div class="loader-ring"></div>
-        <div class="mt-4 text-xs font-bold tracking-[0.3em] text-gray-500">SPORTINGLABS</div>
-    </div>
+    <div id="app-background"></div>
+    <div id="global-loader"><div class="loader-ring"></div><div class="mt-4 text-xs font-bold tracking-[0.3em] text-gray-500">SPORTINGLABS</div></div>
 
-    <!-- Header Flutuante -->
+    <!-- Header -->
     <header class="header-main">
         <div class="flex items-center gap-6">
-            <div class="logo-text cursor-pointer" onclick="window.location.reload()">
-                Sporting<span>Labs</span>
-            </div>
-            
-            <!-- Desktop Nav -->
+            <div class="logo-text cursor-pointer" onclick="window.location.reload()">Sporting<span>Labs</span></div>
             <div class="hidden md:flex gap-3">
                 <div class="relative group">
-                    <button class="nav-pill">
-                        <span id="header-sport-name">Futebol</span> <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                    </button>
-                    <div class="dropdown-menu group-hover:block" id="sport-menu"></div>
+                    <button class="nav-pill"><span id="header-sport-name">Futebol</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+                    <div class="dropdown-menu group-hover:block absolute top-full left-0 bg-[#111] p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="sport-menu"></div>
                 </div>
                 <div class="relative group">
-                    <button class="nav-pill" id="league-selector-btn">
-                        <img id="header-league-logo" class="w-4 h-4 rounded-full" src=""> 
-                        <span id="header-league-name">Carregando...</span> <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                    </button>
-                    <div class="dropdown-menu group-hover:block" id="league-menu"></div>
+                    <button class="nav-pill" id="league-selector-btn"><img id="header-league-logo" class="w-4 h-4 rounded-full" src=""> <span id="header-league-name">Carregando...</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+                    <div class="dropdown-menu group-hover:block absolute top-full left-0 bg-[#111] p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="league-menu"></div>
                 </div>
             </div>
         </div>
-
-        <div class="search-container hidden md:block">
-            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-            <input type="text" id="global-search-input" class="search-input" placeholder="Buscar jogos, times...">
+        
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="search-container hidden md:block relative w-64">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                <input type="text" id="global-search-input" class="search-input" placeholder="Buscar...">
+            </div>
+            
+            <!-- Theme Toggle -->
+            <button onclick="app.toggleTheme()" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">
+                <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 hidden"></i>
+                <i data-lucide="moon" id="theme-icon-moon" class="w-5 h-5"></i>
+            </button>
         </div>
 
-        <!-- Mobile: League Trigger -->
-        <button class="md:hidden nav-pill !p-2" onclick="app.toggleMobileLeague()">
-            <img id="mob-league-logo" class="w-5 h-5 rounded-full" src="">
-        </button>
+        <button class="md:hidden nav-pill !p-2 ml-2" onclick="app.toggleMobileLeague()"><img id="mob-league-logo" class="w-6 h-6 rounded-full" src=""></button>
     </header>
 
-    <!-- Mobile League Menu (Overlay) -->
-    <div id="mob-league-menu" class="fixed inset-0 z-[80] bg-black/90 backdrop-blur-xl hidden flex-col p-6 pt-24 overflow-y-auto transition-opacity duration-300">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-white">Selecionar Liga</h2>
-            <button onclick="app.toggleMobileLeague()" class="p-2 rounded-full bg-white/10"><i data-lucide="x"></i></button>
-        </div>
-        <div id="mob-league-list" class="grid grid-cols-1 gap-3"></div>
+    <!-- Mobile League Menu -->
+    <div id="mob-league-menu" class="fixed inset-0 z-[80] bg-black/95 backdrop-blur-xl hidden flex-col p-6 pt-24 overflow-y-auto transition-opacity duration-300">
+        <div class="flex justify-between items-center mb-8"><h2 class="text-3xl font-bold text-white">Selecionar Liga</h2><button onclick="app.toggleMobileLeague()" class="p-3 rounded-full bg-white/10 hover:bg-white/20"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+        <div id="mob-league-list" class="grid grid-cols-1 gap-4"></div>
     </div>
 
-    <!-- Main Layout -->
-    <main class="container mx-auto px-4 md:px-0">
-        
-        <!-- Sidebar Navigation (Desktop Only) -->
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Sidebar -->
         <aside class="sidebar hidden md:flex">
             <div class="nav-card">
-                <button onclick="app.setView('matches')" class="nav-btn active" id="desk-nav-matches">
-                    <i data-lucide="calendar-days"></i> Jogos de Hoje
-                </button>
-                <button onclick="app.setView('standings')" class="nav-btn" id="desk-nav-standings">
-                    <i data-lucide="trophy"></i> Classificação
-                </button>
-                <button onclick="app.setView('scorers')" class="nav-btn" id="desk-nav-scorers">
-                    <i data-lucide="target"></i> Artilharia
-                </button>
-                <button onclick="app.setView('news')" class="nav-btn" id="desk-nav-news">
-                    <i data-lucide="zap"></i> Notícias
-                </button>
+                <button onclick="app.setView('matches')" class="nav-btn active" id="desk-nav-matches"><i data-lucide="calendar-days"></i> Jogos de Hoje</button>
+                <button onclick="app.setView('standings')" class="nav-btn" id="desk-nav-standings"><i data-lucide="trophy"></i> Classificação</button>
+                <button onclick="app.setView('scorers')" class="nav-btn" id="desk-nav-scorers"><i data-lucide="target"></i> Artilharia</button>
+                <button onclick="app.setView('news')" class="nav-btn" id="desk-nav-news"><i data-lucide="zap"></i> Notícias</button>
+                <button onclick="app.setView('clubs')" class="nav-btn" id="desk-nav-clubs"><i data-lucide="shield"></i> Clubes</button>
             </div>
-
             <div class="nav-card !bg-transparent !border-0 pl-2">
                 <h3 class="text-xs font-bold text-gray-500 uppercase mb-4 tracking-widest">Ligas Principais</h3>
                 <div id="sidebar-league-list" class="space-y-1"></div>
             </div>
         </aside>
 
-        <!-- Feed Content -->
-        <div class="feed">
-            <!-- Dynamic League Header -->
-            <div class="league-header">
-                <img id="page-league-logo" class="league-logo-large">
-                <div class="relative z-10">
-                    <h1 id="page-league-name" class="text-3xl md:text-5xl font-black text-white leading-none tracking-tight drop-shadow-lg"></h1>
-                    <p class="text-[var(--accent)] font-bold text-sm mt-2 uppercase tracking-widest" id="page-league-country"></p>
+        <!-- Feed -->
+        <div class="feed" id="main-feed">
+            <div class="league-header flex items-center gap-6 mb-8 p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-0"></div>
+                <img id="page-league-logo" class="w-20 h-20 object-contain z-10 drop-shadow-xl">
+                <div class="z-10">
+                    <h1 id="page-league-name" class="text-4xl md:text-5xl font-black text-white leading-none tracking-tight"></h1>
+                    <p class="text-[var(--accent)] font-bold text-sm mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
                 </div>
             </div>
 
-            <!-- Views -->
+            <!-- View: Matches -->
             <div id="view-matches" class="view-section">
-                <div class="flex justify-between items-center mb-6 px-2">
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-xl font-bold">Partidas</h2>
-                        <span id="live-indicator" class="hidden px-2 py-0.5 bg-[var(--accent)] text-black text-[10px] font-bold rounded animate-pulse">AO VIVO</span>
+                <div class="flex justify-between items-center mb-8 px-2">
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-2xl font-bold" style="color: var(--text-primary)">Partidas</h2>
+                        <span id="live-indicator" class="hidden px-3 py-1 bg-[var(--accent)] text-black text-[11px] font-extrabold rounded-full animate-pulse">AO VIVO</span>
                     </div>
-                    <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-32 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje">
+                    <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-36 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)">
                 </div>
-                <div id="matches-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
+                <div id="matches-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
             </div>
 
+            <!-- View: Standings -->
             <div id="view-standings" class="view-section hidden">
-                <div class="section-title mb-6">Tabela de Classificação</div>
-                <div id="standings-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Tabela</div>
+                <div id="standings-container" class="std-table-container"></div>
+                <div id="standings-legend" class="table-legend"></div>
             </div>
 
+            <!-- View: Scorers -->
             <div id="view-scorers" class="view-section hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <div class="section-title !mb-0">Artilheiros</div>
-                    <select id="season-selector" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 cursor-pointer outline-none"></select>
+                <div class="flex justify-between items-center mb-8">
+                    <div class="section-title !mb-0 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Artilheiros</div>
+                    <select id="season-selector" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 cursor-pointer outline-none" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)"></select>
                 </div>
                 <div id="scorers-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
+            <!-- View: News -->
             <div id="view-news" class="view-section hidden">
-                <div class="section-title mb-6">Últimas Notícias</div>
-                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Últimas Notícias</div>
+                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
 
-            <!-- ADSTERRA CONTAINER (ID: 82e48754817fbcaf08d478de3b4f0b72) -->
-            <div class="ad-network-container" id="ad-container-bottom">
-                <span class="ad-label">Publicidade</span>
-                <div id="adsterra-slot"></div>
+            <!-- View: Clubs -->
+            <div id="view-clubs" class="view-section hidden">
+                <div class="text-2xl font-bold mb-8 border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Clubes da Liga</div>
+                <div class="mb-10 relative max-w-xl">
+                    <input type="text" id="wiki-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar clube...">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <div id="clubs-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6"></div>
+                <div id="wiki-detail" class="hidden">
+                    <button onclick="app.closeWiki()" class="mb-6 text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
+                </div>
             </div>
-
         </div>
     </main>
 
-    <!-- Mobile Bottom Navigation (Floating) -->
+    <!-- Mobile Bottom Nav -->
     <nav class="bottom-nav md:hidden">
-        <button class="bottom-nav-item active" onclick="app.setView('matches')" id="mob-nav-matches">
-            <i data-lucide="calendar-days"></i>
-            <span>Jogos</span>
-        </button>
-        <button class="bottom-nav-item" onclick="app.setView('standings')" id="mob-nav-standings">
-            <i data-lucide="trophy"></i>
-            <span>Tabela</span>
-        </button>
-        <button class="bottom-nav-item" onclick="app.setView('scorers')" id="mob-nav-scorers">
-            <i data-lucide="target"></i>
-            <span>Gols</span>
-        </button>
-        <button class="bottom-nav-item" onclick="app.setView('news')" id="mob-nav-news">
-            <i data-lucide="zap"></i>
-            <span>News</span>
-        </button>
+        <button class="bottom-nav-item active" onclick="app.setView('matches')" id="mob-nav-matches"><i data-lucide="calendar-days"></i><span>Jogos</span></button>
+        <button class="bottom-nav-item" onclick="app.setView('standings')" id="mob-nav-standings"><i data-lucide="trophy"></i><span>Tabela</span></button>
+        <button class="bottom-nav-item" onclick="app.setView('scorers')" id="mob-nav-scorers"><i data-lucide="target"></i><span>Gols</span></button>
+        <button class="bottom-nav-item" onclick="app.setView('news')" id="mob-nav-news"><i data-lucide="zap"></i><span>News</span></button>
+        <button class="bottom-nav-item" onclick="app.setView('clubs')" id="mob-nav-clubs"><i data-lucide="shield"></i><span>Clubes</span></button>
     </nav>
 
     <!-- Match Detail Modal -->
     <div id="match-modal" class="modal-overlay">
         <div class="modal-content">
-            <!-- Header Dinâmico -->
-            <div class="relative h-[220px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
+            <div class="relative h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
                 <div class="modal-header-bg" id="modal-bg"></div>
-                <div class="relative z-10 w-full px-8 flex justify-between items-center mt-4">
-                    <div class="flex flex-col items-center w-1/3">
-                        <img id="modal-home-logo" class="w-20 h-20 object-contain mb-3 drop-shadow-2xl">
-                        <h2 id="modal-home-name" class="text-sm md:text-lg font-bold text-white text-center leading-tight">HOME</h2>
+                <div class="relative z-10 w-full px-4 md:px-12 flex justify-between items-center mt-4">
+                    <div class="flex flex-col items-center w-1/3 text-center">
+                        <img id="modal-home-logo" class="w-24 h-24 object-contain mb-4 drop-shadow-2xl">
+                        <h2 id="modal-home-name" class="text-base md:text-xl font-black text-white leading-tight">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
                         <div class="modal-score-display" id="modal-score">0 - 0</div>
-                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] bg-black/60 px-3 py-1 rounded-full backdrop-blur-md border border-white/10 mt-2">AO VIVO</div>
-                        <div id="modal-time" class="text-gray-400 text-xs mt-2 font-mono"></div>
+                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] bg-black/60 px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-3">AO VIVO</div>
+                        <div id="modal-time" class="text-gray-400 text-sm mt-2 font-mono"></div>
                     </div>
-                    <div class="flex flex-col items-center w-1/3">
-                        <img id="modal-away-logo" class="w-20 h-20 object-contain mb-3 drop-shadow-2xl">
-                        <h2 id="modal-away-name" class="text-sm md:text-lg font-bold text-white text-center leading-tight">AWAY</h2>
+                    <div class="flex flex-col items-center w-1/3 text-center">
+                        <img id="modal-away-logo" class="w-24 h-24 object-contain mb-4 drop-shadow-2xl">
+                        <h2 id="modal-away-name" class="text-base md:text-xl font-black text-white leading-tight">AWAY</h2>
                     </div>
                 </div>
-                <button onclick="app.closeModal()" class="absolute top-6 right-6 text-white/50 hover:text-white z-20 bg-black/20 p-2 rounded-full backdrop-blur-md transition hover:bg-white/10"><i data-lucide="x"></i></button>
+                <button onclick="app.closeModal()" class="absolute top-6 right-6 text-white/50 hover:text-white z-20 bg-black/40 p-3 rounded-full backdrop-blur-md transition hover:bg-white/20"><i data-lucide="x"></i></button>
             </div>
-
-            <!-- Content Scrollable -->
-            <div class="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-                <!-- AI Button -->
-                <div class="mb-8">
-                    <button id="ai-analyst-btn" class="ai-btn w-full justify-center shadow-lg">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Análise W3AI da Partida
-                    </button>
-                    <div id="ai-match-result" class="hidden ai-response-box">
-                        <div class="ai-content"></div>
-                    </div>
+            <div class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+                <div class="mb-10">
+                    <button id="ai-analyst-btn" class="ai-btn shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Análise W3AI</button>
+                    <div id="ai-match-result" class="hidden ai-response-box"><div class="ai-content"></div></div>
                 </div>
-
-                <h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Estatísticas</h3>
-                <div id="modal-stats" class="space-y-6 max-w-2xl mx-auto mb-10"></div>
-
-                <h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Linha do Tempo</h3>
-                <div id="modal-timeline" class="space-y-4 relative ml-4 pl-8 border-l border-white/10"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Estatísticas</h3><div id="modal-stats" class="space-y-6"></div></div>
+                    <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Linha do Tempo</h3><div id="modal-timeline" class="space-y-4 relative ml-4 pl-8 border-l border-white/10"></div></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Floating AI Chat -->
+    <!-- Chat Bot -->
     <div class="floating-chat-btn" onclick="app.toggleChat()">
         <i data-lucide="message-square-plus" class="w-6 h-6 text-white"></i>
     </div>
-
     <div class="chat-window" id="chat-window">
         <div class="chat-header">
             <div class="flex items-center gap-2">
                 <i data-lucide="bot" class="text-[#a855f7]"></i>
-                <span class="font-bold text-white text-sm">W3AI Assistant</span>
+                <span class="font-bold" style="color: var(--text-primary)">W3AI Assistant</span>
             </div>
             <button onclick="app.toggleChat()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
         <div class="chat-messages" id="chat-messages">
-            <div class="msg ai">Olá! Sou o assistente de inteligência artificial da SportingLabs. Pergunte-me sobre estatísticas, regras ou história do futebol!</div>
+            <div class="msg ai">Olá! Sou o assistente virtual da SportingLabs. Pergunte-me sobre estatísticas, regras ou história do futebol!</div>
         </div>
         <div class="chat-input-area">
             <input type="text" id="chat-input" class="chat-input" placeholder="Digite sua pergunta...">
@@ -712,30 +564,77 @@
         </div>
     </div>
 
-    <!-- Javascript Logic -->
     <script>
-        const apiKey = "AIzaSyBo-3NH7MNY25x3jEXOQ4tCgW3ErbaczYg"; // API Key configurada
+        const apiKey = "AIzaSyCJHhlX86-hDNcuaZ0MCY5IH5DIp2Pp0qw"; 
+        const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe"; 
 
-        /* =========================================
-           DATA & CONFIGURATION
-           ========================================= */
         const SPORTS_DB = {
             "soccer": {
                 name: "Futebol",
                 leagues: {
-                    "champions": { id: "uefa.champions", name: "Champions League", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png", theme: "theme-champions", bg: "https://wallpapercave.com/wp/wp12864467.jpg" },
-                    "brasileirao": { id: "bra.1", name: "Brasileirão Série A", logo: "https://upload.wikimedia.org/wikipedia/pt/7/75/Campeonato_Brasileiro_de_Futebol_de_2024_-_S%C3%A9rie_A.png", theme: "theme-brasileirao", bg: "https://s2-globo-play.glbimg.com/rHTMAA96-XWwbs6h4pEWeZXlREw=/https://s2.glbimg.com/aNGo_xeD86fO2XMCGBRlpe7rmmg=/i.s3.glbimg.com/v1/AUTH_c3c606ff68e7478091d1ca496f9c5625/internal_photos/bs/2025/L/P/Y3zKUbSTWAUtZN86BTzg/2025-4731-brasileirao-background.jpg" },
-                    "premier": { id: "eng.1", name: "Premier League", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png", theme: "theme-premier", bg: "https://t4.ftcdn.net/jpg/05/99/15/97/360_F_599159727_pFIXrrEiyZnuSw5h0qOjAuVMeQfTYpQM.jpg" },
-                    "laliga": { id: "esp.1", name: "La Liga", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png", theme: "theme-laliga", bg: "https://assets.goal.com/images/v3/blt054a5ddddf1e5a2b/158f203189e94419d7010667f379da35bcf16d8e.jpg" },
-                    "libertadores": { id: "conmebol.libertadores", name: "Libertadores", logo: "https://upload.wikimedia.org/wikipedia/pt/4/4b/Conmebol_Libertadores_Bridgestone_logo.png", theme: "theme-libertadores", bg: "https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2021/01/29/60141dfea45a6.jpeg" },
-                    "sulamericana": { id: "conmebol.sudamericana", name: "Sul-Americana", logo: "https://upload.wikimedia.org/wikipedia/pt/e/e4/Conmebol_Sudamericana_logo.png", theme: "theme-sulamericana", bg: "https://s2-ge.glbimg.com/-M2a9kZoesn0lYulcHlg0hIvCko=/0x0:1280x853/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2022/j/Y/BAJcXyRz6Iz6Svtlf1AA/244ecb3d-2cab-4933-87e0-de24261e1696.jfif" },
-                    "brasileiraob": { id: "bra.2", name: "Brasileirão Série B", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwGf_0cKUUkpEKU_pHoAhgBQsGA3uCDv-D4A&s", theme: "theme-brasileiraob", bg: "https://img.freepik.com/vetores-gratis/papel-de-parede-azul-com-o-titulo-papel-de-parede-azul_483537-4469.jpg" },
-                    "seriea": { id: "ita.1", name: "Serie A", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png", theme: "theme-seriea", bg: "https://cloudfront-us-east-1.images.arcpublishing.com/newr7/L6ZP3CEJ6VMPNFT5HTW7H7L7LY.jpg" },
-                    "bundesliga": { id: "ger.1", name: "Bundesliga", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png", theme: "theme-bundesliga", bg: "https://s2-ge.glbimg.com/F2PP74GbwM16ougDWVMDhZzEp6U=/0x0:1024x659/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/X/Y/3pfuBhTzuraB6EHOqszA/gettyimages-1742744089.jpg" },
-                    "saudi": { id: "ksa.1", name: "Saudi Pro League", logo: "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F2488.png", theme: "theme-saudi", bg: "https://www.365scores.com/pt-br/news/magazine/wp-content/uploads/2023/11/366423961_5646928382077000_2604818796297545939_n-e1699379331310.jpg" },
-                    "eredivisie": { id: "ned.1", name: "Eredivisie", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/11.png", theme: "theme-eredivisie", bg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFGutuFAjY1Jn4Egu_ncE2-IMj_zUDooPWDQ&s" },
-                    "argentina": { id: "arg.1", name: "Liga Profissional", logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/1.png", theme: "theme-argentina", bg: "https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2024/12/Capturar_e27e29.jpg?w=793" },
-                    "mundial": { id: "fifa.club.world.cup", name: "Mundial de Clubes", logo: "https://upload.wikimedia.org/wikipedia/pt/5/5a/2022_FIFA_Club_World_Cup.png", theme: "theme-mundial", bg: "https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2020/04/05/5e8a04ba97834.jpeg" }
+                    "brasileirao": { 
+                        id: "bra.1", apiFootballId: 71, seasonId: 2026, name: "Brasileirão Série A", 
+                        logo: "https://upload.wikimedia.org/wikipedia/pt/7/75/Campeonato_Brasileiro_de_Futebol_de_2024_-_S%C3%A9rie_A.png", 
+                        theme: "theme-brasileirao", 
+                        bg: "https://s2-globo-play.glbimg.com/rHTMAA96-XWwbs6h4pEWeZXlREw=/https://s2.glbimg.com/aNGo_xeD86fO2XMCGBRlpe7rmmg=/i.s3.glbimg.com/v1/AUTH_c3c606ff68e7478091d1ca496f9c5625/internal_photos/bs/2025/L/P/Y3zKUbSTWAUtZN86BTzg/2025-4731-brasileirao-background.jpg",
+                        clubs: ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético Mineiro", "Grêmio", "Internacional", "Fluminense", "Botafogo", "Vasco da Gama", "Cruzeiro", "Bahia", "Fortaleza", "Athletico Paranaense", "Red Bull Bragantino", "Cuiabá", "Santos", "Goiás", "Coritiba", "América Mineiro", "Vitória", "Criciúma", "Juventude", "Atlético Goianiense", "Sport Recife", "Ceará"]
+                    },
+                    "brasileiraob": { 
+                        id: "bra.2", apiFootballId: 72, seasonId: 2026, name: "Brasileirão Série B", 
+                        logo: "https://upload.wikimedia.org/wikipedia/pt/thumb/2/2d/Campeonato_Brasileiro_de_Futebol_S%C3%A9rie_B_2025.png/250px-Campeonato_Brasileiro_de_Futebol_S%C3%A9rie_B_2025.png", 
+                        theme: "theme-brasileiraob", 
+                        bg: "https://assets.goal.com/images/v3/bltcc999d0167120e29/brasileir%C3%A3o_s%C3%A9rie_b_ta%C3%A7a.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+                        clubs: ["Santos", "Ponte Preta", "Guarani", "Novorizontino", "Mirassol", "Vila Nova", "Ceará", "Sport", "CRB", "Botafogo-SP", "Ituano", "Chapecoense", "Avaí", "Amazonas", "Paysandu", "Operário-PR", "Coritiba", "América-MG", "Goiás", "Brusque"]
+                    },
+                    "premier": { 
+                        id: "eng.1", apiFootballId: 39, seasonId: 2026, name: "Premier League", 
+                        logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png", 
+                        theme: "theme-premier", 
+                        bg: "https://t4.ftcdn.net/jpg/05/99/15/97/360_F_599159727_pFIXrrEiyZnuSw5h0qOjAuVMeQfTYpQM.jpg",
+                        clubs: ["Arsenal", "Manchester City", "Liverpool", "Manchester United", "Chelsea", "Tottenham", "Newcastle", "Aston Villa", "West Ham", "Brighton", "Everton", "Wolverhampton", "Fulham", "Crystal Palace", "Brentford", "Nottingham Forest"]
+                    },
+                    "laliga": { 
+                        id: "esp.1", apiFootballId: 140, seasonId: 2026, name: "La Liga", 
+                        logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png", 
+                        theme: "theme-laliga", 
+                        bg: "https://assets.goal.com/images/v3/blt054a5ddddf1e5a2b/158f203189e94419d7010667f379da35bcf16d8e.jpg",
+                        clubs: ["Real Madrid", "Barcelona", "Atletico Madrid", "Sevilla", "Valencia", "Real Sociedad", "Villarreal", "Real Betis", "Athletic Club", "Girona", "Celta Vigo", "Rayo Vallecano", "Mallorca", "Osasuna"]
+                    },
+                    "champions": { 
+                        id: "uefa.champions", apiFootballId: 2, seasonId: 2026, name: "Champions League", 
+                        logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png", 
+                        theme: "theme-champions", 
+                        bg: "https://editorial.uefa.com/resources/027f-1793cd516cbd-e4e5d9d1aedf-1000/fbl-eur-c1-draw.jpeg",
+                        clubs: ["Real Madrid", "Manchester City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Borussia Dortmund", "Atletico Madrid", "AC Milan", "Porto", "Benfica"]
+                    },
+                    "libertadores": { 
+                        id: "conmebol.libertadores", apiFootballId: 13, seasonId: 2026, name: "Libertadores", 
+                        logo: "https://upload.wikimedia.org/wikipedia/pt/4/4b/Conmebol_Libertadores_Bridgestone_logo.png", 
+                        theme: "theme-libertadores", 
+                        bg: "https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2021/01/29/60141dfea45a6.jpeg",
+                        clubs: ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "São Paulo", "Atletico Mineiro", "Nacional", "Peñarol", "Fluminense", "Grêmio", "Internacional", "Olimpia", "Colo-Colo"]
+                    },
+                    "seriea": { 
+                        id: "ita.1", apiFootballId: 135, seasonId: 2026, name: "Serie A", 
+                        logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png", 
+                        theme: "theme-seriea", 
+                        bg: "https://cloudfront-us-east-1.images.arcpublishing.com/newr7/L6ZP3CEJ6VMPNFT5HTW7H7L7LY.jpg",
+                        clubs: ["Juventus", "Inter Milan", "AC Milan", "Napoli", "Roma", "Lazio", "Atalanta", "Fiorentina", "Bologna", "Torino"]
+                    },
+                    "bundesliga": { 
+                        id: "ger.1", apiFootballId: 78, seasonId: 2026, name: "Bundesliga", 
+                        logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png", 
+                        theme: "theme-bundesliga", 
+                        bg: "https://s2-ge.glbimg.com/F2PP74GbwM16ougDWVMDhZzEp6U=/0x0:1024x659/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/X/Y/3pfuBhTzuraB6EHOqszA/gettyimages-1742744089.jpg",
+                        clubs: ["Bayern Munich", "Borussia Dortmund", "Bayer Leverkusen", "RB Leipzig", "Eintracht Frankfurt", "Wolfsburg", "Hoffenheim"]
+                    },
+                    "saudi": { 
+                        id: "ksa.1", apiFootballId: 307, seasonId: 2026, name: "Saudi Pro League", 
+                        logo: "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F2488.png", 
+                        theme: "theme-saudi", 
+                        bg: "https://www.365scores.com/pt-br/news/magazine/wp-content/uploads/2023/11/366423961_5646928382077000_2604818796297545939_n-e1699379331310.jpg",
+                        clubs: ["Al Hilal", "Al Nassr", "Al Ittihad", "Al Ahli", "Al Ettifaq", "Al Shabab"]
+                    }
                 }
             }
         };
@@ -743,85 +642,74 @@
         const API_CONFIG = {
             ESPN_BASE_SITE: 'https://site.api.espn.com/apis/site/v2/sports',
             ESPN_BASE_WEB: 'https://site.web.api.espn.com/apis',
+            APIFOOTBALL_BASE_URL: 'https://v3.football.api-sports.io',
             getScoreboardUrl: (s, l, d) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/scoreboard?lang=pt&region=br&dates=${d}&limit=100`,
             getStandingsUrl: (l) => `${API_CONFIG.ESPN_BASE_WEB}/v2/sports/soccer/${l}/standings?lang=pt`,
             getGameSummaryUrl: (l, e) => `${API_CONFIG.ESPN_BASE_SITE}/soccer/${l}/summary?event=${e}&lang=pt`,
             getNewsUrl: (s, l) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/news?lang=pt&region=br`,
-            getLeagueLeadersUrl: (s, l, y) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/statistics?lang=pt&region=br&season=${y}`,
+            getTeamsUrl: (s, l) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/teams?lang=pt&region=br`,
+            getApiFootballScorersUrl: (leagueId, season) => `${API_CONFIG.APIFOOTBALL_BASE_URL}/players/topscorers?league=${leagueId}&season=${season}`,
+            getWikiSearchUrl: (q) => `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`,
+            getWikiDetailUrl: (t) => `https://pt.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&exintro&explaintext&pithumbsize=500&titles=${encodeURIComponent(t)}&format=json&origin=*`,
             formatDate: (date) => date.toISOString().slice(0, 10).replace(/-/g, "")
         };
 
-        const AdManager = {
-            // Configuração do Adsterra
-            adConfig: {
-                key: '9d3aedd69475dcae677afe86847f32cc',
-                format: 'iframe',
-                height: 60,
-                width: 468,
-                params: {}
-            },
-
-            init() {
-                const container = document.getElementById('adsterra-slot');
-                if (!container) return;
-
-                // Cria o elemento de script com as opções do Adsterra
-                const scriptOptions = document.createElement('script');
-                scriptOptions.type = 'text/javascript';
-                scriptOptions.innerHTML = `
-                    atOptions = {
-                        'key' : '${this.adConfig.key}',
-                        'format' : '${this.adConfig.format}',
-                        'height' : ${this.adConfig.height},
-                        'width' : ${this.adConfig.width},
-                        'params' : {}
-                    };
-                `;
-                container.appendChild(scriptOptions);
-
-                // Cria o script de invocação do Adsterra
-                const scriptInvoke = document.createElement('script');
-                scriptInvoke.type = 'text/javascript';
-                scriptInvoke.src = 'https://www.highperformanceformat.com/9d3aedd69475dcae677afe86847f32cc/invoke.js'; // URL de exemplo, substitua pela correta do Adsterra se diferente
-                container.appendChild(scriptInvoke);
-
-                console.log('W3Ads: Adsterra integrated.');
-            }
-        };
-
         const app = {
-            state: {
-                currentSport: 'soccer',
-                currentLeague: 'brasileirao',
-                currentDate: new Date(),
-                view: 'matches',
-                selectedSeason: new Date().getFullYear(),
-                currentMatchData: null // Stores data for AI context
-            },
+            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark' },
 
             init() {
-                this.renderNav();
-                this.renderSeasonSelector();
-                this.setupEvents();
-                this.loadLeague(this.state.currentLeague);
-                AdManager.init(); 
-                setTimeout(() => document.getElementById('global-loader').classList.add('loader-hidden'), 800);
+                try {
+                    this.initTheme();
+                    this.renderNav();
+                    this.renderSeasonSelector();
+                    this.setupEvents();
+                    this.loadLeague(this.state.currentLeague);
+                    setTimeout(() => document.getElementById('global-loader').classList.add('loader-hidden'), 800);
+                } catch(e) { console.error("W3Labs Init Error:", e); }
+            },
+
+            initTheme() {
+                const savedTheme = localStorage.getItem('sporting_theme');
+                if (savedTheme) {
+                    this.setTheme(savedTheme);
+                } else {
+                    this.setTheme('dark'); 
+                }
+            },
+
+            toggleTheme() {
+                const newTheme = this.state.theme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme);
+            },
+
+            setTheme(theme) {
+                this.state.theme = theme;
+                const body = document.body;
+                const moon = document.getElementById('theme-icon-moon');
+                const sun = document.getElementById('theme-icon-sun');
+
+                if (theme === 'light') {
+                    body.classList.add('light-mode');
+                    moon.classList.remove('hidden');
+                    sun.classList.add('hidden');
+                } else {
+                    body.classList.remove('light-mode');
+                    moon.classList.add('hidden');
+                    sun.classList.remove('hidden');
+                }
+                localStorage.setItem('sporting_theme', theme);
+                if(window.lucide) window.lucide.createIcons();
             },
 
             setupEvents() {
-                flatpickr("#date-picker", {
-                    defaultDate: "today", dateFormat: "d/m/Y", locale: "pt", theme: "dark",
-                    onChange: (selectedDates) => {
-                        this.state.currentDate = selectedDates[0];
-                        if(this.state.view === 'matches') this.loadLeague(this.state.currentLeague);
-                    }
-                });
-                document.getElementById('season-selector').addEventListener('change', (e) => {
-                    this.state.selectedSeason = e.target.value;
-                    if(this.state.view === 'scorers') this.fetchScorers(SPORTS_DB.soccer.leagues[this.state.currentLeague].id);
-                });
+                if(typeof flatpickr !== 'undefined') {
+                    flatpickr("#date-picker", { defaultDate: "today", dateFormat: "d/m/Y", locale: "pt", theme: "dark", onChange: (selectedDates) => { this.state.currentDate = selectedDates[0]; if(this.state.view === 'matches') this.loadLeague(this.state.currentLeague); } });
+                }
+                const seasonSelector = document.getElementById('season-selector');
+                if (seasonSelector) { seasonSelector.addEventListener('change', (e) => { this.state.selectedSeason = e.target.value; if(this.state.view === 'scorers') this.fetchScorers(this.state.currentLeague); }); }
+                const wikiSearchInput = document.getElementById('wiki-search-input');
+                if (wikiSearchInput) { wikiSearchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.searchClubs(); }); }
                 
-                // Chat Input Enter Key
                 document.getElementById('chat-input').addEventListener('keypress', (e) => {
                     if(e.key === 'Enter') this.sendChatMessage();
                 });
@@ -829,237 +717,383 @@
 
             renderSeasonSelector() {
                 const sel = document.getElementById('season-selector');
-                const curr = new Date().getFullYear();
-                for(let i=0;i<10;i++) {
-                    const opt = document.createElement('option');
-                    opt.value = curr-i; opt.innerText = curr-i;
-                    opt.className = 'text-black';
-                    sel.appendChild(opt);
-                }
+                if (!sel) return;
+                sel.innerHTML = '';
+                for(let i=0;i<5;i++) { const opt = document.createElement('option'); opt.value = 2026-i; opt.innerText = 2026-i; opt.className = 'text-black'; sel.appendChild(opt); }
             },
 
             renderNav() {
                 const menu = document.getElementById('league-menu');
                 const sidebar = document.getElementById('sidebar-league-list');
                 const mobList = document.getElementById('mob-league-list');
-                menu.innerHTML = ''; sidebar.innerHTML = ''; mobList.innerHTML = '';
+                if (menu) menu.innerHTML = ''; if (sidebar) sidebar.innerHTML = ''; if (mobList) mobList.innerHTML = '';
 
                 Object.entries(SPORTS_DB.soccer.leagues).forEach(([key, league]) => {
-                    // Dropdown
-                    const item = document.createElement('div');
-                    item.className = 'dropdown-item';
-                    item.innerHTML = `<img src="${league.logo}"> ${league.name}`;
-                    item.onclick = () => this.changeLeague(key);
-                    menu.appendChild(item);
-
-                    // Sidebar Item
-                    const sideItem = document.createElement('button');
-                    sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group';
-                    sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition"> <span class="font-medium">${league.name}</span>`;
-                    sideItem.onclick = () => this.changeLeague(key);
-                    sidebar.appendChild(sideItem);
-
-                    // Mobile Item
-                    const mobItem = document.createElement('button');
-                    mobItem.className = 'flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-full text-left';
-                    mobItem.innerHTML = `<img src="${league.logo}" class="w-8 h-8 object-contain"> <span class="text-white font-bold">${league.name}</span>`;
-                    mobItem.onclick = () => { this.changeLeague(key); this.toggleMobileLeague(); };
-                    mobList.appendChild(mobItem);
+                    if (menu) { const item = document.createElement('div'); item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white'; item.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${league.name}`; item.onclick = () => this.changeLeague(key); menu.appendChild(item); }
+                    if (sidebar) { const sideItem = document.createElement('button'); sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group'; sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition" onerror="this.style.display='none'"> <span class="font-medium">${league.name}</span>`; sideItem.onclick = () => this.changeLeague(key); sidebar.appendChild(sideItem); }
+                    if (mobList) { const mobItem = document.createElement('button'); mobItem.className = 'flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-full text-left hover:bg-white/10 transition'; mobItem.innerHTML = `<img src="${league.logo}" class="w-8 h-8 object-contain" onerror="this.style.display='none'"> <span class="text-white font-bold text-lg">${league.name}</span>`; mobItem.onclick = () => { this.changeLeague(key); this.toggleMobileLeague(); }; mobList.appendChild(mobItem); }
                 });
             },
 
-            changeLeague(key) {
-                this.state.currentLeague = key;
-                this.loadLeague(key);
-            },
+            changeLeague(key) { this.state.currentLeague = key; this.loadLeague(key); },
 
             async loadLeague(key) {
                 const league = SPORTS_DB.soccer.leagues[key];
                 const dateStr = API_CONFIG.formatDate(this.state.currentDate);
                 
-                document.getElementById('header-league-name').innerText = league.name;
-                document.getElementById('header-league-logo').src = league.logo;
-                document.getElementById('mob-league-logo').src = league.logo;
-                document.getElementById('page-league-name').innerText = league.name;
-                document.getElementById('page-league-logo').src = league.logo;
-                document.body.style.backgroundImage = `url('${league.bg}'), radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8), #050507)`; 
-                document.body.style.backgroundBlendMode = 'overlay';
+                const setText = (id, txt) => { const el = document.getElementById(id); if(el) el.innerText = txt; };
+                const setSrc = (id, src) => { const el = document.getElementById(id); if(el) el.src = src; };
 
-                const grid = document.getElementById('matches-grid');
-                grid.className = `grid grid-cols-1 xl:grid-cols-2 gap-4 ${league.theme}`;
+                setText('header-league-name', league.name);
+                setSrc('header-league-logo', league.logo);
+                setSrc('mob-league-logo', league.logo);
+                setText('page-league-name', league.name);
+                setSrc('page-league-logo', league.logo);
+                setText('page-league-country', "Temporada " + this.state.selectedSeason);
+
+                const bgEl = document.getElementById('app-background');
+                if (bgEl) { bgEl.style.backgroundImage = `url('${league.bg}')`; }
+                
+                const feed = document.querySelector('.feed');
+                if (feed) feed.className = `feed ${league.theme}`;
 
                 if(this.state.view === 'matches') await this.fetchMatches(league.id, dateStr);
                 if(this.state.view === 'standings') await this.fetchStandings(league.id);
-                if(this.state.view === 'scorers') await this.fetchScorers(league.id);
+                if(this.state.view === 'scorers') await this.fetchScorers(key);
                 if(this.state.view === 'news') await this.fetchNews(league.id);
+                if(this.state.view === 'clubs') this.renderClubs(key);
             },
 
-            /* FETCHERS */
             async fetchMatches(id, date) {
-                const grid = document.getElementById('matches-grid');
+                const grid = document.getElementById('matches-grid'); if(!grid) return;
                 grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
                 try {
-                    const res = await fetch(API_CONFIG.getScoreboardUrl('soccer', id, date));
-                    const data = await res.json();
-                    this.renderMatches(data.events || []);
-                } catch { grid.innerHTML = '<div class="text-center text-red-400 col-span-full">Erro de conexão.</div>'; }
+                    const res = await fetch(API_CONFIG.getScoreboardUrl('soccer', id, date)); const data = await res.json(); this.renderMatches(data.events || []);
+                } catch { grid.innerHTML = '<div class="text-center text-red-400 col-span-full">Erro ao carregar partidas.</div>'; }
             },
 
             renderMatches(events) {
-                const grid = document.getElementById('matches-grid');
-                grid.innerHTML = '';
-                if(!events.length) { grid.innerHTML = '<div class="text-center text-gray-500 col-span-full py-10">Sem jogos hoje.</div>'; return; }
-                
-                const hasLive = events.some(e => e.status.type.state === 'in');
-                document.getElementById('live-indicator').classList.toggle('hidden', !hasLive);
+                const grid = document.getElementById('matches-grid'); if(!grid) return; grid.innerHTML = '';
+                if(!events.length) { grid.innerHTML = '<div class="text-center text-gray-500 col-span-full py-10 font-medium">Nenhum jogo programado para hoje.</div>'; return; }
                 const lConfig = SPORTS_DB.soccer.leagues[this.state.currentLeague];
+                const liveIndicator = document.getElementById('live-indicator');
+                if(liveIndicator) liveIndicator.classList.toggle('hidden', !events.some(e => e.status.type.state === 'in'));
 
                 events.forEach(ev => {
                     const comp = ev.competitions[0];
                     const home = comp.competitors.find(c => c.homeAway === 'home');
                     const away = comp.competitors.find(c => c.homeAway === 'away');
-                    const isLive = ev.status.type.state === 'in';
-                    const time = isLive ? `<span class="text-[var(--accent)] animate-pulse">${ev.status.displayClock}'</span>` : ev.status.type.shortDetail;
+                    const time = ev.status.type.state === 'in' ? `<span class="text-[var(--accent)] animate-pulse">${ev.status.displayClock}'</span>` : ev.status.type.shortDetail;
+                    const card = document.createElement('div'); card.className = 'match-card'; card.onclick = () => this.openMatch(ev.id);
+                    
+                    const leagueLogo = lConfig.logo;
 
-                    const card = document.createElement('div');
-                    card.className = 'match-card';
-                    card.onclick = () => this.openMatch(ev.id);
                     card.innerHTML = `
                         <div class="tv-scoreboard">
-                            <div class="tv-logo-box"><img src="${lConfig.logo}"></div>
-                            <div class="tv-team-box home"><span class="truncate">${home.team.shortDisplayName}</span><img src="${home.team.logo||''}"></div>
-                            <!-- W3Labs Fix: Use '0' if undefined -->
-                            <div class="tv-score-box">${home.score || '0'} - ${away.score || '0'}</div>
-                            <div class="tv-team-box away"><img src="${away.team.logo||''}"><span class="truncate">${away.team.shortDisplayName}</span></div>
-                            <div class="tv-time-box">${time}</div>
+                            <div class="tv-scoreboard-bg"></div>
+                            <div class="tv-team-box home"><span>${home.team.shortDisplayName}</span><img src="${home.team.logo||''}"></div>
+                            <div class="tv-score-center">
+                                <div class="tv-score">${home.score || '0'} - ${away.score || '0'}</div>
+                                <div class="tv-time">${time}</div>
+                            </div>
+                            <div class="tv-team-box away"><img src="${away.team.logo||''}"><span>${away.team.shortDisplayName}</span></div>
                         </div>
-                        <div class="match-footer">
-                            <span class="truncate w-1/2">${ev.name}</span>
-                            <span class="truncate w-1/2 text-right text-xs opacity-70"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${comp.venue?.fullName||'N/A'}</span>
-                        </div>
-                    `;
+                        <div class="match-footer"><span class="truncate w-1/2 font-bold">${ev.name}</span><span class="truncate w-1/2 text-right text-xs opacity-70"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${comp.venue?.fullName||'Estádio'}</span></div>`;
                     grid.appendChild(card);
                 });
-                lucide.createIcons();
+                if(window.lucide) window.lucide.createIcons();
             },
 
             async fetchStandings(id) {
-                const con = document.getElementById('standings-container');
+                const con = document.getElementById('standings-container'); if(!con) return;
+                const legend = document.getElementById('standings-legend'); if(legend) legend.innerHTML = '';
                 con.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                
                 try {
-                    const res = await fetch(API_CONFIG.getStandingsUrl(id));
-                    const data = await res.json();
-                    con.innerHTML = '';
+                    const res = await fetch(API_CONFIG.getStandingsUrl(id)); const data = await res.json(); con.innerHTML = '';
+                    
+                    // Determine zones based on League ID
+                    let zones = {};
+                    let legendItems = [];
+                    
+                    if (this.state.currentLeague === 'brasileirao') {
+                        zones = { 1: 'libertadores', 2: 'libertadores', 3: 'libertadores', 4: 'libertadores', 5: 'prelibertadores', 6: 'prelibertadores', 7: 'sulamericana', 8: 'sulamericana', 9: 'sulamericana', 10: 'sulamericana', 11: 'sulamericana', 12: 'sulamericana', 17: 'rebaixamento', 18: 'rebaixamento', 19: 'rebaixamento', 20: 'rebaixamento' };
+                        legendItems = [
+                            { color: 'bg-libertadores', text: 'Libertadores' },
+                            { color: 'bg-prelibertadores', text: 'Pré-Libertadores' },
+                            { color: 'bg-sulamericana', text: 'Sul-Americana' },
+                            { color: 'bg-rebaixamento', text: 'Rebaixamento' }
+                        ];
+                    } else if (this.state.currentLeague === 'brasileiraob') {
+                        zones = { 1: 'acesso', 2: 'acesso', 3: 'acesso', 4: 'acesso', 17: 'rebaixamento', 18: 'rebaixamento', 19: 'rebaixamento', 20: 'rebaixamento' };
+                        legendItems = [
+                            { color: 'bg-acesso', text: 'Acesso à Série A' },
+                            { color: 'bg-rebaixamento', text: 'Rebaixamento' }
+                        ];
+                    } else if (this.state.currentLeague === 'premier' || this.state.currentLeague === 'laliga' || this.state.currentLeague === 'seriea' || this.state.currentLeague === 'bundesliga') {
+                         zones = { 1: 'libertadores', 2: 'libertadores', 3: 'libertadores', 4: 'libertadores', 5: 'sulamericana', 6: 'sulamericana', 18: 'rebaixamento', 19: 'rebaixamento', 20: 'rebaixamento' };
+                         legendItems = [ { color: 'bg-libertadores', text: 'Champions League' }, { color: 'bg-sulamericana', text: 'Europa League' }, { color: 'bg-rebaixamento', text: 'Rebaixamento' } ];
+                    }
+
+                    if (legend) {
+                        legend.innerHTML = legendItems.map(i => `<div class="legend-item"><div class="legend-dot ${i.color}"></div><span>${i.text}</span></div>`).join('');
+                    }
+
                     (data.children||[]).forEach(g => {
-                        const card = document.createElement('div');
-                        card.className = 'glass-panel overflow-hidden';
-                        let html = `<div class="p-4 border-b border-white/5 font-bold text-sm uppercase text-gray-400 bg-white/5">${g.name}</div>`;
+                        const card = document.createElement('div'); card.className = 'glass-panel overflow-hidden mb-6';
+                        let html = `<div class="p-5 border-b border-white/5 font-bold text-lg uppercase text-[var(--accent)] bg-white/5 tracking-wider">${g.name}</div>`;
+                        html += `<div class="std-table-header"><div>#</div><div class="text-left">Clube</div><div class="text-center">Pts</div><div class="text-center">J</div><div class="text-center">V</div><div class="text-center">E</div><div class="text-center">D</div><div class="text-center">SG</div><div class="text-center">%</div></div>`;
                         (g.standings.entries||[]).forEach((e,i) => {
                             const val = n => e.stats.find(s=>s.name===n)?.value||0;
-                            html += `<div class="std-row transition-colors hover:bg-white/5">
-                                <span class="font-bold ${i<4?'text-[var(--accent)]':(i>16?'text-red-400':'text-gray-500')}">${i+1}</span>
-                                <div class="team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate">${e.team.shortDisplayName}</span></div>
-                                <span class="font-bold text-white text-center">${val('points')}</span>
-                                <span class="text-gray-500 text-center">${val('gamesPlayed')}</span>
-                                <span class="text-gray-500 text-center">${val('wins')}</span>
-                                <span class="text-gray-500 text-center">${val('ties')}</span>
-                                <span class="text-gray-500 text-center">${val('losses')}</span>
+                            const rank = i + 1;
+                            const zone = zones[rank] ? `zone-${zones[rank]}` : 'zone-neutra';
+                            const bgZone = zones[rank] ? `bg-${zones[rank]}` : 'bg-neutra';
+                            
+                            html += `<div class="std-row">
+                                <div class="rank-cell"><div class="rank-dot ${bgZone}"></div><span>${rank}</span></div>
+                                <div class="team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate text-white">${e.team.shortDisplayName}</span></div>
+                                <span class="font-bold text-center text-lg">${val('points')}</span>
+                                <span class="opacity-70 text-center">${val('gamesPlayed')}</span>
+                                <span class="opacity-70 text-center">${val('wins')}</span>
+                                <span class="opacity-70 text-center">${val('ties')}</span>
+                                <span class="opacity-70 text-center">${val('losses')}</span>
+                                <span class="opacity-70 text-center">${val('pointDifferential')}</span>
+                                <span class="opacity-70 text-center text-xs">${Math.round((val('points')/(val('gamesPlayed')*3))*100)}%</span>
                             </div>`;
                         });
-                        card.innerHTML = html;
-                        con.appendChild(card);
+                        card.innerHTML = html; con.appendChild(card);
                     });
                 } catch { con.innerHTML = '<div class="text-center text-red-400">Erro na tabela.</div>'; }
             },
 
-            async fetchScorers(id) {
-                const g = document.getElementById('scorers-grid');
+            async fetchScorers(leagueKey) {
+                const g = document.getElementById('scorers-grid'); if (!g) return;
                 g.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                const leagueData = SPORTS_DB.soccer.leagues[leagueKey];
+                if (!leagueData || !leagueData.apiFootballId) { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Dados indisponíveis.</div>'; return; }
                 try {
-                    const res = await fetch(API_CONFIG.getLeagueLeadersUrl('soccer', id, this.state.selectedSeason));
-                    const d = await res.json();
-                    const cat = d.stats?.categories?.find(c=>c.name==='goals') || d.categories?.find(c=>c.name==='goals');
-                    if(cat?.leaders) {
+                    const res = await fetch(API_CONFIG.getApiFootballScorersUrl(leagueData.apiFootballId, this.state.selectedSeason), { headers: { 'x-apisports-key': APIFOOTBALL_KEY } });
+                    const data = await res.json();
+                    if(data.response && data.response.length > 0) {
                         g.innerHTML = '';
-                        cat.leaders.forEach((l,i) => {
-                            g.innerHTML += `<div class="scorer-card">
-                                <div class="scorer-rank">${i+1}</div>
-                                <img src="${l.athlete.headshot?.href}" class="scorer-img">
-                                <div class="flex-1">
-                                    <div class="font-bold text-white">${l.athlete.displayName}</div>
-                                    <div class="text-xs text-gray-400">${l.team?.displayName}</div>
-                                </div>
-                                <div class="scorer-goals">${l.value}</div>
-                            </div>`;
+                        data.response.slice(0, 20).forEach((item, i) => {
+                            const p = item.player; const s = item.statistics[0];
+                            g.innerHTML += `<div class="scorer-card"><div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm text-gray-400 font-medium">${s.team.name}</div></div><div class="scorer-goals">${s.goals.total}</div></div>`;
                         });
-                    } else { g.innerHTML = '<div class="col-span-full text-center text-gray-500">Sem dados.</div>'; }
-                } catch { g.innerHTML = '<div class="col-span-full text-center text-red-400">Erro.</div>'; }
+                    } else { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Sem dados.</div>'; }
+                } catch { g.innerHTML = '<div class="col-span-full text-center text-red-400">Erro API.</div>'; }
             },
 
             async fetchNews(id) {
-                const g = document.getElementById('news-grid');
+                const g = document.getElementById('news-grid'); if (!g) return;
                 g.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
                 try {
-                    const res = await fetch(API_CONFIG.getNewsUrl('soccer', id));
-                    const d = await res.json();
-                    g.innerHTML = '';
+                    const res = await fetch(API_CONFIG.getNewsUrl('soccer', id)); const d = await res.json(); g.innerHTML = '';
                     (d.articles||[]).slice(0,9).forEach(n => {
                         if(!n.images?.length) return;
-                        g.innerHTML += `<a href="${n.links?.web?.href}" target="_blank" class="news-card">
-                            <img src="${n.images[0].url}" class="news-img">
-                            <div class="news-content"><h3 class="news-title">${n.headline}</h3><p class="news-meta">${n.published||'Recente'}</p></div>
+                        g.innerHTML += `<a href="${n.links?.web?.href}" target="_blank" class="news-card group block">
+                            <div class="news-img-wrapper"><img src="${n.images[0].url}" class="news-img"></div>
+                            <div class="news-content">
+                                <div><div class="news-category">Notícia</div><h3 class="news-title group-hover:text-[var(--accent)] transition">${n.headline}</h3></div>
+                                <p class="news-footer"><i data-lucide="clock" class="w-3 h-3"></i> ${n.published||'Recente'}</p>
+                            </div>
                         </a>`;
                     });
+                    if(window.lucide) window.lucide.createIcons();
                 } catch { g.innerHTML = '<div class="text-center">Sem notícias.</div>'; }
             },
 
-            /* --- AI FEATURES --- */
-            async callGeminiAPI(prompt) {
-                if(!apiKey) return "**Erro:** Chave da API Gemini não configurada. Por favor, configure a chave no código.";
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            async renderClubs(leagueKey) {
+                const container = document.getElementById('clubs-grid');
+                const wikiDetail = document.getElementById('wiki-detail');
+                const grid = document.getElementById('clubs-grid');
+                if (!container) return;
+                wikiDetail.classList.add('hidden'); grid.classList.remove('hidden');
+                
+                const league = SPORTS_DB.soccer.leagues[leagueKey];
+                const clubsList = league.clubs || [];
+                container.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
+
+                let espnTeamsMap = {};
                 try {
-                    const response = await fetch(url, {
+                    const res = await fetch(API_CONFIG.getTeamsUrl('soccer', league.id));
+                    const data = await res.json();
+                    if(data.sports && data.sports[0].leagues && data.sports[0].leagues[0].teams) {
+                        data.sports[0].leagues[0].teams.forEach(t => {
+                            espnTeamsMap[t.team.displayName] = t.team.logos?.[0]?.href;
+                            espnTeamsMap[t.team.shortDisplayName] = t.team.logos?.[0]?.href;
+                            espnTeamsMap[t.team.name] = t.team.logos?.[0]?.href;
+                        });
+                    }
+                } catch(e) {}
+
+                container.innerHTML = '';
+                clubsList.forEach(clubName => {
+                    const card = document.createElement('div');
+                    card.className = 'club-grid-card';
+                    card.onclick = () => this.loadWikiDetail(clubName);
+                    
+                    let logoUrl = espnTeamsMap[clubName] || null;
+                    if (!logoUrl) {
+                        const key = Object.keys(espnTeamsMap).find(k => k.includes(clubName) || clubName.includes(k));
+                        if(key) logoUrl = espnTeamsMap[key];
+                    }
+                    const imgContent = logoUrl ? `<img src="${logoUrl}" alt="${clubName}">` : `<div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl">⚽</div>`;
+                    card.innerHTML = `${imgContent}<span>${clubName}</span>`;
+                    container.appendChild(card);
+                });
+            },
+
+            async searchClubs() {
+                const q = document.getElementById('wiki-search-input').value;
+                if(!q) return;
+                this.loadWikiDetail(q);
+            },
+
+            async loadWikiDetail(searchTerm) {
+                const container = document.getElementById('wiki-content-area');
+                const wikiDetail = document.getElementById('wiki-detail');
+                const grid = document.getElementById('clubs-grid');
+                if (!container) return;
+                grid.classList.add('hidden'); wikiDetail.classList.remove('hidden');
+                container.innerHTML = '<div class="flex flex-col items-center justify-center py-20"><div class="loader-ring"></div></div>';
+
+                try {
+                    const queryTerm = searchTerm.includes("FC") || searchTerm.includes("Real") ? searchTerm : searchTerm + " futebol clube";
+                    const searchRes = await fetch(API_CONFIG.getWikiSearchUrl(queryTerm));
+                    const searchData = await searchRes.json();
+                    
+                    if(!searchData.query || !searchData.query.search || searchData.query.search.length === 0) {
+                         container.innerHTML = `<p class="text-center text-red-400">Clube "${searchTerm}" não encontrado.</p>`; return;
+                    }
+
+                    const bestMatchTitle = searchData.query.search[0].title;
+                    const detailRes = await fetch(API_CONFIG.getWikiDetailUrl(bestMatchTitle));
+                    const detailData = await detailRes.json();
+                    const page = Object.values(detailData.query.pages)[0];
+                    
+                    let html = `<h2 class="text-4xl mb-6 font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2>`;
+                    if(page.thumbnail) html += `<img src="${page.thumbnail.source}" class="w-full max-w-2xl mx-auto rounded-3xl mb-10 shadow-2xl border border-white/10">`;
+                    html += `<div class="text-lg leading-relaxed text-gray-400" style="color: var(--text-primary)">${page.extract ? page.extract.replace(/\n/g, '<br><br>') : 'Sem descrição.'}</div>`;
+                    
+                    container.innerHTML = html;
+                } catch(e) { container.innerHTML = '<p class="text-center text-red-400">Erro de conexão.</p>'; }
+            },
+
+            closeWiki() {
+                document.getElementById('wiki-detail').classList.add('hidden');
+                document.getElementById('clubs-grid').classList.remove('hidden');
+            },
+
+            async callGeminiAPI(prompt) {
+                if(!apiKey) return "**Erro:** Chave da API Gemini não configurada.";
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                     });
                     const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui analisar no momento.";
-                } catch(e) { console.error(e); return "Erro ao conectar com a IA."; }
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Erro na análise.";
+                } catch(e) { return "Erro na conexão."; }
             },
 
             async analyzeMatchAI() {
                 const btn = document.getElementById('ai-analyst-btn');
                 const resultBox = document.getElementById('ai-match-result');
                 const contentDiv = resultBox.querySelector('.ai-content');
-                
                 if(!this.state.currentMatchData) return;
                 
-                btn.disabled = true;
-                btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Analisando...';
-                
+                btn.disabled = true; btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
                 const d = this.state.currentMatchData;
-                const c = d.header.competitions[0];
-                const home = c.competitors.find(x=>x.homeAway==='home');
-                const away = c.competitors.find(x=>x.homeAway==='away');
-                const events = (d.keyEvents || []).map(e => `${e.clock.displayValue}: ${e.text}`).join(', ');
+                const home = d.header.competitions[0].competitors.find(x=>x.homeAway==='home');
+                const away = d.header.competitions[0].competitors.find(x=>x.homeAway==='away');
                 
-                const prompt = `Atue como um comentarista de futebol especialista e tático. Analise esta partida:
-                ${home.team.displayName} vs ${away.team.displayName}.
-                Placar atual: ${home.score} - ${away.score}.
-                Tempo: ${c.status.type.detail}.
-                Eventos chave: ${events}.
-                Forneça um resumo curto (máx 3 frases) e emocionante sobre o jogo, destacando quem está melhor e uma previsão tática rápida. Responda em Português. Use formatação Markdown (negrito).`;
-
+                const prompt = `Analise: ${home.team.displayName} ${home.score} x ${away.score} ${away.team.displayName}. Resuma o jogo em 3 frases de impacto.`;
                 const aiResponse = await this.callGeminiAPI(prompt);
                 
-                btn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Nova Análise';
-                btn.disabled = false;
-                resultBox.classList.remove('hidden');
-                contentDiv.innerHTML = marked.parse(aiResponse);
-                lucide.createIcons();
+                btn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Nova Análise'; btn.disabled = false;
+                resultBox.classList.remove('hidden'); contentDiv.innerHTML = marked.parse(aiResponse);
+                if(window.lucide) window.lucide.createIcons();
             },
 
+            async openMatch(id) {
+                const m = document.getElementById('match-modal');
+                if (!m) return;
+                const l = SPORTS_DB.soccer.leagues[this.state.currentLeague];
+                m.classList.add('open');
+                m.querySelector('.modal-content').className = `modal-content ${l.theme}`;
+                document.getElementById('modal-bg').style.backgroundImage = `url('${l.bg}')`;
+                document.getElementById('ai-match-result').classList.add('hidden');
+                
+                try {
+                    const res = await fetch(API_CONFIG.getGameSummaryUrl(l.id, id));
+                    const d = await res.json();
+                    this.state.currentMatchData = d;
+                    this.renderMatchDetail(d);
+                    document.getElementById('ai-analyst-btn').onclick = () => this.analyzeMatchAI();
+                } catch { console.log('Erro modal'); }
+            },
+
+            renderMatchDetail(d) {
+                if(!d?.header) return;
+                const h = d.header.competitions[0].competitors.find(x=>x.homeAway==='home');
+                const a = d.header.competitions[0].competitors.find(x=>x.homeAway==='away');
+                
+                const setText = (id, txt) => { const el = document.getElementById(id); if(el) el.innerText = txt; };
+                const setSrc = (id, src) => { const el = document.getElementById(id); if(el) el.src = src; };
+
+                setText('modal-home-name', h.team.displayName); setText('modal-away-name', a.team.displayName);
+                setSrc('modal-home-logo', h.team.logos?.[0]?.href); setSrc('modal-away-logo', a.team.logos?.[0]?.href);
+                // Correção para evitar 'undefined' no placar
+                setText('modal-score', `${h.score || '0'} - ${a.score || '0'}`);
+                
+                const statDiv = document.getElementById('modal-stats');
+                if (statDiv) {
+                    statDiv.innerHTML = '';
+                    if(d.boxscore?.teams) {
+                        const hS = d.boxscore.teams.find(t=>t.team.id===h.team.id)?.statistics||[];
+                        const aS = d.boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
+                        hS.forEach(s => {
+                            const hV = s.displayValue; const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
+                            const tot = (parseFloat(hV)||0) + (parseFloat(aV)||0) || 1;
+                            statDiv.innerHTML += `<div class="mb-4"><div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div><div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${(parseFloat(hV)/tot)*100}%"></div></div></div>`;
+                        });
+                    } else {
+                        statDiv.innerHTML = '<div class="text-center text-gray-500 py-4">Estatísticas não disponíveis.</div>';
+                    }
+                }
+
+                // Linha do Tempo (Restaurada)
+                const tl = document.getElementById('modal-timeline');
+                if (tl) {
+                    tl.innerHTML = '';
+                    const events = d.keyEvents || (d.header.competitions[0].details || []); // Tenta keyEvents ou details
+                    
+                    if (events.length > 0) {
+                        events.reverse().forEach(e => {
+                            const text = e.text || e.shortText || "Lance";
+                            const type = e.type?.text || "Jogo";
+                            const clock = e.clock?.displayValue || e.clock?.value || "-";
+                            
+                            let icon = '•';
+                            if (type.toLowerCase().includes('goal')) icon = '⚽';
+                            else if (type.toLowerCase().includes('card') || type.toLowerCase().includes('yellow')) icon = '🟨';
+                            else if (type.toLowerCase().includes('red')) icon = '🟥';
+                            else if (type.toLowerCase().includes('substitution')) icon = '🔄';
+
+                            tl.innerHTML += `<div class="relative pb-6 border-l border-white/10 pl-6 last:border-0" style="border-color: var(--glass-border)">
+                                <span class="absolute -left-[9px] bg-black text-xs font-bold text-[var(--accent)] border border-[var(--accent)] rounded px-1">${clock}</span>
+                                <div class="text-sm font-bold" style="color: var(--text-primary)">${icon} ${text}</div>
+                                <div class="text-xs text-gray-500 uppercase mt-1">${type}</div>
+                            </div>`;
+                        });
+                    } else {
+                        tl.innerHTML = '<div class="text-center text-gray-500 py-4">Nenhum lance importante registrado.</div>';
+                    }
+                }
+            },
+
+            /* Chat Features */
             toggleChat() {
                 const chat = document.getElementById('chat-window');
                 chat.classList.toggle('open');
@@ -1076,7 +1110,6 @@
                 input.value = '';
                 container.scrollTop = container.scrollHeight;
 
-                // Loading state
                 const loadId = 'chat-loading-' + Date.now();
                 container.innerHTML += `<div id="${loadId}" class="msg ai opacity-50">Digitando...</div>`;
                 container.scrollTop = container.scrollHeight;
@@ -1092,100 +1125,25 @@
                 container.scrollTop = container.scrollHeight;
             },
 
-            /* --- MATCH MODAL --- */
-            async openMatch(id) {
-                const m = document.getElementById('match-modal');
-                const l = SPORTS_DB.soccer.leagues[this.state.currentLeague];
-                m.classList.add('open');
-                m.querySelector('.modal-content').className = `modal-content ${l.theme}`;
-                document.getElementById('modal-bg').style.backgroundImage = `url('${l.bg}')`;
-                
-                // Reset AI box
-                document.getElementById('ai-match-result').classList.add('hidden');
-                
-                try {
-                    const res = await fetch(API_CONFIG.getGameSummaryUrl(l.id, id));
-                    const d = await res.json();
-                    this.state.currentMatchData = d;
-                    this.renderMatchDetail(d);
-                    
-                    // Bind click for this specific match context
-                    document.getElementById('ai-analyst-btn').onclick = () => this.analyzeMatchAI();
-                } catch { console.log('Erro modal'); }
-            },
-
-            renderMatchDetail(d) {
-                if(!d?.header) return;
-                const c = d.header.competitions[0];
-                const h = c.competitors.find(x=>x.homeAway==='home');
-                const a = c.competitors.find(x=>x.homeAway==='away');
-                document.getElementById('modal-home-name').innerText = h.team.displayName;
-                document.getElementById('modal-away-name').innerText = a.team.displayName;
-                document.getElementById('modal-home-logo').src = h.team.logos?.[0]?.href;
-                document.getElementById('modal-away-logo').src = a.team.logos?.[0]?.href;
-                
-                // W3Labs Fix: Use '0' if undefined
-                document.getElementById('modal-score').innerText = `${h.score || '0'} - ${a.score || '0'}`;
-                
-                document.getElementById('modal-status').innerText = c.status.type.state === 'in' ? 'AO VIVO' : c.status.type.description;
-                document.getElementById('modal-time').innerText = c.status.type.detail;
-
-                // Stats
-                const statDiv = document.getElementById('modal-stats');
-                statDiv.innerHTML = '';
-                if(d.boxscore?.teams) {
-                    const hS = d.boxscore.teams.find(t=>t.team.id===h.team.id)?.statistics||[];
-                    const aS = d.boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
-                    hS.forEach(s => {
-                        const hV = s.displayValue; const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
-                        const tot = (parseFloat(hV)||0) + (parseFloat(aV)||0) || 1;
-                        statDiv.innerHTML += `<div>
-                            <div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div>
-                            <div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${(parseFloat(hV)/tot)*100}%"></div></div>
-                        </div>`;
-                    });
-                } else { statDiv.innerHTML = '<div class="text-center opacity-50">Sem estatísticas.</div>'; }
-
-                // Timeline
-                const tl = document.getElementById('modal-timeline');
-                tl.innerHTML = '';
-                (d.keyEvents||[]).reverse().forEach(e => {
-                    const icon = e.type.text.toLowerCase().includes('goal') ? '⚽' : (e.type.text.toLowerCase().includes('card') ? '🟨' : '•');
-                    tl.innerHTML += `<div class="relative pb-6 border-l border-white/10 pl-6 last:border-0">
-                        <span class="absolute -left-[9px] bg-black text-xs font-bold text-[var(--accent)] border border-[var(--accent)] rounded px-1">${e.clock.displayValue}</span>
-                        <div class="text-sm font-bold text-white">${icon} ${e.text}</div>
-                        <div class="text-xs text-gray-500 uppercase mt-1">${e.type.text}</div>
-                    </div>`;
-                });
-            },
-
             closeModal() { document.getElementById('match-modal').classList.remove('open'); },
-            toggleMobileLeague() { 
-                const m = document.getElementById('mob-league-menu');
-                m.classList.toggle('hidden'); m.classList.toggle('flex');
-            },
+            toggleMobileLeague() { const m = document.getElementById('mob-league-menu'); if(m) { m.classList.toggle('hidden'); m.classList.toggle('flex'); } },
             setView(v) {
                 this.state.view = v;
                 document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden'));
-                document.getElementById(`view-${v}`).classList.remove('hidden');
+                const viewEl = document.getElementById(`view-${v}`); if (viewEl) viewEl.classList.remove('hidden');
                 
+                // Update Nav States
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const deskBtn = document.getElementById(`desk-nav-${v}`);
-                if(deskBtn) deskBtn.classList.add('active');
-
+                const deskBtn = document.getElementById(`desk-nav-${v}`); if(deskBtn) deskBtn.classList.add('active');
                 document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-                const mobBtn = document.getElementById(`mob-nav-${v}`);
-                if(mobBtn) mobBtn.classList.add('active');
+                const mobBtn = document.getElementById(`mob-nav-${v}`); if(mobBtn) mobBtn.classList.add('active');
 
-                this.loadLeague(this.state.currentLeague);
+                if(v === 'clubs') this.renderClubs(this.state.currentLeague);
+                else this.loadLeague(this.state.currentLeague);
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => { app.init(); lucide.createIcons(); });
+        document.addEventListener('DOMContentLoaded', () => { if(window.lucide) window.lucide.createIcons(); app.init(); });
     </script>
-    
-    <!-- Tracking Script (Requested) -->
-    <script src="https://my.rtmark.net/p.js?f=sync&lr=1&partner=3100898e37dcc351efcf7e09396bc501260e9445f7e761e311b1f606c8201d1d" defer></script>
-    <noscript><img src="https://my.rtmark.net/img.gif?f=sync&lr=1&partner=3100898e37dcc351efcf7e09396bc501260e9445f7e761e311b1f606c8201d1d" width="1" height="1" /></noscript>
 </body>
 </html>
