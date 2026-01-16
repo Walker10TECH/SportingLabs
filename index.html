@@ -470,24 +470,17 @@
         .modal-score-display { font-size: 4rem; font-weight: 900; letter-spacing: -2px; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         /* Monetization - Native Banner */
-        .sponsor-card {
-            width: 100%; height: 100px;
-            background: linear-gradient(135deg, #111 0%, #222 100%);
-            border: 1px solid var(--border-glass); border-radius: 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; margin-top: 30px; position: relative; overflow: hidden;
-            cursor: pointer; transition: transform 0.2s;
+        .ad-network-container {
+            width: 100%; min-height: 90px;
+            display: flex; justify-content: center; align-items: center;
+            margin: 2rem 0; background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--border-glass); border-radius: 12px;
+            overflow: hidden; position: relative;
         }
-        .sponsor-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-        .sponsor-tag {
-            position: absolute; top: 0; left: 0; background: var(--accent); color: #000;
-            font-size: 0.6rem; font-weight: 800; padding: 2px 8px; border-bottom-right-radius: 8px;
-        }
-        .sponsor-content h3 { font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 4px; }
-        .sponsor-content p { font-size: 0.8rem; color: #999; }
-        .sponsor-cta {
-            background: var(--accent); color: #000; font-weight: 700;
-            padding: 8px 16px; border-radius: 100px; font-size: 0.85rem;
+
+        .ad-label {
+            position: absolute; top: 4px; right: 8px; font-size: 0.6rem;
+            color: #555; text-transform: uppercase; letter-spacing: 1px; z-index: 5;
         }
 
         @media (max-width: 1024px) {
@@ -623,15 +616,12 @@
                 <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- Native Banner Placeholder (Zero Burocracia - "Visual") -->
-            <a href="https://www.bet365.com" target="_blank" class="sponsor-card group">
-                <span class="sponsor-tag">PARCEIRO W3LABS</span>
-                <div class="sponsor-content">
-                    <h3>Aposte no seu time agora!</h3>
-                    <p>As melhores odds do mercado esportivo.</p>
-                </div>
-                <button class="sponsor-cta group-hover:scale-105 transition-transform">APOSTAS <i data-lucide="arrow-up-right" class="inline w-4 h-4 ml-1"></i></button>
-            </a>
+            <!-- ADSTERRA CONTAINER (ID: 82e48754817fbcaf08d478de3b4f0b72) -->
+            <div class="ad-network-container" id="ad-container-bottom">
+                <span class="ad-label">Publicidade</span>
+                <div id="adsterra-slot"></div>
+            </div>
+
         </div>
     </main>
 
@@ -761,6 +751,44 @@
             formatDate: (date) => date.toISOString().slice(0, 10).replace(/-/g, "")
         };
 
+        const AdManager = {
+            // Configuração do Adsterra
+            adConfig: {
+                key: '82e48754817fbcaf08d478de3b4f0b72',
+                format: 'iframe',
+                height: 90,
+                width: 728,
+                params: {}
+            },
+
+            init() {
+                const container = document.getElementById('adsterra-slot');
+                if (!container) return;
+
+                // Cria o elemento de script com as opções do Adsterra
+                const scriptOptions = document.createElement('script');
+                scriptOptions.type = 'text/javascript';
+                scriptOptions.innerHTML = `
+                    atOptions = {
+                        'key' : '${this.adConfig.key}',
+                        'format' : '${this.adConfig.format}',
+                        'height' : ${this.adConfig.height},
+                        'width' : ${this.adConfig.width},
+                        'params' : {}
+                    };
+                `;
+                container.appendChild(scriptOptions);
+
+                // Cria o script de invocação do Adsterra
+                const scriptInvoke = document.createElement('script');
+                scriptInvoke.type = 'text/javascript';
+                scriptInvoke.src = '//www.highperformanceformat.com/' + this.adConfig.key + '/invoke.js'; // URL de exemplo, substitua pela correta do Adsterra se diferente
+                container.appendChild(scriptInvoke);
+
+                console.log('W3Ads: Adsterra integrated.');
+            }
+        };
+
         const app = {
             state: {
                 currentSport: 'soccer',
@@ -776,6 +804,7 @@
                 this.renderSeasonSelector();
                 this.setupEvents();
                 this.loadLeague(this.state.currentLeague);
+                AdManager.init(); 
                 setTimeout(() => document.getElementById('global-loader').classList.add('loader-hidden'), 800);
             },
 
