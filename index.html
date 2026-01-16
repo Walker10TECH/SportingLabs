@@ -155,6 +155,7 @@
             color: var(--text-primary); padding: 8px 16px; border-radius: 100px;
             font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px;
             transition: all 0.3s var(--ease-smooth);
+            white-space: nowrap;
         }
         .nav-pill:hover, .nav-pill.active {
             background: var(--nav-item-hover); border-color: var(--accent);
@@ -173,7 +174,7 @@
         }
 
         .theme-toggle-btn {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
             background: var(--nav-item-bg); border: 1px solid var(--glass-border);
             color: var(--text-primary); display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.3s;
@@ -198,16 +199,17 @@
         }
         .tv-scoreboard-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
         
-        .tv-team-box { display: flex; align-items: center; gap: 12px; font-weight: 700; color: white; z-index: 2; width: 38%; font-size: 0.95rem; }
+        .tv-team-box { display: flex; align-items: center; gap: 8px; font-weight: 700; color: white; z-index: 2; width: 38%; font-size: 0.95rem; }
         .tv-team-box.home { justify-content: flex-end; text-align: right; }
         .tv-team-box.away { justify-content: flex-start; text-align: left; }
-        .tv-team-box img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .tv-team-box img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); flex-shrink: 0; }
+        .tv-team-box span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .tv-score-center { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             width: 24%; height: 100%; position: relative; z-index: 2; 
         }
-        /* Aumentado o tamanho da fonte em 25% (de 2rem para 2.5rem) */
+        /* Default Score Size */
         .tv-score { font-weight: 800; font-size: 2.5rem; color: #fff; letter-spacing: 2px; line-height: 1; }
         .tv-time { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-top: 6px; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
         
@@ -216,7 +218,7 @@
             display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; 
         }
 
-        /* Modal Score Display (Adicionado) */
+        /* Modal Score Display */
         .modal-score-display { 
             font-size: 5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; 
             text-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #fff; margin-bottom: 10px;
@@ -242,7 +244,6 @@
 
         .theme-laliga .tv-scoreboard { background: #111; border-bottom: 3px solid #ff4b4b; }
         .theme-laliga .tv-team-box { font-family: 'Teko', sans-serif; font-size: 1.4rem; letter-spacing: 0.5px; text-transform: uppercase; }
-        /* Aumentado para La Liga também */
         .theme-laliga .tv-score { font-family: 'Teko', sans-serif; font-size: 3.5rem; font-weight: 500; }
         .theme-laliga .tv-time { color: #ff4b4b; background: transparent; font-family: 'Teko', sans-serif; font-size: 1.1rem; }
 
@@ -268,14 +269,14 @@
 
         /* General Tables/Grids */
         .std-table-container { overflow-x: auto; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass-bg); box-shadow: var(--card-shadow); }
-        .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05); align-items: center; text-align: center; }
-        .std-table-header div:nth-child(2) { text-align: left; } /* Club name align left */
+        .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05); align-items: center; text-align: center; min-width: 600px; }
+        .std-table-header div:nth-child(2) { text-align: left; } 
         
-        .std-row { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; transition: background 0.2s; color: var(--text-primary); text-align: center; }
+        .std-row { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; transition: background 0.2s; color: var(--text-primary); text-align: center; min-width: 600px; }
         .std-row:hover { background: rgba(128,128,128,0.05); }
         .std-row:last-child { border-bottom: none; }
         .std-row .team-cell { display: flex; align-items: center; gap: 12px; font-weight: 600; text-align: left; overflow: hidden; }
-        .std-row .team-cell img { width: 28px; height: 28px; object-fit: contain; }
+        .std-row .team-cell img { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; }
         
         /* Rank Badge Customization */
         .rank-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
@@ -359,21 +360,76 @@
         .nav-btn.active i { color: var(--accent); }
         .feed { flex: 1; min-width: 0; padding-top: 90px; padding-bottom: 100px; }
 
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: var(--header-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 80; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; background: none; border: none; cursor: pointer; transition: all 0.3s; }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: var(--header-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 80; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; background: none; border: none; cursor: pointer; transition: all 0.3s; }
         .bottom-nav-item.active { color: var(--accent); }
+        .bottom-nav-item i { width: 20px; height: 20px; }
 
-        @media (max-width: 1024px) {
+        /* --- RESPONSIVIDADE AVANÇADA (Ultra Small -> Ultra Wide) --- */
+        
+        /* 1. Mobile Extra Pequeno (iPhone SE, Galaxy Fold - 320px a 375px) */
+        @media (max-width: 375px) {
+            .logo-text { font-size: 1.1rem; }
+            .header-main { padding: 0 8px; height: 60px; }
+            main { padding-top: 60px; }
+            
+            /* Ajustes Finos para Placar em Tela Estreita */
+            .tv-scoreboard { height: 75px; padding: 0 6px; }
+            .tv-team-box { font-size: 0.75rem; width: 35%; gap: 6px; }
+            .tv-team-box img { width: 22px; height: 22px; }
+            .tv-score { font-size: 1.5rem; letter-spacing: 1px; }
+            .tv-time { font-size: 0.6rem; margin-top: 2px; padding: 1px 4px; }
+            
+            .modal-score-display { font-size: 3rem; }
+            .modal-content { height: 95vh; width: 100vw; border-radius: 24px 24px 0 0; }
+            .match-footer { font-size: 0.65rem; padding: 8px 12px; }
+            
+            .league-header { padding: 16px; margin-bottom: 20px; }
+            .league-header img { width: 48px; height: 48px; }
+            #page-league-name { font-size: 1.5rem; }
+            
+            .bottom-nav { padding: 8px 16px; width: 95%; bottom: 16px; }
+            .bottom-nav-item { font-size: 0.6rem; }
+            
+            .ai-btn { font-size: 0.8rem; padding: 8px 12px; }
+        }
+
+        /* 2. Mobile Padrão (376px - 640px) */
+        @media (min-width: 376px) and (max-width: 640px) {
             .sidebar { display: none; }
             .header-main { padding: 0 16px; }
-            main { padding-top: 60px; gap: 0; }
+            main { padding-top: 70px; gap: 0; }
             .feed { padding-top: 20px; }
             .modal-content { height: 92vh; width: 100vw; border-radius: 32px 32px 0 0; position: absolute; bottom: 0; }
             .club-grid-card img { width: 48px; height: 48px; }
-            .std-table-header, .std-row { grid-template-columns: 40px minmax(120px, 3fr) repeat(7, 1fr); font-size: 0.75rem; padding: 10px; }
-            .tv-scoreboard { height: 80px; padding: 0 10px; }
+            .std-table-header, .std-row { font-size: 0.8rem; padding: 10px; }
+            .tv-scoreboard { height: 85px; padding: 0 12px; }
+            .tv-score { font-size: 2rem; }
             .floating-chat-btn { bottom: 100px; right: 20px; }
             .chat-window { bottom: 170px; right: 5%; width: 90%; }
+            .match-card { margin-bottom: 12px; }
+            .modal-score-display { font-size: 4rem; }
+        }
+
+        /* 3. Tablets (640px - 1024px) */
+        @media (min-width: 640px) and (max-width: 1024px) {
+            .feed { padding-top: 30px; }
+            .matches-grid { grid-template-columns: repeat(1, 1fr); } /* Keep matches readable */
+            .news-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* 4. Desktop (1024px - 1536px) - Padrão */
+        
+        /* 5. Telas Extra Grandes (Ultrawide - > 1536px) */
+        @media (min-width: 1536px) {
+            main { max-width: 1800px; gap: 40px; }
+            .tv-scoreboard { height: 100px; }
+            .tv-score { font-size: 3rem; }
+            .match-card:hover { transform: translateY(-6px) scale(1.02); }
+            /* Expandir grids */
+            #matches-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+            #news-grid { grid-template-columns: repeat(4, 1fr); }
+            #clubs-grid { grid-template-columns: repeat(6, 1fr); }
         }
     </style>
 </head>
@@ -384,8 +440,8 @@
 
     <!-- Header -->
     <header class="header-main">
-        <div class="flex items-center gap-6">
-            <div class="logo-text cursor-pointer" onclick="window.location.reload()">Sporting<span>Labs</span></div>
+        <div class="flex items-center gap-2 md:gap-6">
+            <div class="logo-text cursor-pointer flex-shrink-0" onclick="window.location.reload()">Sporting<span>Labs</span></div>
             <div class="hidden md:flex gap-3">
                 <div class="relative group">
                     <button class="nav-pill"><span id="header-sport-name">Futebol</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
@@ -398,9 +454,9 @@
             </div>
         </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 md:gap-4 ml-auto">
             <!-- Search -->
-            <div class="search-container hidden md:block relative w-64">
+            <div class="search-container hidden md:block relative w-48 lg:w-64">
                 <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                 <input type="text" id="global-search-input" class="search-input" placeholder="Buscar...">
             </div>
@@ -410,9 +466,10 @@
                 <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 hidden"></i>
                 <i data-lucide="moon" id="theme-icon-moon" class="w-5 h-5"></i>
             </button>
-        </div>
 
-        <button class="md:hidden nav-pill !p-2 ml-2" onclick="app.toggleMobileLeague()"><img id="mob-league-logo" class="w-6 h-6 rounded-full" src=""></button>
+            <!-- Mobile League Toggle -->
+            <button class="md:hidden nav-pill !p-2 ml-1" onclick="app.toggleMobileLeague()"><img id="mob-league-logo" class="w-6 h-6 rounded-full" src=""></button>
+        </div>
     </header>
 
     <!-- Mobile League Menu -->
@@ -422,9 +479,9 @@
     </div>
 
     <!-- Main Content -->
-    <main class="container">
+    <main class="container px-4 md:px-0">
         <!-- Sidebar -->
-        <aside class="sidebar hidden md:flex">
+        <aside class="sidebar hidden lg:flex">
             <div class="nav-card">
                 <button onclick="app.setView('matches')" class="nav-btn active" id="desk-nav-matches"><i data-lucide="calendar-days"></i> Jogos de Hoje</button>
                 <button onclick="app.setView('standings')" class="nav-btn" id="desk-nav-standings"><i data-lucide="trophy"></i> Classificação</button>
@@ -440,25 +497,26 @@
 
         <!-- Feed -->
         <div class="feed" id="main-feed">
-            <div class="league-header flex items-center gap-6 mb-8 p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden">
+            <div class="league-header flex items-center gap-4 md:gap-6 mb-6 md:mb-8 p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-0"></div>
-                <img id="page-league-logo" class="w-20 h-20 object-contain z-10 drop-shadow-xl">
+                <img id="page-league-logo" class="w-16 h-16 md:w-20 md:h-20 object-contain z-10 drop-shadow-xl">
                 <div class="z-10">
-                    <h1 id="page-league-name" class="text-4xl md:text-5xl font-black text-white leading-none tracking-tight"></h1>
-                    <p class="text-[var(--accent)] font-bold text-sm mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
+                    <h1 id="page-league-name" class="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-none tracking-tight"></h1>
+                    <p class="text-[var(--accent)] font-bold text-xs md:text-sm mt-2 md:mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
                 </div>
             </div>
 
             <!-- View: Matches -->
             <div id="view-matches" class="view-section">
-                <div class="flex justify-between items-center mb-8 px-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 px-2 gap-4">
                     <div class="flex items-center gap-4">
-                        <h2 class="text-2xl font-bold" style="color: var(--text-primary)">Partidas</h2>
+                        <h2 class="text-xl md:text-2xl font-bold" style="color: var(--text-primary)">Partidas</h2>
                         <span id="live-indicator" class="hidden px-3 py-1 bg-[var(--accent)] text-black text-[11px] font-extrabold rounded-full animate-pulse">AO VIVO</span>
                     </div>
-                    <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-36 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)">
+                    <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-full sm:w-36 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)">
                 </div>
-                <div id="matches-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
+                <!-- Responsive Grid: 1 col mobile, 2 col lg, 3 col 2xl -->
+                <div id="matches-grid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6"></div>
             </div>
 
             <!-- View: Standings -->
@@ -471,7 +529,7 @@
             <!-- View: Scorers -->
             <div id="view-scorers" class="view-section hidden">
                 <div class="flex justify-between items-center mb-8">
-                    <div class="section-title !mb-0 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Artilheiros</div>
+                    <div class="section-title !mb-0 text-xl md:text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Artilheiros</div>
                     <select id="season-selector" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 cursor-pointer outline-none" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)"></select>
                 </div>
                 <div id="scorers-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -480,7 +538,8 @@
             <!-- View: News -->
             <div id="view-news" class="view-section hidden">
                 <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Últimas Notícias</div>
-                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                <!-- Responsive Grid: 1 col mobile, 2 col sm, 3 col lg, 4 col xl -->
+                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8"></div>
             </div>
 
             <!-- View: Clubs -->
@@ -490,7 +549,8 @@
                     <input type="text" id="wiki-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar clube...">
                     <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
-                <div id="clubs-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6"></div>
+                <!-- Responsive Grid: 2 col mobile, 3 sm, 4 md, 5 lg, 6 xl -->
+                <div id="clubs-grid" class="grid grid-cols-2 min-[450px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6"></div>
                 <div id="wiki-detail" class="hidden">
                     <button onclick="app.closeWiki()" class="mb-6 text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar</button>
                     <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
@@ -500,7 +560,7 @@
     </main>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="bottom-nav md:hidden">
+    <nav class="bottom-nav lg:hidden">
         <button class="bottom-nav-item active" onclick="app.setView('matches')" id="mob-nav-matches"><i data-lucide="calendar-days"></i><span>Jogos</span></button>
         <button class="bottom-nav-item" onclick="app.setView('standings')" id="mob-nav-standings"><i data-lucide="trophy"></i><span>Tabela</span></button>
         <button class="bottom-nav-item" onclick="app.setView('scorers')" id="mob-nav-scorers"><i data-lucide="target"></i><span>Gols</span></button>
@@ -511,26 +571,26 @@
     <!-- Match Detail Modal -->
     <div id="match-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="relative h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
+            <div class="relative h-[200px] md:h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
                 <div class="modal-header-bg" id="modal-bg"></div>
                 <div class="relative z-10 w-full px-4 md:px-12 flex justify-between items-center mt-4">
                     <div class="flex flex-col items-center w-1/3 text-center">
-                        <img id="modal-home-logo" class="w-24 h-24 object-contain mb-4 drop-shadow-2xl">
-                        <h2 id="modal-home-name" class="text-base md:text-xl font-black text-white leading-tight">HOME</h2>
+                        <img id="modal-home-logo" class="w-16 h-16 md:w-24 md:h-24 object-contain mb-2 md:mb-4 drop-shadow-2xl">
+                        <h2 id="modal-home-name" class="text-xs md:text-xl font-black text-white leading-tight">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
-                        <div class="modal-score-display" id="modal-score">0 - 0</div>
-                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] bg-black/60 px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-3">AO VIVO</div>
-                        <div id="modal-time" class="text-gray-400 text-sm mt-2 font-mono"></div>
+                        <div class="modal-score-display text-4xl md:text-[5rem]" id="modal-score">0 - 0</div>
+                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] bg-black/60 px-3 md:px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-2 md:mt-3">AO VIVO</div>
+                        <div id="modal-time" class="text-gray-400 text-xs md:text-sm mt-2 font-mono"></div>
                     </div>
                     <div class="flex flex-col items-center w-1/3 text-center">
-                        <img id="modal-away-logo" class="w-24 h-24 object-contain mb-4 drop-shadow-2xl">
-                        <h2 id="modal-away-name" class="text-base md:text-xl font-black text-white leading-tight">AWAY</h2>
+                        <img id="modal-away-logo" class="w-16 h-16 md:w-24 md:h-24 object-contain mb-2 md:mb-4 drop-shadow-2xl">
+                        <h2 id="modal-away-name" class="text-xs md:text-xl font-black text-white leading-tight">AWAY</h2>
                     </div>
                 </div>
-                <button onclick="app.closeModal()" class="absolute top-6 right-6 text-white/50 hover:text-white z-20 bg-black/40 p-3 rounded-full backdrop-blur-md transition hover:bg-white/20"><i data-lucide="x"></i></button>
+                <button onclick="app.closeModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white z-20 bg-black/40 p-2 md:p-3 rounded-full backdrop-blur-md transition hover:bg-white/20"><i data-lucide="x"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+            <div class="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
                 <div class="mb-10">
                     <button id="ai-analyst-btn" class="ai-btn shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Análise W3AI</button>
                     <div id="ai-match-result" class="hidden ai-response-box"><div class="ai-content"></div></div>
