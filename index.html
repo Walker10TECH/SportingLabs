@@ -754,12 +754,10 @@
         const AdManager = {
             // Configuração do Adsterra
             adConfig: {
-                key: '82e48754817fbcaf08d478de3b4f0b72', // Placement Key for Banner
-                apiToken: '', // Adsterra Publisher API Token (X-API-Key)
-                baseUrl: 'https://api3.adsterratools.com/publisher',
+                key: '9d3aedd69475dcae677afe86847f32cc',
                 format: 'iframe',
-                height: 90,
-                width: 728,
+                height: 60,
+                width: 468,
                 params: {}
             },
 
@@ -784,61 +782,81 @@
                 // Cria o script de invocação do Adsterra
                 const scriptInvoke = document.createElement('script');
                 scriptInvoke.type = 'text/javascript';
-                scriptInvoke.src = '//www.highperformanceformat.com/' + this.adConfig.key + '/invoke.js'; // URL de exemplo, substitua pela correta do Adsterra se diferente
+                scriptInvoke.src = `//www.highperformancedformats.com/${this.adConfig.key}/invoke.js`;
                 container.appendChild(scriptInvoke);
 
                 console.log('W3Ads: Adsterra integrated.');
-            },
+            }
+        };
+
+        /**
+         * Objeto para interagir com a API de Publishers da Adsterra.
+         * Baseado na documentação fornecida.
+         */
+        const AdsterraAPI = {
+            // IMPORTANTE: Substitua 'YOUR_ADSTERRA_API_KEY' pela sua chave de API real do painel Adsterra.
+            API_KEY: '82e48754817fbcaf08d478de3b4f0b72', 
+            BASE_URL: 'https://api3.adsterratools.com/publisher',
 
             /**
-             * Adsterra Publisher API v3.0.0 Integration
-             * Note: API Token should be kept secure and ideally handled server-side.
+             * Função genérica para fazer chamadas à API Adsterra.
+             * @param {string} endpoint - O endpoint da API (ex: 'stats.json').
+             * @param {object} params - Parâmetros de query para a URL.
+             * @returns {Promise<object>} - A resposta da API em JSON.
              */
-            async apiRequest(endpoint, queryParams = {}) {
-                if (!this.adConfig.apiToken) {
-                    console.warn('Adsterra: API Token not configured.');
-                    return null;
+            async _fetch(endpoint, params = {}) {
+                const url = new URL(`${this.BASE_URL}/${endpoint}`);
+                // A API aceita arrays em group_by como 'group_by[]'
+                for (const key in params) {
+                    if (Array.isArray(params[key])) {
+                        params[key].forEach(value => url.searchParams.append(`${key}[]`, value));
+                    } else {
+                        url.searchParams.append(key, params[key]);
+                    }
                 }
 
-                const url = new URL(`${this.adConfig.baseUrl}/${endpoint}.json`);
-                Object.keys(queryParams).forEach(key => {
-                    if (Array.isArray(queryParams[key])) {
-                        queryParams[key].forEach(val => url.searchParams.append(`${key}[]`, val));
-                    } else {
-                        url.searchParams.append(key, queryParams[key]);
-                    }
-                });
+                if (this.API_KEY === 'YOUR_ADSTERRA_API_KEY') {
+                    const errorMsg = 'Adsterra API: Chave de API não configurada. Por favor, substitua "YOUR_ADSTERRA_API_KEY".';
+                    console.warn(errorMsg);
+                    return { error: errorMsg, items: [] };
+                }
 
                 try {
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
-                            'X-API-Key': this.adConfig.apiToken
+                            'X-API-Key': this.API_KEY
                         }
                     });
+
+                    if (!response.ok) {
+                        throw new Error(`Erro na API Adsterra: ${response.status} ${response.statusText}`);
+                    }
                     return await response.json();
                 } catch (error) {
-                    console.error('Adsterra API Error:', error);
-                    return null;
+                    console.error(error);
+                    return { error: error.message, items: [] };
                 }
             },
 
-            async getStatistics(startDate, finishDate, groupBy = ['date']) {
-                return this.apiRequest('stats', {
-                    start_date: startDate,
-                    finish_date: finishDate,
-                    group_by: groupBy
-                });
+            /**
+             * Retorna estatísticas.
+             * @param {object} options - Opções para a busca.
+             * @param {string} options.startDate - Data de início (formato 'YYYY-MM-DD').
+             * @param {string} options.finishDate - Data de fim (formato 'YYYY-MM-DD').
+             * @param {string|string[]} [options.groupBy='date'] - Entidade para agrupar (ex: 'date', ['date', 'domain']).
+             * @param {object} [options.filters={}] - Filtros adicionais como { domain: 123, country: 'BR' }.
+             * @returns {Promise<object>}
+             */
+            async getStats({ startDate, finishDate, groupBy = 'date', filters = {} }) {
+                const endpoint = 'stats.json';
+                const params = { start_date: startDate, finish_date: finishDate, group_by: groupBy, ...filters };
+                return this._fetch(endpoint, params);
             },
-
-            async getPlacements() {
-                return this.apiRequest('placements');
-            },
-
-            async getDomains() {
-                return this.apiRequest('domains');
-            }
+            
+            async getDomains() { return this._fetch('domains.json'); },
+            async getPlacements(domainId) { return this._fetch(`domain/${domainId}/placements.json`); }
         };
 
         const app = {
@@ -1068,7 +1086,10 @@
             /* --- AI FEATURES --- */
             async callGeminiAPI(prompt) {
                 if(!apiKey) return "**Erro:** Chave da API Gemini não configurada. Por favor, configure a chave no código.";
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                // W3Labs Fix: Using a stable model 'gemini-2.5-flash' instead of a dated preview model.
+                // This prevents potential errors if the preview model is deprecated, which can cause script errors.
+                // The 'gemini-2.5-flash' model is a stable and efficient choice for this kind of task.
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                 const payload = { contents: [{ parts: [{ text: prompt }] }] };
                 try {
                     const response = await fetch(url, {
@@ -1188,59 +1209,6 @@
                 if(d.boxscore?.teams) {
                     const hS = d.boxscore.teams.find(t=>t.team.id===h.team.id)?.statistics||[];
                     const aS = d.boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
-                    hS.forEach(s => {
-                        const hV = s.displayValue; const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
-                        const tot = (parseFloat(hV)||0) + (parseFloat(aV)||0) || 1;
-                        statDiv.innerHTML += `<div>
-                            <div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div>
-                            <div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${(parseFloat(hV)/tot)*100}%"></div></div>
-                        </div>`;
-                    });
-                } else { statDiv.innerHTML = '<div class="text-center opacity-50">Sem estatísticas.</div>'; }
-
-                // Timeline
-                const tl = document.getElementById('modal-timeline');
-                tl.innerHTML = '';
-                (d.keyEvents||[]).reverse().forEach(e => {
-                    const icon = e.type.text.toLowerCase().includes('goal') ? '⚽' : (e.type.text.toLowerCase().includes('card') ? '🟨' : '•');
-                    tl.innerHTML += `<div class="relative pb-6 border-l border-white/10 pl-6 last:border-0">
-                        <span class="absolute -left-[9px] bg-black text-xs font-bold text-[var(--accent)] border border-[var(--accent)] rounded px-1">${e.clock.displayValue}</span>
-                        <div class="text-sm font-bold text-white">${icon} ${e.text}</div>
-                        <div class="text-xs text-gray-500 uppercase mt-1">${e.type.text}</div>
-                    </div>`;
-                });
-            },
-
-            closeModal() { document.getElementById('match-modal').classList.remove('open'); },
-            toggleMobileLeague() { 
-                const m = document.getElementById('mob-league-menu');
-                m.classList.toggle('hidden'); m.classList.toggle('flex');
-            },
-            setView(v) {
-                this.state.view = v;
-                document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden'));
-                document.getElementById(`view-${v}`).classList.remove('hidden');
-                
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const deskBtn = document.getElementById(`desk-nav-${v}`);
-                if(deskBtn) deskBtn.classList.add('active');
-
-                document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-                const mobBtn = document.getElementById(`mob-nav-${v}`);
-                if(mobBtn) mobBtn.classList.add('active');
-
-                this.loadLeague(this.state.currentLeague);
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => { app.init(); lucide.createIcons(); });
-    </script>
-    
-    <!-- Tracking Script (Requested) -->
-    <script src="https://my.rtmark.net/p.js?f=sync&lr=1&partner=3100898e37dcc351efcf7e09396bc501260e9445f7e761e311b1f606c8201d1d" defer></script>
-    <noscript><img src="https://my.rtmark.net/img.gif?f=sync&lr=1&partner=3100898e37dcc351efcf7e09396bc501260e9445f7e761e311b1f606c8201d1d" width="1" height="1" /></noscript>
-</body>
-</html>             const aS = d.boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
                     hS.forEach(s => {
                         const hV = s.displayValue; const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
                         const tot = (parseFloat(hV)||0) + (parseFloat(aV)||0) || 1;
