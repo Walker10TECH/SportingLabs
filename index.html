@@ -360,6 +360,13 @@
         .scorer-goals { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
         body.light-mode .scorer-goals { color: var(--accent); }
 
+        /* Global Search */
+        .search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; color: var(--text-primary); }
+        .search-result-item:hover { background: var(--nav-item-hover); }
+        .search-result-item img { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; border-radius: 50%; }
+        .search-result-item .result-text .title { font-weight: 600; }
+        .search-result-item .result-text .subtitle { font-size: 0.8rem; color: var(--text-muted); }
+
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
@@ -530,7 +537,10 @@
             <!-- Search -->
             <div class="search-container hidden md:block relative w-48 lg:w-64">
                 <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                <input type="text" id="global-search-input" class="search-input" placeholder="Buscar...">
+                <input type="text" id="global-search-input" class="search-input" placeholder="Buscar..." autocomplete="off">
+                <div id="global-search-results" class="absolute top-full left-0 right-0 mt-2 glass-panel p-2 z-50 hidden max-h-80 overflow-y-auto custom-scrollbar">
+                    <!-- Search results will be injected here -->
+                </div>
             </div>
             
             <!-- Theme Toggle -->
@@ -571,7 +581,7 @@
         <div class="feed" id="main-feed">
             <div class="league-header flex items-center gap-4 md:gap-6 mb-6 md:mb-8 p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-0"></div>
-                <img id="page-league-logo" class="w-16 h-16 md:w-20 md:h-20 object-contain z-10 drop-shadow-xl">
+                <img id="page-league-logo" class="w-16 h-16 md:w-20 md:h-20 object-contain z-10 drop-shadow-xl" onerror="this.style.display='none'">
                 <div class="z-10">
                     <h1 id="page-league-name" class="font-black text-white leading-none tracking-tight"></h1>
                     <p class="text-[var(--accent)] font-bold text-xs md:text-sm mt-2 md:mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
@@ -600,7 +610,7 @@
 
             <!-- View: Scorers -->
             <div id="view-scorers" class="view-section hidden">
-                <div class="flex justify-between items-center mb-8">
+                <div id="scorers-header" class="flex justify-between items-center mb-8">
                     <div class="section-title !mb-0 text-xl md:text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Artilheiros</div>
                     <select id="season-selector" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 cursor-pointer outline-none" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)"></select>
                 </div>
@@ -618,15 +628,11 @@
             <div id="view-clubs" class="view-section hidden">
                 <div class="text-2xl font-bold mb-8 border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Clubes da Liga</div>
                 <div class="mb-10 relative max-w-xl">
-                    <input type="text" id="wiki-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar clube...">
+                    <input type="text" id="wiki-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar na Wikipedia...">
                     <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
                 <!-- Responsive Grid: 2 col mobile, 3 sm, 4 md, 5 lg, 6 xl -->
                 <div id="clubs-grid" class="grid grid-cols-2 min-[450px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6"></div>
-                <div id="wiki-detail" class="hidden">
-                    <button onclick="app.closeWiki()" class="mb-6 text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar</button>
-                    <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
-                </div>
             </div>
 
             <!-- View: F1 Schedule -->
@@ -649,6 +655,22 @@
                     <div id="team-standings-body"></div>
                 </div>
             </div>
+
+            <!-- View: F1 Historic Pilots -->
+            <div id="view-historic-pilots" class="view-section hidden">
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Pilotos Históricos</div>
+                <div class="mb-10 relative max-w-xl">
+                    <input type="text" id="wiki-pilot-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar piloto na Wikipedia...">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <div id="historic-pilots-grid" class="grid grid-cols-2 min-[450px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6"></div>
+            </div>
+
+            <!-- Shared Wiki Detail View -->
+            <div id="wiki-detail" class="hidden">
+                <button onclick="app.closeWiki()" class="mb-6 text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar</button>
+                <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
+            </div>
         </div>
     </main>
 
@@ -660,6 +682,25 @@
         <button class="bottom-nav-item" onclick="app.setView('news')" id="mob-nav-news"><i data-lucide="zap"></i><span>News</span></button>
         <button class="bottom-nav-item" onclick="app.setView('clubs')" id="mob-nav-clubs"><i data-lucide="shield"></i><span>Clubes</span></button>
     </nav>
+
+    <!-- F1 Race Detail Modal -->
+    <div id="f1-race-modal" class="modal-overlay">
+        <div class="modal-content"> 
+            <div id="f1-modal-top-section" class="relative h-[200px] md:h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0 p-6">
+                <div class="modal-header-bg" id="f1-modal-bg"></div>
+                <div class="relative z-10 text-center">
+                    <p id="f1-modal-circuit" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] mb-2"></p>
+                    <h2 id="f1-modal-racename" class="text-2xl md:text-4xl font-black text-white leading-tight">Race Name</h2>
+                    <p id="f1-modal-date" class="text-gray-400 text-sm md:text-base mt-2 font-medium"></p>
+                </div>
+                <button onclick="app.closeF1Modal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white z-20 bg-black/40 p-2 md:p-3 rounded-full backdrop-blur-md transition hover:bg-white/20" aria-label="Fechar modal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+                <div id="f1-modal-tabs" class="flex items-center border-b border-white/10 mb-6 overflow-x-auto"></div>
+                <div id="f1-modal-content"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Match Detail Modal -->
     <div id="match-modal" class="modal-overlay">
@@ -694,7 +735,113 @@
 
     <script>
         const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe"; 
-
+        
+        // Base de dados de jogadores. Você pode expandir esta lista com mais de 2000 jogadores.
+        const PLAYER_DB_DATA = {
+          "soccer": {
+            "bra.1": [
+              { "id": 1, "name": "Givanildo Vieira de Sousa", "commonName": "Hulk", "nationality": "Brasil" },
+              { "id": 2, "name": "Gabriel Barbosa Almeida", "commonName": "Gabigol", "nationality": "Brasil" },
+              { "id": 3, "name": "Marcos Leonardo Santos Almeida", "commonName": "Marcos Leonardo", "nationality": "Brasil" },
+              { "id": 4, "name": "Raphael Cavalcante Veiga", "commonName": "Raphael Veiga", "nationality": "Brasil" },
+              { "id": 5, "name": "Cássio Ramos", "commonName": "Cássio", "nationality": "Brasil" },
+              { "id": 6, "name": "Weverton Pereira da Silva", "commonName": "Weverton", "nationality": "Brasil" },
+              { "id": 7, "name": "Giorgian De Arrascaeta", "commonName": "Arrascaeta", "nationality": "Uruguai" },
+              { "id": 8, "name": "Pedro Guilherme Abreu dos Santos", "commonName": "Pedro", "nationality": "Brasil" },
+              { "id": 9, "name": "Germán Cano", "commonName": "Cano", "nationality": "Argentina" },
+              { "id": 10, "name": "Jhon Arias", "commonName": "Jhon Arias", "nationality": "Colômbia" },
+              { "id": 11, "name": "Tiquinho Soares", "commonName": "Tiquinho", "nationality": "Brasil" },
+              { "id": 12, "name": "Paulinho", "commonName": "Paulinho", "nationality": "Brasil" },
+              { "id": 13, "name": "Luis Suárez", "commonName": "Suárez", "nationality": "Uruguai" },
+              { "id": 14, "name": "André Trindade da Costa Neto", "commonName": "André", "nationality": "Brasil" },
+              { "id": 15, "name": "Endrick Felipe Moreira de Sousa", "commonName": "Endrick", "nationality": "Brasil" },
+              { "id": 16, "name": "Vitor Roque", "commonName": "Vitor Roque", "nationality": "Brasil" },
+              { "id": 17, "name": "Renato Augusto", "commonName": "Renato Augusto", "nationality": "Brasil" },
+              { "id": 18, "name": "Gustavo Gómez", "commonName": "G. Gómez", "nationality": "Paraguai" },
+              { "id": 19, "name": "Fagner Conserva Lemos", "commonName": "Fagner", "nationality": "Brasil" },
+              { "id": 20, "name": "Marcelo Vieira da Silva Júnior", "commonName": "Marcelo", "nationality": "Brasil" }
+            ],
+            "premier": [
+              { "id": 101, "name": "Erling Haaland", "commonName": "Haaland", "nationality": "Noruega" },
+              { "id": 102, "name": "Mohamed Salah", "commonName": "Salah", "nationality": "Egito" },
+              { "id": 103, "name": "Kevin De Bruyne", "commonName": "De Bruyne", "nationality": "Bélgica" },
+              { "id": 104, "name": "Bukayo Saka", "commonName": "Saka", "nationality": "Inglaterra" },
+              { "id": 105, "name": "Martin Ødegaard", "commonName": "Ødegaard", "nationality": "Noruega" },
+              { "id": 106, "name": "Declan Rice", "commonName": "Rice", "nationality": "Inglaterra" },
+              { "id": 107, "name": "Marcus Rashford", "commonName": "Rashford", "nationality": "Inglaterra" },
+              { "id": 108, "name": "Bruno Fernandes", "commonName": "Bruno Fernandes", "nationality": "Portugal" },
+              { "id": 109, "name": "Virgil van Dijk", "commonName": "van Dijk", "nationality": "Holanda" },
+              { "id": 110, "name": "Alisson Becker", "commonName": "Alisson", "nationality": "Brasil" },
+              { "id": 111, "name": "Son Heung-min", "commonName": "Son", "nationality": "Coreia do Sul" },
+              { "id": 112, "name": "Enzo Fernández", "commonName": "Enzo Fernández", "nationality": "Argentina" },
+              { "id": 113, "name": "Rodri", "commonName": "Rodri", "nationality": "Espanha" },
+              { "id": 114, "name": "Phil Foden", "commonName": "Foden", "nationality": "Inglaterra" },
+              { "id": 115, "name": "Trent Alexander-Arnold", "commonName": "Alexander-Arnold", "nationality": "Inglaterra" },
+              { "id": 116, "name": "Casemiro", "commonName": "Casemiro", "nationality": "Brasil" },
+              { "id": 117, "name": "Bernardo Silva", "commonName": "Bernardo Silva", "nationality": "Portugal" },
+              { "id": 118, "name": "Jack Grealish", "commonName": "Grealish", "nationality": "Inglaterra" },
+              { "id": 119, "name": "Darwin Núñez", "commonName": "Núñez", "nationality": "Uruguai" },
+              { "id": 120, "name": "Julián Álvarez", "commonName": "J. Álvarez", "nationality": "Argentina" }
+            ],
+            "laliga": [
+                { "id": 201, "name": "Vinícius José Paixão de Oliveira Júnior", "commonName": "Vini Jr.", "nationality": "Brasil" },
+                { "id": 202, "name": "Jude Bellingham", "commonName": "Bellingham", "nationality": "Inglaterra" },
+                { "id": 203, "name": "Robert Lewandowski", "commonName": "Lewandowski", "nationality": "Polônia" },
+                { "id": 204, "name": "Antoine Griezmann", "commonName": "Griezmann", "nationality": "França" },
+                { "id": 205, "name": "Pedri", "commonName": "Pedri", "nationality": "Espanha" },
+                { "id": 206, "name": "Gavi", "commonName": "Gavi", "nationality": "Espanha" },
+                { "id": 207, "name": "Federico Valverde", "commonName": "Valverde", "nationality": "Uruguai" },
+                { "id": 208, "name": "Rodrygo Goes", "commonName": "Rodrygo", "nationality": "Brasil" },
+                { "id": 209, "name": "Luka Modrić", "commonName": "Modrić", "nationality": "Croácia" },
+                { "id": 210, "name": "Frenkie de Jong", "commonName": "de Jong", "nationality": "Holanda" },
+                { "id": 211, "name": "Iago Aspas", "commonName": "Iago Aspas", "nationality": "Espanha" },
+                { "id": 212, "name": "Thibaut Courtois", "commonName": "Courtois", "nationality": "Bélgica" },
+                { "id": 213, "name": "Ronald Araújo", "commonName": "Araújo", "nationality": "Uruguai" },
+                { "id": 214, "name": "Toni Kroos", "commonName": "Kroos", "nationality": "Alemanha" },
+                { "id": 215, "name": "João Félix", "commonName": "João Félix", "nationality": "Portugal" },
+                { "id": 216, "name": "Éder Militão", "commonName": "Militão", "nationality": "Brasil" }
+            ],
+            "ita.1": [
+                { "id": 301, "name": "Victor Osimhen", "commonName": "Osimhen", "nationality": "Nigéria" },
+                { "id": 302, "name": "Lautaro Martínez", "commonName": "Lautaro", "nationality": "Argentina" },
+                { "id": 303, "name": "Rafael Leão", "commonName": "Rafael Leão", "nationality": "Portugal" },
+                { "id": 304, "name": "Khvicha Kvaratskhelia", "commonName": "Kvaratskhelia", "nationality": "Geórgia" },
+                { "id": 305, "name": "Nicolò Barella", "commonName": "Barella", "nationality": "Itália" },
+                { "id": 306, "name": "Federico Chiesa", "commonName": "Chiesa", "nationality": "Itália" },
+                { "id": 307, "name": "Paulo Dybala", "commonName": "Dybala", "nationality": "Argentina" },
+                { "id": 308, "name": "Dušan Vlahović", "commonName": "Vlahović", "nationality": "Sérvia" },
+                { "id": 309, "name": "Theo Hernández", "commonName": "Theo Hernández", "nationality": "França" },
+                { "id": 310, "name": "Ciro Immobile", "commonName": "Immobile", "nationality": "Itália" },
+                { "id": 311, "name": "Mike Maignan", "commonName": "Maignan", "nationality": "França" }
+            ],
+            "ger.1": [
+                { "id": 401, "name": "Harry Kane", "commonName": "Kane", "nationality": "Inglaterra" },
+                { "id": 402, "name": "Jamal Musiala", "commonName": "Musiala", "nationality": "Alemanha" },
+                { "id": 403, "name": "Florian Wirtz", "commonName": "Wirtz", "nationality": "Alemanha" },
+                { "id": 404, "name": "Leroy Sané", "commonName": "Sané", "nationality": "Alemanha" },
+                { "id": 405, "name": "Joshua Kimmich", "commonName": "Kimmich", "nationality": "Alemanha" },
+                { "id": 406, "name": "Marco Reus", "commonName": "Reus", "nationality": "Alemanha" },
+                { "id": 407, "name": "Julian Brandt", "commonName": "Brandt", "nationality": "Alemanha" },
+                { "id": 408, "name": "Thomas Müller", "commonName": "Müller", "nationality": "Alemanha" },
+                { "id": 409, "name": "Manuel Neuer", "commonName": "Neuer", "nationality": "Alemanha" },
+                { "id": 410, "name": "Alphonso Davies", "commonName": "Davies", "nationality": "Canadá" }
+            ],
+            "ksa.1": [
+                { "id": 501, "name": "Cristiano Ronaldo", "commonName": "C. Ronaldo", "nationality": "Portugal" },
+                { "id": 502, "name": "Neymar da Silva Santos Júnior", "commonName": "Neymar Jr.", "nationality": "Brasil" },
+                { "id": 503, "name": "Karim Benzema", "commonName": "Benzema", "nationality": "França" },
+                { "id": 504, "name": "N'Golo Kanté", "commonName": "Kanté", "nationality": "França" },
+                { "id": 505, "name": "Sadio Mané", "commonName": "Mané", "nationality": "Senegal" },
+                { "id": 506, "name": "Riyad Mahrez", "commonName": "Mahrez", "nationality": "Argélia" },
+                { "id": 507, "name": "Roberto Firmino", "commonName": "Firmino", "nationality": "Brasil" },
+                { "id": 508, "name": "Fabinho", "commonName": "Fabinho", "nationality": "Brasil" },
+                { "id": 509, "name": "Sergej Milinković-Savić", "commonName": "Milinković-Savić", "nationality": "Sérvia" },
+                { "id": 510, "name": "Kalidou Koulibaly", "commonName": "Koulibaly", "nationality": "Senegal" },
+                { "id": 511, "name": "Marcelo Brozović", "commonName": "Brozović", "nationality": "Croácia" }
+            ]
+          }
+        };
+        
         const SPORTS_DB = {
             "soccer": {
                 name: "Futebol",
@@ -777,10 +924,17 @@
                 logo: "https://logos-world.net/wp-content/uploads/2023/12/F1-Logo.png",
                 theme: "theme-f1",
                 bg: "https://images.alphacoders.com/132/1328459.jpeg",
+                bg: "https://a1.espncdn.com/combiner/i?img=%2Fphoto%2F2020%2F0512%2Fr697825_1296x729_16%2D9.jpg",
                 views: [
                     { id: 'schedule', name: 'Calendário', icon: 'calendar-days' },
                     { id: 'driver-standings', name: 'Mundial de Pilotos', icon: 'trophy' },
                     { id: 'team-standings', name: 'Mundial de Construtores', icon: 'shield' },
+                    { id: 'historic-pilots', name: 'Pilotos Históricos', icon: 'user-square' },
+                ],
+                historicPilots: [
+                    "Ayrton_Senna", "Michael_Schumacher", "Lewis_Hamilton", 
+                    "Juan_Manuel_Fangio", "Alain_Prost", "Niki_Lauda", 
+                    "Jackie_Stewart", "Jim_Clark", "Sebastian_Vettel", "Nelson_Piquet"
                 ],
                 leagues: { // Not really leagues, but can be used for years or other categorizations if needed
                 }
@@ -800,14 +954,18 @@
             getApiFootballScorersUrl: (leagueId, season) => `${API_CONFIG.APIFOOTBALL_BASE_URL}/players/topscorers?league=${leagueId}&season=${season}`,
             getWikiSearchUrl: (q) => `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`,
             getWikiDetailUrl: (t) => `https://pt.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&exintro&explaintext&pithumbsize=500&titles=${encodeURIComponent(t)}&format=json&origin=*`,
+            // F1 OpenF1
             getF1MeetingsUrl: (year) => `${API_CONFIG.OPENF1_BASE_URL}/meetings?year=${year}`,
             getF1DriverStandingsUrl: (session_key) => `${API_CONFIG.OPENF1_BASE_URL}/championship_drivers?session_key=${session_key}`,
             getF1TeamStandingsUrl: (session_key) => `${API_CONFIG.OPENF1_BASE_URL}/championship_teams?session_key=${session_key}`,
+            // F1 ESPN
+            getF1ScoreboardUrl: (year) => `${API_CONFIG.ESPN_BASE_SITE}/racing/f1/seasons/${year}/events?lang=pt`,
+            getF1RaceSummaryUrl: (e) => `${API_CONFIG.ESPN_BASE_SITE}/racing/f1/summary?event=${e}&lang=pt`,
             formatDate: (date) => date.toISOString().slice(0, 10).replace(/-/g, "")
         };
 
         const app = {
-            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {} },
+            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {}, f1ScoreboardCache: {}, scorersCache: {}, playerDatabaseCache: null },
 
             init() {
                 try {
@@ -886,8 +1044,22 @@
                 }
                 const seasonSelector = document.getElementById('season-selector');
                 if (seasonSelector) { seasonSelector.addEventListener('change', (e) => { this.state.selectedSeason = e.target.value; if(this.state.view === 'scorers') this.fetchScorers(this.state.currentLeague); }); }
-                const wikiSearchInput = document.getElementById('wiki-search-input');
-                if (wikiSearchInput) { wikiSearchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.searchClubs(); }); }
+                
+                const gsi = document.getElementById('global-search-input');
+                if (gsi) {
+                    gsi.addEventListener('input', (e) => this.handleGlobalSearch(e.target.value));
+                    gsi.addEventListener('focus', (e) => {
+                        if (e.target.value.length > 1) { document.getElementById('global-search-results').classList.remove('hidden'); }
+                    });
+                    document.addEventListener('click', (e) => {
+                        const searchContainer = gsi.parentElement;
+                        if (searchContainer && !searchContainer.contains(e.target)) {
+                            document.getElementById('global-search-results').classList.add('hidden');
+                        }
+                    });
+                }
+                document.getElementById('wiki-search-input')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.searchWiki(); });
+                document.getElementById('wiki-pilot-search-input')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.searchWiki(); });
             },
 
             renderSeasonSelector() {
@@ -895,6 +1067,118 @@
                 if (!sel) return;
                 sel.innerHTML = '';
                 for(let i=0;i<5;i++) { const opt = document.createElement('option'); opt.value = 2026-i; opt.innerText = 2026-i; opt.className = 'text-black'; sel.appendChild(opt); }
+            },
+
+            loadPlayerDatabase() {
+                // A base de dados de jogadores agora é carregada de uma variável interna.
+                if (this.state.playerDatabaseCache) {
+                    return this.state.playerDatabaseCache;
+                }
+                this.state.playerDatabaseCache = PLAYER_DB_DATA;
+                return this.state.playerDatabaseCache;
+            },
+
+            async handleGlobalSearch(query) {
+                const resultsContainer = document.getElementById('global-search-results');
+                if (!query || query.length < 2) {
+                    resultsContainer.innerHTML = '';
+                    resultsContainer.classList.add('hidden');
+                    return;
+                }
+
+                resultsContainer.classList.remove('hidden');
+                resultsContainer.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">Buscando...</div>';
+
+                const sportKey = this.state.currentSport;
+                let results = [];
+                const lowerQuery = query.toLowerCase();
+
+                if (sportKey === 'soccer') {
+                    // Busca robusta de jogadores a partir da base de dados externa
+                    const playerDB = this.loadPlayerDatabase();
+                    if (playerDB.soccer) {
+                        Object.keys(playerDB.soccer).forEach(leagueKey => {
+                            const league = SPORTS_DB.soccer.leagues[leagueKey];
+                            if (league) {
+                                const players = playerDB.soccer[leagueKey] || [];
+                                players.forEach(player => {
+                                    const playerName = player.name || '';
+                                    const commonName = player.commonName || '';
+                                    if (playerName.toLowerCase().includes(lowerQuery) || commonName.toLowerCase().includes(lowerQuery)) {
+                                        // Evita adicionar jogadores duplicados na lista de resultados
+                                        if (!results.some(r => r.type === 'player' && r.name === playerName)) {
+                                            results.push({
+                                                type: 'player',
+                                                name: playerName,
+                                                subtitle: `Jogador • ${league.name}`,
+                                                icon: 'user',
+                                                action: () => this.loadWikiDetail(playerName)
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    // Busca de clubes na liga atual (lógica existente)
+                    const leagueKey = this.state.currentLeague;
+                    const league = SPORTS_DB.soccer.leagues[leagueKey];
+                    const clubs = league.clubs || [];
+                    const espnTeamsMap = await this.getEspnTeamsMap(league.id);
+
+                    clubs.forEach(clubName => {
+                        const displayName = clubName.replace(/_/g, ' ');
+                        if (displayName.toLowerCase().includes(lowerQuery)) {
+                            const searchName = displayName.toLowerCase();
+                            let logoUrl = espnTeamsMap[searchName] || null;
+                            if (!logoUrl) {
+                                const key = Object.keys(espnTeamsMap).find(k => k.includes(searchName) || searchName.includes(k));
+                                if(key) logoUrl = espnTeamsMap[key];
+                            }
+                            results.push({ type: 'club', name: displayName, subtitle: league.name, logo: logoUrl,
+                                action: () => { this.setView('clubs'); this.loadWikiDetail(clubName, logoUrl); }
+                            });
+                        }
+                    });
+                } else if (sportKey === 'formula1') {
+                    const pilots = SPORTS_DB.formula1.historicPilots || [];
+                    pilots.forEach(pilotName => {
+                        const displayName = pilotName.replace(/_/g, ' ');
+                        if (displayName.toLowerCase().includes(lowerQuery)) {
+                            results.push({ type: 'pilot', name: displayName, subtitle: 'Piloto Histórico', icon: 'user-square',
+                                action: () => { this.setView('historic-pilots'); this.loadWikiDetail(pilotName); }
+                            });
+                        }
+                    });
+                }
+
+                // Ordena os resultados para mostrar jogadores primeiro, depois clubes/pilotos
+                results.sort((a, b) => {
+                    if (a.type === 'player' && b.type !== 'player') return -1;
+                    if (a.type !== 'player' && b.type === 'player') return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                this.renderGlobalSearchResults(results);
+            },
+
+            renderGlobalSearchResults(results) {
+                const resultsContainer = document.getElementById('global-search-results');
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">Nenhum resultado encontrado.</div>';
+                    return;
+                }
+                resultsContainer.innerHTML = '';
+                results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    const iconHtml = result.logo ? `<img src="${result.logo}" alt="${result.name}">` : (result.icon ? `<i data-lucide="${result.icon}" class="w-8 h-8 text-gray-400"></i>` : '');
+                    item.innerHTML = `${iconHtml}<div class="result-text"><div class="title">${result.name}</div><div class="subtitle">${result.subtitle}</div></div>`;
+                    item.onclick = () => { result.action(); resultsContainer.classList.add('hidden'); document.getElementById('global-search-input').value = ''; };
+                    resultsContainer.appendChild(item);
+                });
+                if(window.lucide) lucide.createIcons();
             },
 
             renderSportsNav() {
@@ -1014,6 +1298,7 @@
                     if(view === 'schedule') await this.fetchF1Schedule();
                     if(view === 'driver-standings') await this.fetchF1DriverStandings();
                     if(view === 'team-standings') await this.fetchF1TeamStandings(); // Corrected typo
+                    if(view === 'historic-pilots') this.renderHistoricPilots();
                 }
             },
 
@@ -1138,21 +1423,22 @@
 
                 meetings.forEach(meeting => {
                     const card = document.createElement('div'); 
-                    card.className = 'f1-race-card';
+                    card.className = 'f1-race-card cursor-pointer';
+                    card.onclick = () => this.openF1Race(meeting);
                     
                     const startDate = new Date(meeting.date_start);
                     const endDate = new Date(meeting.date_end);
                     const dateRange = `${startDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'})} - ${endDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'})}`;
 
                     card.innerHTML = `
-                        <div class="p-5 flex items-center gap-5">
+                        <div class="p-5 flex items-center gap-5 relative">
                             <img src="${meeting.country_flag}" class="w-16 h-10 object-cover rounded-md border border-white/10 shrink-0">
                             <div class="flex-1">
                                 <p class="text-xs font-bold text-[var(--accent)] uppercase">${meeting.circuit_short_name}</p>
                                 <h3 class="font-bold text-lg text-white">${meeting.meeting_name}</h3>
                                 <p class="text-sm text-gray-400 font-medium">${dateRange}</p>
                             </div>
-                            <img src="${meeting.circuit_image}" class="w-20 h-20 object-contain opacity-10 absolute right-4 top-1/2 -translate-y-1/2" onerror="this.style.display='none'">
+                            <img src="${meeting.circuit_image}" class="w-20 h-20 object-contain opacity-10 absolute right-4 top-1/2 -translate-y-1/2" onerror="this.style.display='none'"/>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -1258,35 +1544,145 @@
                 });
             },
 
+            async openF1Race(meeting) {
+                const modal = document.getElementById('f1-race-modal');
+                if (!modal) return;
+
+                modal.classList.add('open');
+                
+                document.getElementById('f1-modal-racename').innerText = meeting.meeting_name;
+                document.getElementById('f1-modal-circuit').innerText = meeting.circuit_short_name;
+                const startDate = new Date(meeting.date_start);
+                document.getElementById('f1-modal-date').innerText = startDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+                document.getElementById('f1-modal-bg').style.backgroundImage = `url('${SPORTS_DB.formula1.bg}')`;
+
+                const contentArea = document.getElementById('f1-modal-content');
+                const tabsArea = document.getElementById('f1-modal-tabs');
+                contentArea.innerHTML = '<div class="py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                tabsArea.innerHTML = '';
+
+                try {
+                    const year = meeting.year;
+                    if (!this.state.f1ScoreboardCache[year]) {
+                        const scoreboardRes = await fetch(API_CONFIG.getF1ScoreboardUrl(year));
+                        const scoreboardData = await scoreboardRes.json();
+                        this.state.f1ScoreboardCache[year] = scoreboardData.events || [];
+                    }
+                    
+                    const events = this.state.f1ScoreboardCache[year];
+                    const normalize = str => str.toLowerCase().replace(/grand prix/g, 'gp').replace(/formula 1/g, '').trim();
+                    const meetingNameNorm = normalize(meeting.meeting_name);
+
+                    const espnEvent = events.find(e => normalize(e.name).includes(meetingNameNorm));
+
+                    if (!espnEvent) { throw new Error('Evento correspondente da ESPN não encontrado.'); }
+
+                    const summaryRes = await fetch(API_CONFIG.getF1RaceSummaryUrl(espnEvent.id));
+                    const summaryData = await summaryRes.json();
+                    
+                    this.renderF1RaceDetails(summaryData);
+
+                } catch (e) {
+                    console.error("Erro ao buscar detalhes da corrida de F1:", e);
+                    contentArea.innerHTML = `<div class="text-center text-red-400 p-10">${e.message || 'Não foi possível carregar os detalhes da corrida.'}</div>`;
+                }
+            },
+
+            renderF1RaceDetails(data) {
+                const contentArea = document.getElementById('f1-modal-content');
+                const tabsArea = document.getElementById('f1-modal-tabs');
+                contentArea.innerHTML = '';
+                tabsArea.innerHTML = '';
+
+                const tabs = data.tabs || [];
+                const pickcenter = data.pickcenter || [];
+
+                if (!tabs.length || !pickcenter.length) {
+                    contentArea.innerHTML = '<div class="text-center text-gray-500 p-10">Resultados não disponíveis.</div>';
+                    return;
+                }
+
+                tabs.forEach((tab, index) => {
+                    const tabButton = document.createElement('button');
+                    tabButton.className = 'px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white';
+                    tabButton.innerText = tab.displayName;
+                    
+                    const contentId = `f1-tab-content-${tab.id}`;
+                    tabButton.onclick = () => {
+                        tabsArea.querySelectorAll('button').forEach(btn => btn.className = 'px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white');
+                        document.querySelectorAll('.f1-tab-pane').forEach(pane => pane.classList.add('hidden'));
+                        tabButton.className = 'px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-white border-[var(--accent)]';
+                        document.getElementById(contentId).classList.remove('hidden');
+                    };
+                    tabsArea.appendChild(tabButton);
+
+                    const tabContent = document.createElement('div');
+                    tabContent.id = contentId;
+                    tabContent.className = 'f1-tab-pane hidden';
+
+                    const providerData = pickcenter.find(p => p.provider === tab.id);
+                    if (providerData && providerData.tables) {
+                        providerData.tables.forEach(tableData => {
+                            const gridCols = `50px repeat(${tableData.headers.length - 1}, minmax(0, 1fr))`;
+                            let tableHtml = `<div class="std-table-container mb-8"><div class="p-4 font-bold text-lg bg-white/5">${tableData.displayName}</div><div class="std-table-header" style="grid-template-columns: ${gridCols};">${tableData.headers.map(h => `<div>${h}</div>`).join('')}</div>`;
+                            tableData.rows.forEach(row => { tableHtml += `<div class="std-row" style="grid-template-columns: ${gridCols};">${row.cells.map((c, i) => `<div class="${i === 0 ? 'font-bold text-lg' : 'opacity-80'}">${c}</div>`).join('')}</div>`; });
+                            tabContent.innerHTML += tableHtml + '</div>';
+                        });
+                    } else { tabContent.innerHTML = '<div class="text-center text-gray-500 p-10">Dados não disponíveis para esta sessão.</div>'; }
+                    contentArea.appendChild(tabContent);
+                    if (index === 0) { tabButton.click(); }
+                });
+            },
+
+            closeF1Modal() { document.getElementById('f1-race-modal').classList.remove('open'); },
+
             async fetchScorers(leagueKey) {
                 const g = document.getElementById('scorers-grid'); if (!g) return;
                 g.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
                 const leagueData = SPORTS_DB.soccer.leagues[leagueKey];
                 if (!leagueData || !leagueData.apiFootballId) { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Dados indisponíveis.</div>'; return; }
                 
-                const espnTeamsMap = await this.getEspnTeamsMap(leagueData.id);
+                const season = this.state.selectedSeason;
+                const cacheKey = `${leagueKey}_${season}`;
 
+                const renderScorers = async (scorersData) => {
+                    if (!scorersData || scorersData.length === 0) {
+                        g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Sem dados de artilharia para esta temporada.</div>';
+                        return;
+                    }
+                    const espnTeamsMap = await this.getEspnTeamsMap(leagueData.id);
+                    g.innerHTML = '';
+                    scorersData.slice(0, 20).forEach((item, i) => {
+                        const p = item.player; 
+                        const s = item.statistics[0];
+                        
+                        const teamNameLower = s.team.name.toLowerCase();
+                        let teamLogo = espnTeamsMap[teamNameLower] || null;
+                        if (!teamLogo) {
+                            const key = Object.keys(espnTeamsMap).find(k => k.includes(teamNameLower) || teamNameLower.includes(k));
+                            if (key) teamLogo = espnTeamsMap[key];
+                        }
+                        const teamLogoImg = teamLogo ? `<img src="${teamLogo}" class="w-5 h-5 mr-2 object-contain">` : '';
+
+                        const card = document.createElement('div');
+                        card.className = 'scorer-card cursor-pointer';
+                        card.onclick = () => this.loadWikiDetail(p.name, p.photo);
+                        card.innerHTML = `<div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm font-medium flex items-center" style="color: var(--text-muted)">${teamLogoImg}<span>${s.team.name}</span></div></div><div class="scorer-goals">${s.goals.total}</div>`;
+                        g.appendChild(card);
+                    });
+                };
+
+                if (this.state.scorersCache[cacheKey]) {
+                    renderScorers(this.state.scorersCache[cacheKey]);
+                    return;
+                }
+                
                 try {
-                    const res = await fetch(API_CONFIG.getApiFootballScorersUrl(leagueData.apiFootballId, this.state.selectedSeason), { headers: { 'x-apisports-key': APIFOOTBALL_KEY } });
+                    const res = await fetch(API_CONFIG.getApiFootballScorersUrl(leagueData.apiFootballId, season), { headers: { 'x-apisports-key': APIFOOTBALL_KEY } });
                     const data = await res.json();
-                    if(data.response && data.response.length > 0) {
-                        g.innerHTML = '';
-                        data.response.slice(0, 20).forEach((item, i) => {
-                            const p = item.player; 
-                            const s = item.statistics[0];
-                            
-                            const teamNameLower = s.team.name.toLowerCase();
-                            let teamLogo = espnTeamsMap[teamNameLower] || null;
-                            if (!teamLogo) {
-                                const key = Object.keys(espnTeamsMap).find(k => k.includes(teamNameLower) || teamNameLower.includes(k));
-                                if (key) teamLogo = espnTeamsMap[key];
-                            }
-                            const teamLogoImg = teamLogo ? `<img src="${teamLogo}" class="w-5 h-5 mr-2 object-contain">` : '';
-
-                            g.innerHTML += `<div class="scorer-card"><div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm font-medium flex items-center" style="color: var(--text-muted)">${teamLogoImg}<span>${s.team.name}</span></div></div><div class="scorer-goals">${s.goals.total}</div></div>`;
-                        });
-                    } else { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Sem dados.</div>'; }
-                } catch { g.innerHTML = '<div class="col-span-full text-center text-red-400">Erro API.</div>'; }
+                    this.state.scorersCache[cacheKey] = data.response || [];
+                    renderScorers(this.state.scorersCache[cacheKey]);
+                } catch { g.innerHTML = '<div class="col-span-full text-center text-red-400">Erro ao carregar artilheiros.</div>'; }
             },
 
             async fetchNews(id) {
@@ -1295,9 +1691,9 @@
                 try {
                     const res = await fetch(API_CONFIG.getNewsUrl('soccer', id)); const d = await res.json(); g.innerHTML = '';
                     (d.articles||[]).slice(0,9).forEach(n => {
-                        if(!n.images?.length) return;
-                        g.innerHTML += `<a href="${n.links?.web?.href}" target="_blank" class="news-card group block">
-                            <div class="news-img-wrapper"><img src="${n.images[0].url}" class="news-img"></div>
+                        if(!n.links?.web?.href) return;
+                        g.innerHTML += `<a href="${n.links.web.href}" target="_blank" class="news-card group block">
+                            <div class="news-img-wrapper">${n.images?.[0]?.url ? `<img src="${n.images[0].url}" class="news-img">` : ''}</div>
                             <div class="news-content">
                                 <div><div class="news-category">Notícia</div><h3 class="news-title group-hover:text-[var(--accent)] transition">${n.headline}</h3></div>
                                 <p class="news-footer"><i data-lucide="clock" class="w-3 h-3"></i> ${n.published||'Recente'}</p>
@@ -1308,12 +1704,29 @@
                 } catch { g.innerHTML = '<div class="text-center">Sem notícias.</div>'; }
             },
 
+            renderHistoricPilots() {
+                const container = document.getElementById('historic-pilots-grid');
+                if (!container) return;
+                this.closeWiki(); // Ensure wiki is closed when rendering the grid
+                const pilots = SPORTS_DB.formula1.historicPilots || [];
+                container.innerHTML = '';
+                pilots.forEach(pilotName => {
+                    const card = document.createElement('div');
+                    card.className = 'club-grid-card';
+                    const displayName = pilotName.replace(/_/g, ' ');
+                    card.onclick = () => this.loadWikiDetail(pilotName);
+                    card.innerHTML = `<div class="w-20 h-20 flex items-center justify-center"><i data-lucide="user-square" class="w-12 h-12 text-gray-400"></i></div><span>${displayName}</span>`;
+                    container.appendChild(card);
+                });
+                if(window.lucide) lucide.createIcons();
+            },
+
             async renderClubs(leagueKey) {
                 const container = document.getElementById('clubs-grid');
                 const wikiDetail = document.getElementById('wiki-detail');
                 const grid = document.getElementById('clubs-grid');
                 if (!container) return;
-                wikiDetail.classList.add('hidden'); grid.classList.remove('hidden');
+                this.closeWiki(); // Ensure wiki is closed when rendering the grid
                 
                 const league = SPORTS_DB.soccer.leagues[leagueKey];
                 const clubsList = league.clubs || [];
@@ -1328,10 +1741,17 @@
                     
                     const displayName = clubName.replace(/_/g, ' ');
                     const searchName = displayName.toLowerCase();
-                    let logoUrl = espnTeamsMap[searchName] || null;
+                    let logoUrl = espnTeamsMap[searchName]; // Tenta correspondência exata primeiro
+
                     if (!logoUrl) {
-                        const key = Object.keys(espnTeamsMap).find(k => k.includes(searchName) || searchName.includes(k));
-                        if(key) logoUrl = espnTeamsMap[key];
+                        // Se a correspondência exata falhar, encontre a melhor correspondência de substring.
+                        // Isso é mais robusto do que .find() porque evita correspondências ambíguas, escolhendo a mais longa.
+                        const matchingKeys = Object.keys(espnTeamsMap).filter(k => searchName.includes(k));
+                        if (matchingKeys.length > 0) {
+                            // Classifique por comprimento decrescente para obter a correspondência mais longa e específica.
+                            matchingKeys.sort((a, b) => b.length - a.length);
+                            logoUrl = espnTeamsMap[matchingKeys[0]];
+                        }
                     }
 
                     card.onclick = () => this.loadWikiDetail(clubName, logoUrl);
@@ -1342,8 +1762,13 @@
                 });
             },
 
-            async searchClubs() {
-                const q = document.getElementById('wiki-search-input').value;
+            searchWiki() {
+                let q = '';
+                if (this.state.view === 'clubs') {
+                    q = document.getElementById('wiki-search-input').value;
+                } else if (this.state.view === 'historic-pilots') {
+                    q = document.getElementById('wiki-pilot-search-input').value;
+                }
                 if(!q) return;
                 this.loadWikiDetail(q);
             },
@@ -1351,22 +1776,34 @@
             async loadWikiDetail(searchTerm, logoUrl = null) {
                 const container = document.getElementById('wiki-content-area');
                 const wikiDetail = document.getElementById('wiki-detail');
-                const grid = document.getElementById('clubs-grid');
-                if (!container) return;
-                grid.classList.add('hidden'); wikiDetail.classList.remove('hidden');
+                if (!container || !wikiDetail) return;
+
+                if (this.state.view === 'clubs') {
+                    document.getElementById('clubs-grid').classList.add('hidden');
+                    document.getElementById('wiki-search-input').parentElement.classList.add('hidden');
+                } else if (this.state.view === 'historic-pilots') {
+                    document.getElementById('historic-pilots-grid').classList.add('hidden');
+                    document.getElementById('wiki-pilot-search-input').parentElement.classList.add('hidden');
+                } else if (this.state.view === 'scorers') {
+                    document.getElementById('scorers-grid').classList.add('hidden');
+                    document.getElementById('scorers-header').classList.add('hidden');
+                }
+                wikiDetail.classList.remove('hidden');
                 container.innerHTML = '<div class="flex flex-col items-center justify-center py-20"><div class="loader-ring"></div></div>';
                 
-                // If logo is not passed (e.g. from search), try to find it.
-                if (!logoUrl) {
+                if (!logoUrl && this.state.currentSport === 'soccer') {
                     try {
                         const league = SPORTS_DB.soccer.leagues[this.state.currentLeague];
                         const espnTeamsMap = await this.getEspnTeamsMap(league.id);
-                        
-                        const searchTermFormatted = searchTerm.replace(/_/g, ' ').toLowerCase();
-                        logoUrl = espnTeamsMap[searchTermFormatted] || null;
+                        const searchName = searchTerm.replace(/_/g, ' ').toLowerCase();
+                        logoUrl = espnTeamsMap[searchName];
                         if (!logoUrl) {
-                            const key = Object.keys(espnTeamsMap).find(k => k.includes(searchTermFormatted) || searchTermFormatted.includes(k));
-                            if(key) logoUrl = espnTeamsMap[key];
+                            // Lógica de correspondência idêntica à de renderClubs para consistência.
+                            const matchingKeys = Object.keys(espnTeamsMap).filter(k => searchName.includes(k));
+                            if (matchingKeys.length > 0) {
+                                matchingKeys.sort((a, b) => b.length - a.length);
+                                logoUrl = espnTeamsMap[matchingKeys[0]];
+                            }
                         }
                     } catch(e) { console.error("Error fetching logo for wiki detail:", e); }
                 }
@@ -1375,27 +1812,37 @@
                     const queryTerm = searchTerm.replace(/_/g, ' ');
                     const searchRes = await fetch(API_CONFIG.getWikiSearchUrl(queryTerm));
                     const searchData = await searchRes.json();
-                    
                     if(!searchData.query || !searchData.query.search || searchData.query.search.length === 0) {
-                         container.innerHTML = `<p class="text-center text-red-400">Clube "${searchTerm}" não encontrado.</p>`; return;
+                         container.innerHTML = `<p class="text-center text-red-400">Conteúdo para "${queryTerm}" não encontrado na Wikipedia.</p>`; return;
                     }
                     const bestMatchTitle = searchData.query.search[0].title;
                     const detailRes = await fetch(API_CONFIG.getWikiDetailUrl(bestMatchTitle));
                     const detailData = await detailRes.json();
                     const page = Object.values(detailData.query.pages)[0];
                     
-                    let html = `<div class="flex items-start gap-6 mb-8">`;
-                    if (logoUrl) { html += `<img src="${logoUrl}" class="w-24 h-24 object-contain rounded-2xl border border-white/10 p-2 bg-white/5 shrink-0">`; }
-                    html += `<div class="flex-1 pt-2"><h2 class="text-4xl font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2></div></div>`;
-                    html += `<div class="text-lg leading-relaxed text-gray-400" style="color: var(--text-primary)">${page.extract ? page.extract.replace(/\n/g, '<br><br>') : 'Sem descrição.'}</div>`;
-                    
+                    const finalLogoUrl = page.thumbnail?.source || logoUrl;
+                    let html = `<div class="flex flex-col md:flex-row items-start gap-8 mb-8">`;
+                    if (finalLogoUrl) {
+                        html += `<img src="${finalLogoUrl}" class="w-32 h-32 object-cover md:object-contain rounded-2xl border border-white/10 p-2 bg-white/5 shrink-0 mx-auto md:mx-0">`;
+                    }
+                    html += `<div class="flex-1 pt-2 text-center md:text-left"><h2 class="text-4xl font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2></div></div>`;
+                    html += `<div class="text-lg leading-relaxed" style="color: var(--text-primary)">${page.extract ? page.extract.replace(/\n/g, '<br><br>') : 'Sem descrição.'}</div>`;
                     container.innerHTML = html;
                 } catch(e) { container.innerHTML = '<p class="text-center text-red-400">Erro de conexão.</p>'; }
             },
 
             closeWiki() {
                 document.getElementById('wiki-detail').classList.add('hidden');
-                document.getElementById('clubs-grid').classList.remove('hidden');
+                if (this.state.view === 'clubs') {
+                    document.getElementById('clubs-grid').classList.remove('hidden');
+                    document.getElementById('wiki-search-input').parentElement.classList.remove('hidden');
+                } else if (this.state.view === 'historic-pilots') {
+                    document.getElementById('historic-pilots-grid').classList.remove('hidden');
+                    document.getElementById('wiki-pilot-search-input').parentElement.classList.remove('hidden');
+                } else if (this.state.view === 'scorers') {
+                    document.getElementById('scorers-grid').classList.remove('hidden');
+                    document.getElementById('scorers-header').classList.remove('hidden');
+                }
             },
 
             async openMatch(id) {
@@ -1487,6 +1934,7 @@
             },
 
             closeModal() { document.getElementById('match-modal').classList.remove('open'); },
+
             toggleMobileLeague() { const m = document.getElementById('mob-league-menu'); if(m) { m.classList.toggle('hidden'); m.classList.toggle('flex'); } },
             
             updateActiveNav(viewId) {
