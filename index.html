@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SportingLabs - NextGen AI | W3Labs</title>
+    <title>SportingLabs W3Labs</title>
     
     <!-- Bibliotecas Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,16 +11,12 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link id="flatpickr-theme" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
     <!-- Markdown Parser -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        /* =========================================
-           1. DESIGN SYSTEM - THEMING
-           ========================================= */
         :root {
             /* DARK MODE (DEFAULT) VARIABLES */
             --bg-deep: #050507;
@@ -43,6 +39,9 @@
             
             --input-bg: rgba(0,0,0,0.4);
             --input-border: var(--glass-border);
+            --modal-bg: #0f0f11;
+            --table-header-bg: rgba(255,255,255,0.02);
+            --dropdown-bg: #111;
 
             /* Cores Fixas */
             --accent: #d1ff4d;
@@ -50,6 +49,7 @@
             --ai-glow: rgba(168, 85, 247, 0.4);
             --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
+            --scrollbar-thumb-bg: rgba(128,128,128,0.3);
             /* Zonas da Tabela */
             --zone-libertadores: #4285f4;
             --zone-prelibertadores: #00bfff;
@@ -81,6 +81,11 @@
             
             --input-bg: rgba(255, 255, 255, 0.8);
             --input-border: rgba(0,0,0,0.1);
+
+            --modal-bg: #ffffff;
+            --table-header-bg: rgba(0,0,0,0.03);
+            --dropdown-bg: #fff;
+            --scrollbar-thumb-bg: rgba(0,0,0,0.2);
         }
 
         /* === GLOBAL STYLES === */
@@ -109,7 +114,7 @@
         }
 
         ::-webkit-scrollbar { width: 6px; background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb-bg); border-radius: 3px; }
 
         /* Loader */
         #global-loader { 
@@ -143,7 +148,9 @@
         .logo-text { 
             font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em; 
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .logo-text span { 
             color: var(--accent); -webkit-text-fill-color: var(--accent);
@@ -161,6 +168,9 @@
             background: var(--nav-item-hover); border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent);
             color: var(--text-primary);
+        }
+        .dropdown-menu {
+            background-color: var(--dropdown-bg);
         }
         body.light-mode .nav-pill:hover, body.light-mode .nav-pill.active { box-shadow: 0 0 5px var(--accent); }
 
@@ -199,18 +209,18 @@
         }
         .tv-scoreboard-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
         
-        .tv-team-box { display: flex; align-items: center; gap: 8px; font-weight: 700; color: white; z-index: 2; width: 38%; font-size: 0.95rem; }
+        .tv-team-box { display: flex; align-items: center; gap: 8px; font-weight: 700; color: white; z-index: 2; flex: 1; min-width: 0; font-size: 0.95rem; }
         .tv-team-box.home { justify-content: flex-end; text-align: right; }
         .tv-team-box.away { justify-content: flex-start; text-align: left; }
         .tv-team-box img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); flex-shrink: 0; }
         .tv-team-box span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .tv-score-center { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            width: 24%; height: 100%; position: relative; z-index: 2; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex-shrink: 0; width: 9rem; height: 100%; position: relative; z-index: 2;
         }
         /* Default Score Size */
-        .tv-score { font-weight: 800; font-size: 2.5rem; color: #fff; letter-spacing: 2px; line-height: 1; }
+        .tv-score { font-weight: 800; font-size: clamp(1.8rem, 5vw, 2.5rem); color: #fff; letter-spacing: 1px; line-height: 1; }
         .tv-time { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-top: 6px; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
         
         .match-footer { 
@@ -220,7 +230,7 @@
 
         /* Modal Score Display */
         .modal-score-display { 
-            font-size: 5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; 
+            font-size: clamp(3.5rem, 10vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1;
             text-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #fff; margin-bottom: 10px;
         }
         body.light-mode .modal-score-display { color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -261,15 +271,40 @@
         .theme-bundesliga .tv-score span { display: block; transform: skewX(10deg); }
         .theme-bundesliga .tv-time { color: #d20515; background: transparent; font-weight: 800; }
 
+        body.light-mode .theme-premier .tv-scoreboard { background: #fff; border-bottom: 3px solid #38003c; }
+        body.light-mode .theme-premier .tv-team-box, body.light-mode .theme-premier .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-premier .tv-time { background: #e90052; color: #fff; }
+        body.light-mode .theme-laliga .tv-scoreboard { background: #fff; }
+        body.light-mode .theme-laliga .tv-team-box, body.light-mode .theme-laliga .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-laliga .tv-time { color: #ff4b4b; background: #f0f0f0; }
+        body.light-mode .theme-champions .tv-scoreboard { background: #f0f5ff; border: 1px solid #a4c2ff; }
+        body.light-mode .theme-champions .tv-team-box, body.light-mode .theme-champions .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-champions .tv-time { background: #3d6aff; color: #fff; border: none; }
+        body.light-mode .theme-libertadores .tv-scoreboard { background: #f5f5f5; }
+        body.light-mode .theme-libertadores .tv-team-box, body.light-mode .theme-libertadores .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-libertadores .tv-time { background: #333; color: #d4af37; }
+        body.light-mode .theme-saudi .tv-scoreboard { background: #f9f9f9; border-bottom-color: #004d26; }
+        body.light-mode .theme-saudi .tv-team-box, body.light-mode .theme-saudi .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-saudi .tv-time { color: #004d26; }
+        body.light-mode .theme-seriea .tv-scoreboard { background: #f0f8ff; }
+        body.light-mode .theme-seriea .tv-team-box, body.light-mode .theme-seriea .tv-score { color: var(--text-primary); }
+        body.light-mode .theme-seriea .tv-time { background: #00396e; color: #fff; }
+
         .theme-saudi .tv-scoreboard { background: linear-gradient(90deg, #004d26 0%, #002b15 100%); border-bottom: 2px solid #c9b037; }
         .theme-saudi .tv-time { color: #c9b037; }
 
         .theme-seriea .tv-scoreboard { background: #00396e; clip-path: polygon(0 0, 100% 0, 100% 85%, 98% 100%, 2% 100%, 0 85%); }
         .theme-seriea .tv-time { background: #fff; color: #00396e; border-radius: 10px; }
 
+        /* F1 Theme */
+        .theme-f1 .league-header { border-bottom: 3px solid #e10600; }
+        body.light-mode .theme-f1 .league-header { border-bottom-color: #e10600; }
+        .f1-race-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: all 0.3s; box-shadow: var(--card-shadow); }
+        .f1-race-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
         /* General Tables/Grids */
         .std-table-container { overflow-x: auto; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass-bg); box-shadow: var(--card-shadow); }
-        .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: rgba(0,0,0,0.05); align-items: center; text-align: center; min-width: 600px; }
+        .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: var(--table-header-bg); align-items: center; text-align: center; min-width: 600px; }
         .std-table-header div:nth-child(2) { text-align: left; } 
         
         .std-row { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; transition: background 0.2s; color: var(--text-primary); text-align: center; min-width: 600px; }
@@ -309,7 +344,7 @@
         .news-card:hover .news-img { transform: scale(1.1); }
         .news-content { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05)); }
         .news-category { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
-        .news-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-primary); }
+        .news-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-primary); }
         .news-footer { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
         
         .club-grid-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: var(--card-shadow); }
@@ -325,30 +360,10 @@
         .scorer-goals { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
         body.light-mode .scorer-goals { color: var(--accent); }
 
-        /* AI & Chat */
-        .ai-btn { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); color: white; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 20px var(--ai-glow); width: 100%; }
-        .ai-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--ai-glow); }
-        .ai-response-box { background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px; padding: 20px; margin-top: 16px; position: relative; }
-        .ai-content { font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); }
-        body:not(.light-mode) .ai-content { color: #e9d5ff; }
-
-        .floating-chat-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px var(--ai-glow); z-index: 90; cursor: pointer; transition: transform 0.2s; border: 2px solid rgba(255,255,255,0.2); }
-        .floating-chat-btn:hover { transform: scale(1.1); }
-        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; max-height: 70vh; background: var(--bg-deep); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 91; display: none; flex-direction: column; overflow: hidden; transform-origin: bottom right; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .chat-window.open { display: flex; }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        .chat-header { padding: 16px; background: rgba(168, 85, 247, 0.1); border-bottom: 1px solid rgba(168, 85, 247, 0.2); display: flex; justify-content: space-between; align-items: center; }
-        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-input-area { padding: 12px; border-top: 1px solid var(--glass-border); background: var(--nav-item-bg); display: flex; gap: 8px; }
-        .chat-input { flex: 1; background: var(--input-bg); border: 1px solid var(--glass-border); padding: 10px 16px; border-radius: 20px; color: var(--text-primary); outline: none; font-size: 0.9rem; }
-        .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.4; }
-        .msg.user { align-self: flex-end; background: #333; color: white; border-bottom-right-radius: 2px; }
-        .msg.ai { align-self: flex-start; background: rgba(168, 85, 247, 0.2); color: var(--text-primary); border: 1px solid rgba(168, 85, 247, 0.2); border-bottom-left-radius: 2px; }
-
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #0f0f11; width: 100%; max-width: 900px; height: 90vh; border-radius: 32px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.95) translateY(20px); transition: 0.4s; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
+        .modal-content { background: var(--modal-bg); width: 100%; max-width: 900px; height: 90vh; border-radius: 32px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.95) translateY(20px); transition: 0.4s; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
         .modal-header-bg { position: absolute; inset: 0; opacity: 0.2; background-size: cover; background-position: center; filter: blur(40px); }
 
@@ -365,71 +380,128 @@
         .bottom-nav-item.active { color: var(--accent); }
         .bottom-nav-item i { width: 20px; height: 20px; }
 
+        #mob-league-menu { backdrop-filter: blur(16px); background-color: rgba(0,0,0,0.95); }
+        body.light-mode #mob-league-menu { background-color: rgba(243, 244, 246, 0.95); }
+
         /* --- RESPONSIVIDADE AVANÇADA (Ultra Small -> Ultra Wide) --- */
         
         /* 1. Mobile Extra Pequeno (iPhone SE, Galaxy Fold - 320px a 375px) */
         @media (max-width: 375px) {
-            .logo-text { font-size: 1.1rem; }
-            .header-main { padding: 0 8px; height: 60px; }
-            main { padding-top: 60px; }
+            .logo-text { font-size: 0.9rem; }
+            .header-main { padding: 0 8px; height: 48px; }
             
             /* Ajustes Finos para Placar em Tela Estreita */
-            .tv-scoreboard { height: 75px; padding: 0 6px; }
-            .tv-team-box { font-size: 0.75rem; width: 35%; gap: 6px; }
-            .tv-team-box img { width: 22px; height: 22px; }
-            .tv-score { font-size: 1.5rem; letter-spacing: 1px; }
-            .tv-time { font-size: 0.6rem; margin-top: 2px; padding: 1px 4px; }
+            .tv-scoreboard { height: 55px; padding: 0 5px; }
+            .tv-team-box { font-size: 0.65rem; gap: 3px; }
+            .tv-team-box img { width: 18px; height: 18px; }
+            .tv-time { font-size: 0.5rem; margin-top: 1px; padding: 1px 3px; }
+
+            /* Modal Mobile Extra Pequeno */
+            .modal-content { height: 100vh; width: 100vw; border-radius: 0; } /* Full screen */
+            #modal-top-section { height: 120px; }
+            .modal-home-logo, .modal-away-logo { width: 40px; height: 40px; margin-bottom: 2px; }
+            .modal-score-display { font-size: 2rem; }
+            #modal-status { font-size: 9px; padding: 0px 8px; }
+            #modal-time { font-size: 10px; margin-top: 1px; }
+            .modal-overlay .modal-content > .flex-1 { padding: 10px; } /* Content area padding */
+            #modal-timeline { margin-left: 8px; padding-left: 16px; } /* Timeline indent */
+
+            .match-footer { font-size: 0.6rem; padding: 6px 10px; }
             
-            .modal-score-display { font-size: 3rem; }
-            .modal-content { height: 95vh; width: 100vw; border-radius: 24px 24px 0 0; }
-            .match-footer { font-size: 0.65rem; padding: 8px 12px; }
+            .league-header { padding: 10px; margin-bottom: 12px; }
+            .league-header img { width: 36px; height: 36px; }
+            #page-league-name { font-size: 1.2rem; }
             
-            .league-header { padding: 16px; margin-bottom: 20px; }
-            .league-header img { width: 48px; height: 48px; }
-            #page-league-name { font-size: 1.5rem; }
-            
-            .bottom-nav { padding: 8px 16px; width: 95%; bottom: 16px; }
-            .bottom-nav-item { font-size: 0.6rem; }
-            
-            .ai-btn { font-size: 0.8rem; padding: 8px 12px; }
+            .bottom-nav { padding: 6px 12px; width: 95%; bottom: 12px; }
+            .bottom-nav-item { font-size: 0.55rem; }
+            .bottom-nav-item i { width: 18px; height: 18px; }
         }
 
         /* 2. Mobile Padrão (376px - 640px) */
         @media (min-width: 376px) and (max-width: 640px) {
             .sidebar { display: none; }
-            .header-main { padding: 0 16px; }
-            main { padding-top: 70px; gap: 0; }
-            .feed { padding-top: 20px; }
-            .modal-content { height: 92vh; width: 100vw; border-radius: 32px 32px 0 0; position: absolute; bottom: 0; }
-            .club-grid-card img { width: 48px; height: 48px; }
-            .std-table-header, .std-row { font-size: 0.8rem; padding: 10px; }
-            .tv-scoreboard { height: 85px; padding: 0 12px; }
-            .tv-score { font-size: 2rem; }
-            .floating-chat-btn { bottom: 100px; right: 20px; }
-            .chat-window { bottom: 170px; right: 5%; width: 90%; }
-            .match-card { margin-bottom: 12px; }
-            .modal-score-display { font-size: 4rem; }
+            .header-main { padding: 0 12px; height: 55px; }
+            .feed { padding-top: 70px; padding-left: 0.8rem; padding-right: 0.8rem; }
+            .modal-content { height: 95vh; width: 100vw; border-radius: 20px 20px 0 0; position: absolute; bottom: 0; }
+            
+            /* Modal Mobile Padrão */
+            #modal-top-section { height: 150px; }
+            .modal-home-logo, .modal-away-logo { width: 60px; height: 60px; margin-bottom: 4px; }
+            .modal-score-display { font-size: 2.8rem; }
+            #modal-status { font-size: 10px; padding: 1px 10px; }
+            #modal-time { font-size: 12px; margin-top: 2px; }
+            .modal-overlay .modal-content > .flex-1 { padding: 15px; }
+            #modal-timeline { margin-left: 12px; padding-left: 20px; }
+
+            .club-grid-card img { width: 40px; height: 40px; }
+            .std-table-header, .std-row { font-size: 0.7rem; padding: 8px; }
+            .tv-scoreboard { height: 65px; padding: 0 10px; }
+            .match-card { margin-bottom: 10px; }
         }
 
         /* 3. Tablets (640px - 1024px) */
         @media (min-width: 640px) and (max-width: 1024px) {
-            .feed { padding-top: 30px; }
-            .matches-grid { grid-template-columns: repeat(1, 1fr); } /* Keep matches readable */
+            .feed { padding-top: 80px; }
+            .matches-grid { grid-template-columns: repeat(2, 1fr); }
             .news-grid { grid-template-columns: repeat(2, 1fr); }
+
+            /* Modal Tablets */
+            .modal-content { max-width: 700px; height: 85vh; border-radius: 28px; }
+            #modal-top-section { height: 200px; }
+            .modal-home-logo, .modal-away-logo { width: 80px; height: 80px; }
+            .modal-score-display { font-size: 3.5rem; }
+            .modal-overlay .modal-content > .flex-1 { padding: 20px; }
         }
 
-        /* 4. Desktop (1024px - 1536px) - Padrão */
-        
+        /* 4. Desktop (1024px - 1536px) - Padrão (sem necessidade de override aqui) */
         /* 5. Telas Extra Grandes (Ultrawide - > 1536px) */
         @media (min-width: 1536px) {
-            main { max-width: 1800px; gap: 40px; }
-            .tv-scoreboard { height: 100px; }
-            .tv-score { font-size: 3rem; }
-            .match-card:hover { transform: translateY(-6px) scale(1.02); }
+            main { max-width: 2000px; gap: 50px; } /* Adjusted max-width for main content */
+            .tv-scoreboard { height: 110px; }
+            #page-league-name { font-size: clamp(2.8rem, 4vw, 4.5rem); }
+            .match-card:hover { transform: translateY(-8px) scale(1.02); }
             /* Expandir grids */
-            #matches-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+            #matches-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
             #news-grid { grid-template-columns: repeat(4, 1fr); }
             #clubs-grid { grid-template-columns: repeat(6, 1fr); }
+
+            /* Modal Ultrawide Desktop */
+            .modal-content { max-width: 1200px; height: 90vh; border-radius: 40px; }
+            #modal-top-section { height: 300px; }
+            .modal-home-logo, .modal-away-logo { width: 120px; height: 120px; margin-bottom: 8px; }
+            .modal-score-display { font-size: 6rem; }
+            .modal-overlay .modal-content > .flex-1 { padding: 40px 60px; }
+            #modal-timeline { margin-left: 24px; padding-left: 40px; }
+        }
+
+        /* 6. Mobile Landscape Specific Adjustments (e.g. 16:9 on a phone) */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .header-main {
+                height: 50px;
+            }
+            .feed {
+                /* Adjust padding for smaller header and to save vertical space */
+                padding-top: 60px; 
+                padding-bottom: 20px;
+            }
+            .bottom-nav {
+                /* Hide bottom nav on landscape mobile, it takes up too much vertical space. */
+                display: none;
+            }
+            .modal-content {
+                /* Make modal full screen to maximize space */
+                height: 100vh;
+                width: 100vw;
+                border-radius: 0;
+            }
+            #modal-top-section {
+                height: 120px; /* Keep consistent with portrait extra small */
+            }
+            .modal-home-logo, .modal-away-logo {
+                width: 40px; height: 40px; margin-bottom: 2px; /* Keep consistent with portrait extra small */
+            }
+            .modal-score-display { font-size: 2rem; } /* Keep consistent with portrait extra small */
+            .sidebar { display: none; } /* Ensure sidebar is hidden */
         }
     </style>
 </head>
@@ -445,11 +517,11 @@
             <div class="hidden md:flex gap-3">
                 <div class="relative group">
                     <button class="nav-pill"><span id="header-sport-name">Futebol</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
-                    <div class="dropdown-menu group-hover:block absolute top-full left-0 bg-[#111] p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="sport-menu"></div>
+                    <div class="dropdown-menu group-hover:block absolute top-full left-0 p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="sport-menu"></div>
                 </div>
                 <div class="relative group">
                     <button class="nav-pill" id="league-selector-btn"><img id="header-league-logo" class="w-4 h-4 rounded-full" src=""> <span id="header-league-name">Carregando...</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
-                    <div class="dropdown-menu group-hover:block absolute top-full left-0 bg-[#111] p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="league-menu"></div>
+                    <div class="dropdown-menu group-hover:block absolute top-full left-0 p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="league-menu"></div>
                 </div>
             </div>
         </div>
@@ -462,18 +534,18 @@
             </div>
             
             <!-- Theme Toggle -->
-            <button onclick="app.toggleTheme()" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">
+            <button onclick="app.toggleTheme()" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro" aria-label="Alternar tema de cores">
                 <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 hidden"></i>
                 <i data-lucide="moon" id="theme-icon-moon" class="w-5 h-5"></i>
             </button>
 
             <!-- Mobile League Toggle -->
-            <button class="md:hidden nav-pill !p-2 ml-1" onclick="app.toggleMobileLeague()"><img id="mob-league-logo" class="w-6 h-6 rounded-full" src=""></button>
+            <button class="md:hidden nav-pill !p-2 ml-1" onclick="app.toggleMobileLeague()" aria-label="Selecionar liga"><img id="mob-league-logo" class="w-6 h-6 rounded-full" src=""></button>
         </div>
     </header>
 
     <!-- Mobile League Menu -->
-    <div id="mob-league-menu" class="fixed inset-0 z-[80] bg-black/95 backdrop-blur-xl hidden flex-col p-6 pt-24 overflow-y-auto transition-opacity duration-300">
+    <div id="mob-league-menu" class="fixed inset-0 z-[80] hidden flex-col p-6 pt-24 overflow-y-auto transition-opacity duration-300">
         <div class="flex justify-between items-center mb-8"><h2 class="text-3xl font-bold text-white">Selecionar Liga</h2><button onclick="app.toggleMobileLeague()" class="p-3 rounded-full bg-white/10 hover:bg-white/20"><i data-lucide="x" class="w-6 h-6"></i></button></div>
         <div id="mob-league-list" class="grid grid-cols-1 gap-4"></div>
     </div>
@@ -501,7 +573,7 @@
                 <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-0"></div>
                 <img id="page-league-logo" class="w-16 h-16 md:w-20 md:h-20 object-contain z-10 drop-shadow-xl">
                 <div class="z-10">
-                    <h1 id="page-league-name" class="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-none tracking-tight"></h1>
+                    <h1 id="page-league-name" class="font-black text-white leading-none tracking-tight"></h1>
                     <p class="text-[var(--accent)] font-bold text-xs md:text-sm mt-2 md:mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
                 </div>
             </div>
@@ -516,7 +588,7 @@
                     <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-full sm:w-36 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)">
                 </div>
                 <!-- Responsive Grid: 1 col mobile, 2 col lg, 3 col 2xl -->
-                <div id="matches-grid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6"></div>
+                <div id="matches-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6"></div>
             </div>
 
             <!-- View: Standings -->
@@ -556,6 +628,27 @@
                     <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
                 </div>
             </div>
+
+            <!-- View: F1 Schedule -->
+            <div id="view-schedule" class="view-section hidden">
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Calendário da Fórmula 1</div>
+                <div id="schedule-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6"></div>
+            </div>
+
+            <!-- View: F1 Driver Standings -->
+            <div id="view-driver-standings" class="view-section hidden">
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Mundial de Pilotos</div>
+                <div id="driver-standings-container" class="std-table-container"></div>
+            </div>
+
+            <!-- View: F1 Team Standings -->
+            <div id="view-team-standings" class="view-section hidden">
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Mundial de Construtores</div>
+                <div id="team-standings-container" class="std-table-container">
+                    <div class="std-table-header" style="grid-template-columns: 50px minmax(180px, 3fr) 1fr;"><div>#</div><div class="text-left">Equipe</div><div class="text-center">Pts</div></div>
+                    <div id="team-standings-body"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -570,8 +663,8 @@
 
     <!-- Match Detail Modal -->
     <div id="match-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="relative h-[200px] md:h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
+        <div class="modal-content"> 
+            <div id="modal-top-section" class="relative h-[200px] md:h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0">
                 <div class="modal-header-bg" id="modal-bg"></div>
                 <div class="relative z-10 w-full px-4 md:px-12 flex justify-between items-center mt-4">
                     <div class="flex flex-col items-center w-1/3 text-center">
@@ -579,7 +672,7 @@
                         <h2 id="modal-home-name" class="text-xs md:text-xl font-black text-white leading-tight">HOME</h2>
                     </div>
                     <div class="flex flex-col items-center">
-                        <div class="modal-score-display text-4xl md:text-[5rem]" id="modal-score">0 - 0</div>
+                        <div class="modal-score-display" id="modal-score">0 - 0</div>
                         <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] bg-black/60 px-3 md:px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-2 md:mt-3">AO VIVO</div>
                         <div id="modal-time" class="text-gray-400 text-xs md:text-sm mt-2 font-mono"></div>
                     </div>
@@ -588,13 +681,9 @@
                         <h2 id="modal-away-name" class="text-xs md:text-xl font-black text-white leading-tight">AWAY</h2>
                     </div>
                 </div>
-                <button onclick="app.closeModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white z-20 bg-black/40 p-2 md:p-3 rounded-full backdrop-blur-md transition hover:bg-white/20"><i data-lucide="x"></i></button>
+                <button onclick="app.closeModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white z-20 bg-black/40 p-2 md:p-3 rounded-full backdrop-blur-md transition hover:bg-white/20" aria-label="Fechar modal"><i data-lucide="x"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
-                <div class="mb-10">
-                    <button id="ai-analyst-btn" class="ai-btn shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Análise W3AI</button>
-                    <div id="ai-match-result" class="hidden ai-response-box"><div class="ai-content"></div></div>
-                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Estatísticas</h3><div id="modal-stats" class="space-y-6"></div></div>
                     <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Linha do Tempo</h3><div id="modal-timeline" class="space-y-4 relative ml-4 pl-8 border-l border-white/10"></div></div>
@@ -603,98 +692,97 @@
         </div>
     </div>
 
-    <!-- Chat Bot -->
-    <div class="floating-chat-btn" onclick="app.toggleChat()">
-        <i data-lucide="message-square-plus" class="w-6 h-6 text-white"></i>
-    </div>
-    <div class="chat-window" id="chat-window">
-        <div class="chat-header">
-            <div class="flex items-center gap-2">
-                <i data-lucide="bot" class="text-[#a855f7]"></i>
-                <span class="font-bold" style="color: var(--text-primary)">W3AI Assistant</span>
-            </div>
-            <button onclick="app.toggleChat()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <div class="msg ai">Olá! Sou o assistente virtual da SportingLabs. Pergunte-me sobre estatísticas, regras ou história do futebol!</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Digite sua pergunta...">
-            <button onclick="app.sendChatMessage()" class="p-2 bg-[#a855f7] rounded-full text-white hover:opacity-80 transition"><i data-lucide="send" class="w-4 h-4"></i></button>
-        </div>
-    </div>
-
     <script>
-        const apiKey = "AIzaSyCJHhlX86-hDNcuaZ0MCY5IH5DIp2Pp0qw"; 
         const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe"; 
 
         const SPORTS_DB = {
             "soccer": {
                 name: "Futebol",
+                logo: "https://cdn-icons-png.flaticon.com/512/53/53283.png",
+                views: [
+                    { id: 'matches', name: 'Jogos de Hoje', icon: 'calendar-days' },
+                    { id: 'standings', name: 'Classificação', icon: 'trophy' },
+                    { id: 'scorers', name: 'Artilharia', icon: 'target' },
+                    { id: 'news', name: 'Notícias', icon: 'zap' },
+                    { id: 'clubs', name: 'Clubes', icon: 'shield' },
+                ],
                 leagues: {
                     "brasileirao": { 
                         id: "bra.1", apiFootballId: 71, seasonId: 2026, name: "Brasileirão Série A", 
                         logo: "https://upload.wikimedia.org/wikipedia/pt/7/75/Campeonato_Brasileiro_de_Futebol_de_2024_-_S%C3%A9rie_A.png", 
                         theme: "theme-brasileirao", 
                         bg: "https://s2-globo-play.glbimg.com/rHTMAA96-XWwbs6h4pEWeZXlREw=/https://s2.glbimg.com/aNGo_xeD86fO2XMCGBRlpe7rmmg=/i.s3.glbimg.com/v1/AUTH_c3c606ff68e7478091d1ca496f9c5625/internal_photos/bs/2025/L/P/Y3zKUbSTWAUtZN86BTzg/2025-4731-brasileirao-background.jpg",
-                        clubs: ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético Mineiro", "Grêmio", "Internacional", "Fluminense", "Botafogo", "Vasco da Gama", "Cruzeiro", "Bahia", "Fortaleza", "Athletico Paranaense", "Red Bull Bragantino", "Cuiabá", "Santos", "Goiás", "Coritiba", "América Mineiro", "Vitória", "Criciúma", "Juventude", "Atlético Goianiense", "Sport Recife", "Ceará"]
+                        clubs: ["Clube_Atlético_Mineiro", "Esporte_Clube_Bahia", "Botafogo_de_Futebol_e_Regatas", "Ceará_Sporting_Club", "Sport_Club_Corinthians_Paulista", "Cruzeiro_Esporte_Clube", "Clube_de_Regatas_do_Flamengo", "Fluminense_Football_Club", "Fortaleza_Esporte_Clube", "Grêmio_Foot-Ball_Porto_Alegrense", "Sport_Club_Internacional", "Esporte_Clube_Juventude", "Mirassol_Futebol_Clube", "Sociedade_Esportiva_Palmeiras", "Red_Bull_Bragantino", "Santos_Futebol_Clube", "São_Paulo_Futebol_Clube", "Sport_Club_do_Recife", "Club_de_Regatas_Vasco_da_Gama", "Esporte_Clube_Vitória"]
                     },
                     "brasileiraob": { 
                         id: "bra.2", apiFootballId: 72, seasonId: 2026, name: "Brasileirão Série B", 
                         logo: "https://upload.wikimedia.org/wikipedia/pt/thumb/2/2d/Campeonato_Brasileiro_de_Futebol_S%C3%A9rie_B_2025.png/250px-Campeonato_Brasileiro_de_Futebol_S%C3%A9rie_B_2025.png", 
                         theme: "theme-brasileiraob", 
                         bg: "https://assets.goal.com/images/v3/bltcc999d0167120e29/brasileir%C3%A3o_s%C3%A9rie_b_ta%C3%A7a.jpg?auto=webp&format=pjpg&width=3840&quality=60",
-                        clubs: ["Santos", "Ponte Preta", "Guarani", "Novorizontino", "Mirassol", "Vila Nova", "Ceará", "Sport", "CRB", "Botafogo-SP", "Ituano", "Chapecoense", "Avaí", "Amazonas", "Paysandu", "Operário-PR", "Coritiba", "América-MG", "Goiás", "Brusque"]
+                        clubs: ["Amazonas_Futebol_Clube", "América_Futebol_Clube_(Minas_Gerais)", "Athletic_Club_(Minas_Gerais)", "Club_Athletico_Paranaense", "Atlético_Clube_Goianiense", "Avaí_Futebol_Clube", "Botafogo_Futebol_Clube_(Ribeirão_Preto)", "Associação_Chapecoense_de_Futebol", "Coritiba_Foot_Ball_Club", "Clube_de_Regatas_Brasil", "Criciúma_Esporte_Clube", "Cuiabá_Esporte_Clube", "Associação_Ferroviária_de_Esportes", "Goiás_Esporte_Clube", "Grêmio_Novorizontino", "Operário_Ferroviário_Esporte_Clube", "Paysandu_Sport_Club", "Clube_do_Remo", "Vila_Nova_Futebol_Clube", "Volta_Redonda_Futebol_Clube"]
                     },
                     "premier": { 
                         id: "eng.1", apiFootballId: 39, seasonId: 2026, name: "Premier League", 
                         logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png", 
                         theme: "theme-premier", 
                         bg: "https://t4.ftcdn.net/jpg/05/99/15/97/360_F_599159727_pFIXrrEiyZnuSw5h0qOjAuVMeQfTYpQM.jpg",
-                        clubs: ["Arsenal", "Manchester City", "Liverpool", "Manchester United", "Chelsea", "Tottenham", "Newcastle", "Aston Villa", "West Ham", "Brighton", "Everton", "Wolverhampton", "Fulham", "Crystal Palace", "Brentford", "Nottingham Forest"]
+                        clubs: ["Arsenal_Football_Club", "Aston_Villa_Football_Club", "A.F.C._Bournemouth", "Brentford_Football_Club", "Brighton_&_Hove_Albion_Football_Club", "Chelsea_Football_Club", "Crystal_Palace_Football_Club", "Everton_Football_Club", "Fulham_Football_Club", "Ipswich_Town_Football_Club", "Leicester_City_Football_Club", "Liverpool_Football_Club", "Manchester_City_Football_Club", "Manchester_United_Football_Club", "Newcastle_United_Football_Club", "Nottingham_Forest_Football_Club", "Southampton_Football_Club", "Tottenham_Hotspur_Football_Club", "West_Ham_United_Football_Club", "Wolverhampton_Wanderers_Football_Club"]
                     },
                     "laliga": { 
                         id: "esp.1", apiFootballId: 140, seasonId: 2026, name: "La Liga", 
                         logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png", 
                         theme: "theme-laliga", 
                         bg: "https://assets.goal.com/images/v3/blt054a5ddddf1e5a2b/158f203189e94419d7010667f379da35bcf16d8e.jpg",
-                        clubs: ["Real Madrid", "Barcelona", "Atletico Madrid", "Sevilla", "Valencia", "Real Sociedad", "Villarreal", "Real Betis", "Athletic Club", "Girona", "Celta Vigo", "Rayo Vallecano", "Mallorca", "Osasuna"]
+                        clubs: ["Deportivo_Alavés", "Athletic_Club", "Atlético_de_Madrid", "Futbol_Club_Barcelona", "Real_Betis_Balompié", "Real_Club_Celta_de_Vigo", "Real_Club_Deportivo_Espanyol_de_Barcelona", "Getafe_Club_de_Fútbol", "Girona_Futbol_Club", "Unión_Deportiva_Las_Palmas", "Club_Deportivo_Leganés", "Real_Club_Deportivo_Mallorca", "Club_Atlético_Osasuna", "Rayo_Vallecano_de_Madrid", "Real_Madrid_Club_de_Fútbol", "Real_Sociedad_de_Fútbol", "Sevilla_Fútbol_Club", "Valencia_Club_de_Fútbol", "Real_Valladolid", "Villarreal_Club_de_Fútbol"]
                     },
                     "champions": { 
                         id: "uefa.champions", apiFootballId: 2, seasonId: 2026, name: "Champions League", 
                         logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png", 
                         theme: "theme-champions", 
                         bg: "https://editorial.uefa.com/resources/027f-1793cd516cbd-e4e5d9d1aedf-1000/fbl-eur-c1-draw.jpeg",
-                        clubs: ["Real Madrid", "Manchester City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Borussia Dortmund", "Atletico Madrid", "AC Milan", "Porto", "Benfica"]
+                        clubs: ["Real_Madrid_Club_de_Fútbol", "Futbol_Club_Barcelona", "Atlético_de_Madrid", "Manchester_City_Football_Club", "Arsenal_Football_Club", "Liverpool_Football_Club", "Manchester_United_Football_Club", "Fußball-Club_Bayern_München", "Borussia_Dortmund", "Bayer_04_Leverkusen", "RB_Leipzig", "Paris_Saint-Germain_Football_Club", "Internazionale_Milano", "Associazione_Calcio_Milan", "Juventus_Football_Club", "Philips_Sport_Vereniging", "Feyenoord_Rotterdam", "Sport_Lisboa_e_Benfica", "Futebol_Clube_do_Porto", "Sporting_Clube_de_Portugal"]
                     },
                     "libertadores": { 
                         id: "conmebol.libertadores", apiFootballId: 13, seasonId: 2026, name: "Libertadores", 
                         logo: "https://upload.wikimedia.org/wikipedia/pt/4/4b/Conmebol_Libertadores_Bridgestone_logo.png", 
                         theme: "theme-libertadores", 
                         bg: "https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2021/01/29/60141dfea45a6.jpeg",
-                        clubs: ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "São Paulo", "Atletico Mineiro", "Nacional", "Peñarol", "Fluminense", "Grêmio", "Internacional", "Olimpia", "Colo-Colo"]
+                        clubs: ["Clube_de_Regatas_do_Flamengo", "Sociedade_Esportiva_Palmeiras", "São_Paulo_Futebol_Clube", "Fluminense_Football_Club", "Grêmio_Foot-Ball_Porto_Alegrense", "Sport_Club_Internacional", "Clube_Atlético_Mineiro", "Club_Atlético_Boca_Juniors", "Club_Atlético_River_Plate", "Racing_Club_de_Avellaneda", "Club_Atlético_Independiente", "Club_Atlético_San_Lorenzo_de_Almagro", "Club_Atlético_Peñarol", "Club_Nacional_de_Football", "Club_Olimpia", "Club_Cerro_Porteño", "Colo-Colo", "Club_Universidad_de_Chile", "Atlético_Nacional", "Liga_Deportiva_Universitaria_de_Quito"]
                     },
                     "seriea": { 
                         id: "ita.1", apiFootballId: 135, seasonId: 2026, name: "Serie A", 
                         logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png", 
                         theme: "theme-seriea", 
                         bg: "https://cloudfront-us-east-1.images.arcpublishing.com/newr7/L6ZP3CEJ6VMPNFT5HTW7H7L7LY.jpg",
-                        clubs: ["Juventus", "Inter Milan", "AC Milan", "Napoli", "Roma", "Lazio", "Atalanta", "Fiorentina", "Bologna", "Torino"]
+                        clubs: ["Atalanta_Bergamasca_Calcio", "Bologna_Football_Club_1909", "Cagliari_Calcio", "Como_1907", "Empoli_Football_Club", "ACF_Fiorentina", "Genoa_Cricket_and_Football_Club", "Internazionale_Milano", "Juventus_Football_Club", "Società_Sportiva_Lazio", "Unione_Sportiva_Lecce", "Associazione_Calcio_Milan", "Associazione_Calcio_Monza", "Società_Sportiva_Calcio_Napoli", "Parma_Calcio_1913", "Associazione_Sportiva_Roma", "Torino_Football_Club", "Udinese_Calcio", "Venezia_Football_Club", "Hellas_Verona_Football_Club"]
                     },
                     "bundesliga": { 
                         id: "ger.1", apiFootballId: 78, seasonId: 2026, name: "Bundesliga", 
                         logo: "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png", 
                         theme: "theme-bundesliga", 
                         bg: "https://s2-ge.glbimg.com/F2PP74GbwM16ougDWVMDhZzEp6U=/0x0:1024x659/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/X/Y/3pfuBhTzuraB6EHOqszA/gettyimages-1742744089.jpg",
-                        clubs: ["Bayern Munich", "Borussia Dortmund", "Bayer Leverkusen", "RB Leipzig", "Eintracht Frankfurt", "Wolfsburg", "Hoffenheim"]
+                        clubs: ["Bayer_04_Leverkusen", "VfB_Stuttgart", "Fußball-Club_Bayern_München", "RB_Leipzig", "Borussia_Dortmund", "Eintracht_Frankfurt", "TSG_1899_Hoffenheim", "1._FC_Heidenheim_1846", "SV_Werder_Bremen", "SC_Freiburg", "FC_Augsburg", "VfL_Wolfsburg", "1._FSV_Mainz_05", "Borussia_Mönchengladbach", "1._FC_Union_Berlin", "VfL_Bochum", "FC_St._Pauli", "Holstein_Kiel", "Hamburger_SV", "FC_Schalke_04"]
                     },
                     "saudi": { 
                         id: "ksa.1", apiFootballId: 307, seasonId: 2026, name: "Saudi Pro League", 
                         logo: "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fleaguelogos%2Fsoccer%2F500%2F2488.png", 
                         theme: "theme-saudi", 
                         bg: "https://www.365scores.com/pt-br/news/magazine/wp-content/uploads/2023/11/366423961_5646928382077000_2604818796297545939_n-e1699379331310.jpg",
-                        clubs: ["Al Hilal", "Al Nassr", "Al Ittihad", "Al Ahli", "Al Ettifaq", "Al Shabab"]
+                        clubs: ["Al-Ahli_Saudi_FC", "Al-Ettifaq_FC", "Al-Fateh_SC", "Al-Fayha_FC", "Al-Hilal_Saudi_Football_Club", "Al-Ittihad_Club", "Al-Khaleej_FC", "Al-Nassr_FC", "Al-Okhdood_Club", "Al-Qadsiah_FC", "Al-Raed_FC", "Al-Riyadh_SC", "Al-Shabab_Football_Club", "Al-Taawoun_FC", "Al-Wehda_Football_Club", "Damac_Football_Club", "Al-Kholood_Club", "Al-Orobah_FC", "Abha_Club", "Al-Hazem_SC"]
                     }
+                }
+            },
+            "formula1": {
+                name: "Fórmula 1",
+                logo: "https://logos-world.net/wp-content/uploads/2023/12/F1-Logo.png",
+                theme: "theme-f1",
+                bg: "https://images.alphacoders.com/132/1328459.jpeg",
+                views: [
+                    { id: 'schedule', name: 'Calendário', icon: 'calendar-days' },
+                    { id: 'driver-standings', name: 'Mundial de Pilotos', icon: 'trophy' },
+                    { id: 'team-standings', name: 'Mundial de Construtores', icon: 'shield' },
+                ],
+                leagues: { // Not really leagues, but can be used for years or other categorizations if needed
                 }
             }
         };
@@ -703,6 +791,7 @@
             ESPN_BASE_SITE: 'https://site.api.espn.com/apis/site/v2/sports',
             ESPN_BASE_WEB: 'https://site.web.api.espn.com/apis',
             APIFOOTBALL_BASE_URL: 'https://v3.football.api-sports.io',
+            OPENF1_BASE_URL: 'https://api.openf1.org/v1',
             getScoreboardUrl: (s, l, d) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/scoreboard?lang=pt&region=br&dates=${d}&limit=100`,
             getStandingsUrl: (l) => `${API_CONFIG.ESPN_BASE_WEB}/v2/sports/soccer/${l}/standings?lang=pt`,
             getGameSummaryUrl: (l, e) => `${API_CONFIG.ESPN_BASE_SITE}/soccer/${l}/summary?event=${e}&lang=pt`,
@@ -711,19 +800,23 @@
             getApiFootballScorersUrl: (leagueId, season) => `${API_CONFIG.APIFOOTBALL_BASE_URL}/players/topscorers?league=${leagueId}&season=${season}`,
             getWikiSearchUrl: (q) => `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`,
             getWikiDetailUrl: (t) => `https://pt.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&exintro&explaintext&pithumbsize=500&titles=${encodeURIComponent(t)}&format=json&origin=*`,
+            getF1MeetingsUrl: (year) => `${API_CONFIG.OPENF1_BASE_URL}/meetings?year=${year}`,
+            getF1DriverStandingsUrl: (session_key) => `${API_CONFIG.OPENF1_BASE_URL}/championship_drivers?session_key=${session_key}`,
+            getF1TeamStandingsUrl: (session_key) => `${API_CONFIG.OPENF1_BASE_URL}/championship_teams?session_key=${session_key}`,
             formatDate: (date) => date.toISOString().slice(0, 10).replace(/-/g, "")
         };
 
         const app = {
-            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark' },
+            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {} },
 
             init() {
                 try {
                     this.initTheme();
-                    this.renderNav();
+                    this.renderSportsNav();
+                    this.renderPrimaryNavigation();
                     this.renderSeasonSelector();
                     this.setupEvents();
-                    this.loadLeague(this.state.currentLeague);
+                    this.loadDataForView();
                     setTimeout(() => document.getElementById('global-loader').classList.add('loader-hidden'), 800);
                 } catch(e) { console.error("W3Labs Init Error:", e); }
             },
@@ -747,32 +840,54 @@
                 const body = document.body;
                 const moon = document.getElementById('theme-icon-moon');
                 const sun = document.getElementById('theme-icon-sun');
+                const flatpickrTheme = document.getElementById('flatpickr-theme');
 
                 if (theme === 'light') {
                     body.classList.add('light-mode');
                     moon.classList.remove('hidden');
                     sun.classList.add('hidden');
+                    if (flatpickrTheme) flatpickrTheme.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/light.css';
                 } else {
                     body.classList.remove('light-mode');
                     moon.classList.add('hidden');
                     sun.classList.remove('hidden');
+                    if (flatpickrTheme) flatpickrTheme.href = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css';
                 }
                 localStorage.setItem('sporting_theme', theme);
                 if(window.lucide) window.lucide.createIcons();
             },
 
+            async getEspnTeamsMap(leagueId) {
+                if (this.state.espnTeamsCache[leagueId]) {
+                    return this.state.espnTeamsCache[leagueId];
+                }
+                let espnTeamsMap = {};
+                try {
+                    const res = await fetch(API_CONFIG.getTeamsUrl('soccer', leagueId));
+                    const data = await res.json();
+                    if(data.sports && data.sports[0].leagues && data.sports[0].leagues[0].teams) {
+                        data.sports[0].leagues[0].teams.forEach(t => {
+                            espnTeamsMap[t.team.displayName.toLowerCase()] = t.team.logos?.[0]?.href;
+                            espnTeamsMap[t.team.shortDisplayName.toLowerCase()] = t.team.logos?.[0]?.href;
+                            espnTeamsMap[t.team.name.toLowerCase()] = t.team.logos?.[0]?.href;
+                        });
+                    }
+                    this.state.espnTeamsCache[leagueId] = espnTeamsMap;
+                    return espnTeamsMap;
+                } catch(e) {
+                    console.error("Error fetching ESPN teams map:", e);
+                    return {};
+                }
+            },
+
             setupEvents() {
                 if(typeof flatpickr !== 'undefined') {
-                    flatpickr("#date-picker", { defaultDate: "today", dateFormat: "d/m/Y", locale: "pt", theme: "dark", onChange: (selectedDates) => { this.state.currentDate = selectedDates[0]; if(this.state.view === 'matches') this.loadLeague(this.state.currentLeague); } });
+                    flatpickr("#date-picker", { defaultDate: "today", dateFormat: "d/m/Y", locale: "pt", onChange: (selectedDates) => { this.state.currentDate = selectedDates[0]; if(this.state.view === 'matches') this.loadDataForView(); } });
                 }
                 const seasonSelector = document.getElementById('season-selector');
                 if (seasonSelector) { seasonSelector.addEventListener('change', (e) => { this.state.selectedSeason = e.target.value; if(this.state.view === 'scorers') this.fetchScorers(this.state.currentLeague); }); }
                 const wikiSearchInput = document.getElementById('wiki-search-input');
                 if (wikiSearchInput) { wikiSearchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.searchClubs(); }); }
-                
-                document.getElementById('chat-input').addEventListener('keypress', (e) => {
-                    if(e.key === 'Enter') this.sendChatMessage();
-                });
             },
 
             renderSeasonSelector() {
@@ -782,46 +897,124 @@
                 for(let i=0;i<5;i++) { const opt = document.createElement('option'); opt.value = 2026-i; opt.innerText = 2026-i; opt.className = 'text-black'; sel.appendChild(opt); }
             },
 
-            renderNav() {
+            renderSportsNav() {
+                const menu = document.getElementById('sport-menu');
+                if (!menu) return;
+                menu.innerHTML = '';
+                Object.entries(SPORTS_DB).forEach(([key, sport]) => {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white';
+                    item.innerHTML = `<img src="${sport.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${sport.name}`;
+                    item.onclick = () => this.changeSport(key);
+                    menu.appendChild(item);
+                });
+            },
+
+            renderPrimaryNavigation() {
+                const sport = SPORTS_DB[this.state.currentSport];
+                const leagueSelectorBtn = document.getElementById('league-selector-btn');
+                const sidebarLeagues = document.getElementById('sidebar-league-list').parentElement;
+                const navCard = document.querySelector('.nav-card');
+                const bottomNav = document.querySelector('.bottom-nav');
+
+                document.getElementById('header-sport-name').innerText = sport.name;
+
+                // Update main navigation (sidebar and bottom nav)
+                navCard.innerHTML = sport.views.map(v => 
+                    `<button onclick="app.setView('${v.id}')" class="nav-btn" id="desk-nav-${v.id}"><i data-lucide="${v.icon}"></i> ${v.name}</button>`
+                ).join('');
+                bottomNav.innerHTML = sport.views.map(v => 
+                    `<button class="bottom-nav-item" onclick="app.setView('${v.id}')" id="mob-nav-${v.id}"><i data-lucide="${v.icon}"></i><span>${v.name.split(' ')[0]}</span></button>`
+                ).join('');
+
+                if (this.state.currentSport === 'soccer') {
+                    leagueSelectorBtn.style.display = 'flex';
+                    sidebarLeagues.style.display = 'block';
+                    this.renderLeagueNav();
+                } else {
+                    leagueSelectorBtn.style.display = 'none';
+                    sidebarLeagues.style.display = 'none';
+                }
+                
+                this.updateActiveNav(this.state.view);
+                if(window.lucide) lucide.createIcons();
+            },
+
+            renderLeagueNav() {
                 const menu = document.getElementById('league-menu');
                 const sidebar = document.getElementById('sidebar-league-list');
                 const mobList = document.getElementById('mob-league-list');
                 if (menu) menu.innerHTML = ''; if (sidebar) sidebar.innerHTML = ''; if (mobList) mobList.innerHTML = '';
 
                 Object.entries(SPORTS_DB.soccer.leagues).forEach(([key, league]) => {
-                    if (menu) { const item = document.createElement('div'); item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white'; item.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${league.name}`; item.onclick = () => this.changeLeague(key); menu.appendChild(item); }
-                    if (sidebar) { const sideItem = document.createElement('button'); sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group'; sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition" onerror="this.style.display='none'"> <span class="font-medium">${league.name}</span>`; sideItem.onclick = () => this.changeLeague(key); sidebar.appendChild(sideItem); }
-                    if (mobList) { const mobItem = document.createElement('button'); mobItem.className = 'flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-full text-left hover:bg-white/10 transition'; mobItem.innerHTML = `<img src="${league.logo}" class="w-8 h-8 object-contain" onerror="this.style.display='none'"> <span class="text-white font-bold text-lg">${league.name}</span>`; mobItem.onclick = () => { this.changeLeague(key); this.toggleMobileLeague(); }; mobList.appendChild(mobItem); }
+                    if (menu) { const item = document.createElement('div'); item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white'; item.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${league.name}`; item.onclick = () => this.changeSoccerLeague(key); menu.appendChild(item); }
+                    if (sidebar) { const sideItem = document.createElement('button'); sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group'; sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition" onerror="this.style.display='none'"> <span class="font-medium">${league.name}</span>`; sideItem.onclick = () => this.changeSoccerLeague(key); sidebar.appendChild(sideItem); }
+                    if (mobList) { const mobItem = document.createElement('button'); mobItem.className = 'flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-full text-left hover:bg-white/10 transition'; mobItem.innerHTML = `<img src="${league.logo}" class="w-8 h-8 object-contain" onerror="this.style.display='none'"> <span class="text-white font-bold text-lg">${league.name}</span>`; mobItem.onclick = () => { this.changeSoccerLeague(key); this.toggleMobileLeague(); }; mobList.appendChild(mobItem); }
                 });
             },
 
-            changeLeague(key) { this.state.currentLeague = key; this.loadLeague(key); },
-
-            async loadLeague(key) {
-                const league = SPORTS_DB.soccer.leagues[key];
-                const dateStr = API_CONFIG.formatDate(this.state.currentDate);
+            changeSport(sportKey) {
+                if (this.state.currentSport === sportKey) return;
+                this.state.currentSport = sportKey;
                 
+                const sport = SPORTS_DB[sportKey];
+                this.state.view = sport.views[0].id;
+                if (sportKey === 'soccer') {
+                    this.state.currentLeague = 'brasileirao';
+                } else {
+                    this.state.currentLeague = null;
+                }
+
+                this.renderPrimaryNavigation();
+                this.loadDataForView();
+            },
+
+            changeSoccerLeague(key) { this.state.currentLeague = key; this.loadDataForView(); },
+
+            async loadDataForView() {
+                const sportKey = this.state.currentSport;
+                const view = this.state.view;
+                const sport = SPORTS_DB[sportKey];
+                const leagueKey = this.state.currentLeague;
+
                 const setText = (id, txt) => { const el = document.getElementById(id); if(el) el.innerText = txt; };
                 const setSrc = (id, src) => { const el = document.getElementById(id); if(el) el.src = src; };
 
-                setText('header-league-name', league.name);
-                setSrc('header-league-logo', league.logo);
-                setSrc('mob-league-logo', league.logo);
-                setText('page-league-name', league.name);
-                setSrc('page-league-logo', league.logo);
-                setText('page-league-country', "Temporada " + this.state.selectedSeason);
+                if (sportKey === 'soccer') {
+                    const league = sport.leagues[leagueKey];
+                    const dateStr = API_CONFIG.formatDate(this.state.currentDate);
+                    
+                    setText('header-league-name', league.name);
+                    setSrc('header-league-logo', league.logo);
+                    setSrc('mob-league-logo', league.logo);
+                    setText('page-league-name', league.name);
+                    setSrc('page-league-logo', league.logo);
+                    setText('page-league-country', "Temporada " + this.state.selectedSeason);
 
-                const bgEl = document.getElementById('app-background');
-                if (bgEl) { bgEl.style.backgroundImage = `url('${league.bg}')`; }
-                
-                const feed = document.querySelector('.feed');
-                if (feed) feed.className = `feed ${league.theme}`;
+                    const bgEl = document.getElementById('app-background');
+                    if (bgEl) { bgEl.style.backgroundImage = `url('${league.bg}')`; }
+                    const feed = document.querySelector('.feed');
+                    if (feed) feed.className = `feed ${league.theme}`;
 
-                if(this.state.view === 'matches') await this.fetchMatches(league.id, dateStr);
-                if(this.state.view === 'standings') await this.fetchStandings(league.id);
-                if(this.state.view === 'scorers') await this.fetchScorers(key);
-                if(this.state.view === 'news') await this.fetchNews(league.id);
-                if(this.state.view === 'clubs') this.renderClubs(key);
+                    if(view === 'matches') await this.fetchMatches(league.id, dateStr);
+                    if(view === 'standings') await this.fetchStandings(league.id);
+                    if(view === 'scorers') await this.fetchScorers(leagueKey);
+                    if(view === 'news') await this.fetchNews(league.id);
+                    if(view === 'clubs') this.renderClubs(leagueKey);
+                } else if (sportKey === 'formula1') {
+                    setText('page-league-name', sport.name);
+                    setSrc('page-league-logo', sport.logo);
+                    setText('page-league-country', "Temporada " + this.state.selectedSeason);
+
+                    const bgEl = document.getElementById('app-background');
+                    if (bgEl) { bgEl.style.backgroundImage = `url('${sport.bg}')`; }
+                    const feed = document.querySelector('.feed');
+                    if (feed) feed.className = `feed ${sport.theme}`;
+
+                    if(view === 'schedule') await this.fetchF1Schedule();
+                    if(view === 'driver-standings') await this.fetchF1DriverStandings();
+                    if(view === 'team-standings') await this.fetchF1TeamStandings(); // Corrected typo
+                }
             },
 
             async fetchMatches(id, date) {
@@ -911,14 +1104,14 @@
                             
                             html += `<div class="std-row">
                                 <div class="rank-cell"><div class="rank-dot ${bgZone}"></div><span>${rank}</span></div>
-                                <div class="team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate text-white">${e.team.shortDisplayName}</span></div>
+                                <div class="team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate">${e.team.shortDisplayName}</span></div>
                                 <span class="font-bold text-center text-lg">${val('points')}</span>
                                 <span class="opacity-70 text-center">${val('gamesPlayed')}</span>
                                 <span class="opacity-70 text-center">${val('wins')}</span>
                                 <span class="opacity-70 text-center">${val('ties')}</span>
                                 <span class="opacity-70 text-center">${val('losses')}</span>
                                 <span class="opacity-70 text-center">${val('pointDifferential')}</span>
-                                <span class="opacity-70 text-center text-xs">${Math.round((val('points')/(val('gamesPlayed')*3))*100)}%</span>
+                                <span class="opacity-70 text-center text-xs">${val('gamesPlayed') > 0 ? Math.round((val('points')/(val('gamesPlayed')*3))*100) : 0}%</span>
                             </div>`;
                         });
                         card.innerHTML = html; con.appendChild(card);
@@ -926,19 +1119,171 @@
                 } catch { con.innerHTML = '<div class="text-center text-red-400">Erro na tabela.</div>'; }
             },
 
+            async fetchF1Schedule() {
+                const grid = document.getElementById('schedule-grid'); if(!grid) return;
+                grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                try {
+                    const year = this.state.selectedSeason;
+                    const res = await fetch(API_CONFIG.getF1MeetingsUrl(year)); 
+                    const data = await res.json(); 
+                    this.renderF1Schedule(data || []);
+                } catch { grid.innerHTML = '<div class="text-center text-red-400 col-span-full">Erro ao carregar calendário.</div>'; }
+            },
+
+            renderF1Schedule(meetings) {
+                const grid = document.getElementById('schedule-grid'); if(!grid) return; grid.innerHTML = '';
+                if(!meetings.length) { grid.innerHTML = '<div class="text-center text-gray-500 col-span-full py-10 font-medium">Nenhuma corrida encontrada para esta temporada.</div>'; return; }
+                
+                meetings.sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
+
+                meetings.forEach(meeting => {
+                    const card = document.createElement('div'); 
+                    card.className = 'f1-race-card';
+                    
+                    const startDate = new Date(meeting.date_start);
+                    const endDate = new Date(meeting.date_end);
+                    const dateRange = `${startDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'})} - ${endDate.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'})}`;
+
+                    card.innerHTML = `
+                        <div class="p-5 flex items-center gap-5">
+                            <img src="${meeting.country_flag}" class="w-16 h-10 object-cover rounded-md border border-white/10 shrink-0">
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-[var(--accent)] uppercase">${meeting.circuit_short_name}</p>
+                                <h3 class="font-bold text-lg text-white">${meeting.meeting_name}</h3>
+                                <p class="text-sm text-gray-400 font-medium">${dateRange}</p>
+                            </div>
+                            <img src="${meeting.circuit_image}" class="w-20 h-20 object-contain opacity-10 absolute right-4 top-1/2 -translate-y-1/2" onerror="this.style.display='none'">
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            },
+
+            async fetchF1DriverStandings() {
+                const con = document.getElementById('driver-standings-container'); if(!con) return;
+                con.innerHTML = '<div class="py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                try {
+                    const standingsRes = await fetch(API_CONFIG.getF1DriverStandingsUrl('latest'));
+                    const standingsData = await standingsRes.json();
+                    if (!standingsData || standingsData.length === 0) {
+                        con.innerHTML = '<div class="text-center text-gray-500 p-10">Campeonato de pilotos não disponível.</div>';
+                        return;
+                    }
+
+                    const sessionKey = standingsData[0].session_key;
+                    const driversRes = await fetch(`${API_CONFIG.OPENF1_BASE_URL}/drivers?session_key=${sessionKey}`);
+                    const driversData = await driversRes.json();
+
+                    const driversMap = new Map(driversData.map(d => [d.driver_number, d]));
+
+                    this.renderF1DriverStandings(standingsData, driversMap);
+                } catch { con.innerHTML = '<div class="text-center text-red-400 p-10">Erro ao carregar campeonato de pilotos.</div>'; }
+            },
+
+            renderF1DriverStandings(standings, driversMap) {
+                const con = document.getElementById('driver-standings-container'); if(!con) return;
+                
+                let html = `<div class="std-table-header" style="grid-template-columns: 50px minmax(180px, 2fr) minmax(150px, 2fr) 1fr;"><div>#</div><div class="text-left">Piloto</div><div class="text-left">Equipe</div><div class="text-center">Pts</div></div>`;
+                
+                standings.sort((a, b) => a.position_current - b.position_current);
+
+                standings.forEach(s => {
+                    const driverInfo = driversMap.get(s.driver_number);
+                    const driverName = driverInfo ? driverInfo.full_name : `Piloto #${s.driver_number}`;
+                    const teamName = driverInfo ? driverInfo.team_name : 'N/A';
+                    const teamColour = driverInfo && driverInfo.team_colour ? `#${driverInfo.team_colour}` : 'var(--text-muted)';
+
+                    html += `<div class="std-row" style="grid-template-columns: 50px minmax(180px, 2fr) minmax(150px, 2fr) 1fr;">
+                        <div class="rank-cell"><span>${s.position_current}</span></div>
+                        <div class="team-cell">
+                            <span class="truncate font-bold">${driverName}</span>
+                        </div>
+                        <div class="team-cell">
+                            <div style="width: 4px; height: 20px; background-color: ${teamColour}; border-radius: 2px; margin-right: 8px;"></div>
+                            <span class="truncate">${teamName}</span>
+                        </div>
+                        <span class="font-bold text-center text-lg">${s.points_current}</span>
+                    </div>`;
+                });
+                con.innerHTML = html;
+            },
+
+            async fetchF1TeamStandings() {
+                const con = document.getElementById('team-standings-body'); if(!con) return;
+                con.innerHTML = '<div class="py-20 flex justify-center"><div class="loader-ring"></div></div>';
+                try {
+                    const teamStandingsRes = await fetch(API_CONFIG.getF1TeamStandingsUrl('latest'));
+                    const teamStandingsData = await teamStandingsRes.json();
+
+                    if (!teamStandingsData || teamStandingsData.length === 0) {
+                        con.innerHTML = '<div class="text-center text-gray-500 p-10">Campeonato de construtores não disponível.</div>';
+                        return;
+                    }
+
+                    const sessionKey = teamStandingsData[0].session_key;
+                    const driversRes = await fetch(`${API_CONFIG.OPENF1_BASE_URL}/drivers?session_key=${sessionKey}`);
+                    const driversData = await driversRes.json();
+
+                    const teamColourMap = new Map();
+                    driversData.forEach(d => {
+                        if (d.team_name && d.team_colour && !teamColourMap.has(d.team_name)) {
+                            teamColourMap.set(d.team_name, d.team_colour);
+                        }
+                    });
+
+                    this.renderF1TeamStandings(teamStandingsData, teamColourMap);
+                } catch { con.innerHTML = '<div class="text-center text-red-400 p-10">Erro ao carregar campeonato de construtores.</div>'; }
+            },
+
+            renderF1TeamStandings(standings, teamColourMap) {
+                const con = document.getElementById('team-standings-body'); if(!con) return;
+                con.innerHTML = '';
+                
+                standings.sort((a, b) => a.position_current - b.position_current);
+
+                standings.forEach(s => {
+                    const teamColour = teamColourMap.get(s.team_name) ? `#${teamColourMap.get(s.team_name)}` : 'var(--text-muted)';
+                    const row = document.createElement('div');
+                    row.className = 'std-row';
+                    row.style.gridTemplateColumns = '50px minmax(180px, 3fr) 1fr';
+                    row.innerHTML = `
+                        <div class="rank-cell"><span>${s.position_current}</span></div>
+                        <div class="team-cell">
+                            <div style="width: 4px; height: 20px; background-color: ${teamColour}; border-radius: 2px; margin-right: 8px;"></div>
+                            <span class="truncate font-bold">${s.team_name}</span>
+                        </div>
+                        <span class="font-bold text-center text-lg">${s.points_current}</span>
+                    `;
+                    con.appendChild(row);
+                });
+            },
+
             async fetchScorers(leagueKey) {
                 const g = document.getElementById('scorers-grid'); if (!g) return;
                 g.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
                 const leagueData = SPORTS_DB.soccer.leagues[leagueKey];
                 if (!leagueData || !leagueData.apiFootballId) { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Dados indisponíveis.</div>'; return; }
+                
+                const espnTeamsMap = await this.getEspnTeamsMap(leagueData.id);
+
                 try {
                     const res = await fetch(API_CONFIG.getApiFootballScorersUrl(leagueData.apiFootballId, this.state.selectedSeason), { headers: { 'x-apisports-key': APIFOOTBALL_KEY } });
                     const data = await res.json();
                     if(data.response && data.response.length > 0) {
                         g.innerHTML = '';
                         data.response.slice(0, 20).forEach((item, i) => {
-                            const p = item.player; const s = item.statistics[0];
-                            g.innerHTML += `<div class="scorer-card"><div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm text-gray-400 font-medium">${s.team.name}</div></div><div class="scorer-goals">${s.goals.total}</div></div>`;
+                            const p = item.player; 
+                            const s = item.statistics[0];
+                            
+                            const teamNameLower = s.team.name.toLowerCase();
+                            let teamLogo = espnTeamsMap[teamNameLower] || null;
+                            if (!teamLogo) {
+                                const key = Object.keys(espnTeamsMap).find(k => k.includes(teamNameLower) || teamNameLower.includes(k));
+                                if (key) teamLogo = espnTeamsMap[key];
+                            }
+                            const teamLogoImg = teamLogo ? `<img src="${teamLogo}" class="w-5 h-5 mr-2 object-contain">` : '';
+
+                            g.innerHTML += `<div class="scorer-card"><div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm font-medium flex items-center" style="color: var(--text-muted)">${teamLogoImg}<span>${s.team.name}</span></div></div><div class="scorer-goals">${s.goals.total}</div></div>`;
                         });
                     } else { g.innerHTML = '<div class="col-span-full text-center text-gray-500 glass-panel p-10">Sem dados.</div>'; }
                 } catch { g.innerHTML = '<div class="col-span-full text-center text-red-400">Erro API.</div>'; }
@@ -974,32 +1319,25 @@
                 const clubsList = league.clubs || [];
                 container.innerHTML = '<div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>';
 
-                let espnTeamsMap = {};
-                try {
-                    const res = await fetch(API_CONFIG.getTeamsUrl('soccer', league.id));
-                    const data = await res.json();
-                    if(data.sports && data.sports[0].leagues && data.sports[0].leagues[0].teams) {
-                        data.sports[0].leagues[0].teams.forEach(t => {
-                            espnTeamsMap[t.team.displayName] = t.team.logos?.[0]?.href;
-                            espnTeamsMap[t.team.shortDisplayName] = t.team.logos?.[0]?.href;
-                            espnTeamsMap[t.team.name] = t.team.logos?.[0]?.href;
-                        });
-                    }
-                } catch(e) {}
+                const espnTeamsMap = await this.getEspnTeamsMap(league.id);
 
                 container.innerHTML = '';
                 clubsList.forEach(clubName => {
                     const card = document.createElement('div');
                     card.className = 'club-grid-card';
-                    card.onclick = () => this.loadWikiDetail(clubName);
                     
-                    let logoUrl = espnTeamsMap[clubName] || null;
+                    const displayName = clubName.replace(/_/g, ' ');
+                    const searchName = displayName.toLowerCase();
+                    let logoUrl = espnTeamsMap[searchName] || null;
                     if (!logoUrl) {
-                        const key = Object.keys(espnTeamsMap).find(k => k.includes(clubName) || clubName.includes(k));
+                        const key = Object.keys(espnTeamsMap).find(k => k.includes(searchName) || searchName.includes(k));
                         if(key) logoUrl = espnTeamsMap[key];
                     }
-                    const imgContent = logoUrl ? `<img src="${logoUrl}" alt="${clubName}">` : `<div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl">⚽</div>`;
-                    card.innerHTML = `${imgContent}<span>${clubName}</span>`;
+
+                    card.onclick = () => this.loadWikiDetail(clubName, logoUrl);
+
+                    const imgContent = logoUrl ? `<img src="${logoUrl}" alt="${displayName}">` : `<div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl">⚽</div>`;
+                    card.innerHTML = `${imgContent}<span>${displayName}</span>`;
                     container.appendChild(card);
                 });
             },
@@ -1010,30 +1348,45 @@
                 this.loadWikiDetail(q);
             },
 
-            async loadWikiDetail(searchTerm) {
+            async loadWikiDetail(searchTerm, logoUrl = null) {
                 const container = document.getElementById('wiki-content-area');
                 const wikiDetail = document.getElementById('wiki-detail');
                 const grid = document.getElementById('clubs-grid');
                 if (!container) return;
                 grid.classList.add('hidden'); wikiDetail.classList.remove('hidden');
                 container.innerHTML = '<div class="flex flex-col items-center justify-center py-20"><div class="loader-ring"></div></div>';
-
+                
+                // If logo is not passed (e.g. from search), try to find it.
+                if (!logoUrl) {
+                    try {
+                        const league = SPORTS_DB.soccer.leagues[this.state.currentLeague];
+                        const espnTeamsMap = await this.getEspnTeamsMap(league.id);
+                        
+                        const searchTermFormatted = searchTerm.replace(/_/g, ' ').toLowerCase();
+                        logoUrl = espnTeamsMap[searchTermFormatted] || null;
+                        if (!logoUrl) {
+                            const key = Object.keys(espnTeamsMap).find(k => k.includes(searchTermFormatted) || searchTermFormatted.includes(k));
+                            if(key) logoUrl = espnTeamsMap[key];
+                        }
+                    } catch(e) { console.error("Error fetching logo for wiki detail:", e); }
+                }
+                
                 try {
-                    const queryTerm = searchTerm.includes("FC") || searchTerm.includes("Real") ? searchTerm : searchTerm + " futebol clube";
+                    const queryTerm = searchTerm.replace(/_/g, ' ');
                     const searchRes = await fetch(API_CONFIG.getWikiSearchUrl(queryTerm));
                     const searchData = await searchRes.json();
                     
                     if(!searchData.query || !searchData.query.search || searchData.query.search.length === 0) {
                          container.innerHTML = `<p class="text-center text-red-400">Clube "${searchTerm}" não encontrado.</p>`; return;
                     }
-
                     const bestMatchTitle = searchData.query.search[0].title;
                     const detailRes = await fetch(API_CONFIG.getWikiDetailUrl(bestMatchTitle));
                     const detailData = await detailRes.json();
                     const page = Object.values(detailData.query.pages)[0];
                     
-                    let html = `<h2 class="text-4xl mb-6 font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2>`;
-                    if(page.thumbnail) html += `<img src="${page.thumbnail.source}" class="w-full max-w-2xl mx-auto rounded-3xl mb-10 shadow-2xl border border-white/10">`;
+                    let html = `<div class="flex items-start gap-6 mb-8">`;
+                    if (logoUrl) { html += `<img src="${logoUrl}" class="w-24 h-24 object-contain rounded-2xl border border-white/10 p-2 bg-white/5 shrink-0">`; }
+                    html += `<div class="flex-1 pt-2"><h2 class="text-4xl font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2></div></div>`;
                     html += `<div class="text-lg leading-relaxed text-gray-400" style="color: var(--text-primary)">${page.extract ? page.extract.replace(/\n/g, '<br><br>') : 'Sem descrição.'}</div>`;
                     
                     container.innerHTML = html;
@@ -1045,37 +1398,6 @@
                 document.getElementById('clubs-grid').classList.remove('hidden');
             },
 
-            async callGeminiAPI(prompt) {
-                if(!apiKey) return "**Erro:** Chave da API Gemini não configurada.";
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                    });
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Erro na análise.";
-                } catch(e) { return "Erro na conexão."; }
-            },
-
-            async analyzeMatchAI() {
-                const btn = document.getElementById('ai-analyst-btn');
-                const resultBox = document.getElementById('ai-match-result');
-                const contentDiv = resultBox.querySelector('.ai-content');
-                if(!this.state.currentMatchData) return;
-                
-                btn.disabled = true; btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
-                const d = this.state.currentMatchData;
-                const home = d.header.competitions[0].competitors.find(x=>x.homeAway==='home');
-                const away = d.header.competitions[0].competitors.find(x=>x.homeAway==='away');
-                
-                const prompt = `Analise: ${home.team.displayName} ${home.score} x ${away.score} ${away.team.displayName}. Resuma o jogo em 3 frases de impacto.`;
-                const aiResponse = await this.callGeminiAPI(prompt);
-                
-                btn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i> Gerar Nova Análise'; btn.disabled = false;
-                resultBox.classList.remove('hidden'); contentDiv.innerHTML = marked.parse(aiResponse);
-                if(window.lucide) window.lucide.createIcons();
-            },
-
             async openMatch(id) {
                 const m = document.getElementById('match-modal');
                 if (!m) return;
@@ -1083,14 +1405,12 @@
                 m.classList.add('open');
                 m.querySelector('.modal-content').className = `modal-content ${l.theme}`;
                 document.getElementById('modal-bg').style.backgroundImage = `url('${l.bg}')`;
-                document.getElementById('ai-match-result').classList.add('hidden');
                 
                 try {
                     const res = await fetch(API_CONFIG.getGameSummaryUrl(l.id, id));
                     const d = await res.json();
                     this.state.currentMatchData = d;
                     this.renderMatchDetail(d);
-                    document.getElementById('ai-analyst-btn').onclick = () => this.analyzeMatchAI();
                 } catch { console.log('Erro modal'); }
             },
 
@@ -1110,15 +1430,21 @@
                 const statDiv = document.getElementById('modal-stats');
                 if (statDiv) {
                     statDiv.innerHTML = '';
-                    if(d.boxscore?.teams) {
-                        const hS = d.boxscore.teams.find(t=>t.team.id===h.team.id)?.statistics||[];
-                        const aS = d.boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
+                    const boxscore = d.boxscore || d.gameInfo?.boxscore; // Check in two possible locations
+                    if(boxscore?.teams) {
+                        const hS = boxscore.teams.find(t=>t.team.id===h.team.id)?.statistics||[];
+                        const aS = boxscore.teams.find(t=>t.team.id===a.team.id)?.statistics||[];
                         hS.forEach(s => {
-                            const hV = s.displayValue; const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
-                            const tot = (parseFloat(hV)||0) + (parseFloat(aV)||0) || 1;
-                            statDiv.innerHTML += `<div class="mb-4"><div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div><div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${(parseFloat(hV)/tot)*100}%"></div></div></div>`;
+                            const hV = s.displayValue; 
+                            const aV = aS.find(x=>x.label===s.label)?.displayValue||'0';
+                            const hNum = parseFloat(String(hV).replace('%',''));
+                            const aNum = parseFloat(String(aV).replace('%',''));
+                            const tot = (hNum || 0) + (aNum || 0) || 1;
+                            const hPercent = (hNum / tot) * 100;
+                            statDiv.innerHTML += `<div class="mb-4"><div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div><div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${hPercent}%"></div></div></div>`;
                         });
-                    } else {
+                    }
+                    if (statDiv.innerHTML === '') {
                         statDiv.innerHTML = '<div class="text-center text-gray-500 py-4">Estatísticas não disponíveis.</div>';
                     }
                 }
@@ -1127,19 +1453,25 @@
                 const tl = document.getElementById('modal-timeline');
                 if (tl) {
                     tl.innerHTML = '';
-                    const events = d.keyEvents || (d.header.competitions[0].details || []); // Tenta keyEvents ou details
+                    // Prioritize keyEvents. As a fallback, filter 'details' to find event-like items.
+                    let events = d.keyEvents || [];
+                    if (!events.length && d.header?.competitions?.[0]?.details) {
+                        events = d.header.competitions[0].details.filter(e => e.clock && (e.text || e.shortText));
+                    }
                     
                     if (events.length > 0) {
-                        events.reverse().forEach(e => {
+                        // Events are chronological, so reverse to show most recent first.
+                        events.slice().reverse().forEach(e => {
                             const text = e.text || e.shortText || "Lance";
                             const type = e.type?.text || "Jogo";
-                            const clock = e.clock?.displayValue || e.clock?.value || "-";
+                            const clock = e.clock?.displayValue || "-";
                             
                             let icon = '•';
-                            if (type.toLowerCase().includes('goal')) icon = '⚽';
-                            else if (type.toLowerCase().includes('card') || type.toLowerCase().includes('yellow')) icon = '🟨';
-                            else if (type.toLowerCase().includes('red')) icon = '🟥';
-                            else if (type.toLowerCase().includes('substitution')) icon = '🔄';
+                            const lowerType = type.toLowerCase();
+                            if (lowerType.includes('goal')) icon = '⚽';
+                            else if (lowerType.includes('yellow card')) icon = '🟨';
+                            else if (lowerType.includes('red card')) icon = '🟥';
+                            else if (lowerType.includes('substitution')) icon = '🔄';
 
                             tl.innerHTML += `<div class="relative pb-6 border-l border-white/10 pl-6 last:border-0" style="border-color: var(--glass-border)">
                                 <span class="absolute -left-[9px] bg-black text-xs font-bold text-[var(--accent)] border border-[var(--accent)] rounded px-1">${clock}</span>
@@ -1147,59 +1479,37 @@
                                 <div class="text-xs text-gray-500 uppercase mt-1">${type}</div>
                             </div>`;
                         });
-                    } else {
+                    }
+                    if (tl.innerHTML === '') {
                         tl.innerHTML = '<div class="text-center text-gray-500 py-4">Nenhum lance importante registrado.</div>';
                     }
                 }
             },
 
-            /* Chat Features */
-            toggleChat() {
-                const chat = document.getElementById('chat-window');
-                chat.classList.toggle('open');
-                if(chat.classList.contains('open')) document.getElementById('chat-input').focus();
-            },
-
-            async sendChatMessage() {
-                const input = document.getElementById('chat-input');
-                const msg = input.value.trim();
-                if(!msg) return;
-
-                const container = document.getElementById('chat-messages');
-                container.innerHTML += `<div class="msg user">${msg}</div>`;
-                input.value = '';
-                container.scrollTop = container.scrollHeight;
-
-                const loadId = 'chat-loading-' + Date.now();
-                container.innerHTML += `<div id="${loadId}" class="msg ai opacity-50">Digitando...</div>`;
-                container.scrollTop = container.scrollHeight;
-
-                const prompt = `Você é o SportingAssistant, um assistente virtual especialista em futebol da W3Labs. 
-                Responda de forma curta, amigável e informativa à pergunta do usuário sobre esportes.
-                Pergunta: "${msg}"`;
-
-                const response = await this.callGeminiAPI(prompt);
-                
-                document.getElementById(loadId).remove();
-                container.innerHTML += `<div class="msg ai">${marked.parse(response)}</div>`;
-                container.scrollTop = container.scrollHeight;
-            },
-
             closeModal() { document.getElementById('match-modal').classList.remove('open'); },
             toggleMobileLeague() { const m = document.getElementById('mob-league-menu'); if(m) { m.classList.toggle('hidden'); m.classList.toggle('flex'); } },
+            
+            updateActiveNav(viewId) {
+                document.querySelectorAll('.nav-btn, .bottom-nav-item').forEach(b => b.classList.remove('active'));
+                const deskBtn = document.getElementById(`desk-nav-${viewId}`); 
+                if(deskBtn) deskBtn.classList.add('active');
+                
+                const mobBtn = document.getElementById(`mob-nav-${viewId}`); 
+                if(mobBtn) mobBtn.classList.add('active');
+
+                const activeNavBtn = document.querySelector('.nav-btn.active');
+                if(activeNavBtn && activeNavBtn.querySelector('i')) {
+                    document.querySelectorAll('.nav-btn i').forEach(i => i.style.color = 'inherit');
+                    activeNavBtn.querySelector('i').style.color = 'var(--accent)';
+                }
+            },
+
             setView(v) {
                 this.state.view = v;
                 document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden'));
                 const viewEl = document.getElementById(`view-${v}`); if (viewEl) viewEl.classList.remove('hidden');
-                
-                // Update Nav States
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const deskBtn = document.getElementById(`desk-nav-${v}`); if(deskBtn) deskBtn.classList.add('active');
-                document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-                const mobBtn = document.getElementById(`mob-nav-${v}`); if(mobBtn) mobBtn.classList.add('active');
-
-                if(v === 'clubs') this.renderClubs(this.state.currentLeague);
-                else this.loadLeague(this.state.currentLeague);
+                this.updateActiveNav(v);
+                this.loadDataForView();
             }
         };
 
