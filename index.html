@@ -7,7 +7,7 @@
     
     <!-- Bibliotecas Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Chakra+Petch:wght@600;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Teko:wght@500;700&family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -89,9 +89,50 @@
             --scrollbar-thumb-bg: rgba(0,0,0,0.2);
         }
 
+        /* === FONTES LOCAIS (NOKIA PURE) === */
+        @font-face {
+            font-family: 'Nokia Pure Headline';
+            src: url('./fonts/nokiapureheadline_ultralight.woff2') format('woff2'),
+                 url('./fonts/nokiapureheadline_ultralight.woff') format('woff'),
+                 url('./fonts/nokiapureheadline_ultralight.otf') format('opentype');
+            font-weight: 200;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Nokia Pure Headline';
+            src: url('./fonts/nokiapureheadline_light.woff2') format('woff2'),
+                 url('./fonts/nokiapureheadline_light.woff') format('woff'),
+                 url('./fonts/nokiapureheadline_light.otf') format('opentype');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Nokia Pure Headline';
+            src: url('./fonts/nokiapureheadline_regular.woff2') format('woff2'),
+                 url('./fonts/nokiapureheadline_regular.woff') format('woff'),
+                 url('./fonts/nokiapureheadline_regular.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Nokia Pure Headline';
+            src: url('./fonts/nokiapureheadline_bold.woff2') format('woff2'),
+                 url('./fonts/nokiapureheadline_bold.woff') format('woff'),
+                 url('./fonts/nokiapureheadline_bold.otf') format('opentype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
         /* === GLOBAL STYLES === */
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Nokia Pure Headline', sans-serif;
             background-color: var(--bg-deep);
             color: var(--text-primary);
             margin: 0; padding: 0; 
@@ -177,7 +218,7 @@
 
         .search-input {
             width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
-            padding: 12px 20px 12px 48px; border-radius: 16px; color: var(--text-primary); font-family: 'Outfit';
+            padding: 12px 20px 12px 48px; border-radius: 16px; color: var(--text-primary); font-family: 'Nokia Pure Headline', sans-serif;
             transition: all 0.3s;
         }
         .search-input:focus {
@@ -220,7 +261,6 @@
             border-radius: 8px;
             overflow: hidden;
             background-color: var(--input-bg);
-            background-color: white;
             position: relative;
             justify-content: space-between;
         }
@@ -240,15 +280,11 @@
 
         .unified-team-block.left { 
             justify-content: flex-start;
-            border-top-right-radius: 18px;
-            border-bottom-right-radius: 18px;
             margin-right: -2px;
         }
 
         .unified-team-block.right { 
             justify-content: flex-end; 
-            border-top-left-radius: 18px;
-            border-bottom-left-radius: 18px;
             margin-left: -2px;
         }
 
@@ -259,7 +295,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             letter-spacing: 0.5px;
             z-index: 6;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-family: 'Nokia Pure Headline', sans-serif;
         }
 
         .unified-center-content {
@@ -267,22 +303,37 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            z-index: 4; 
-            background-color: white; /* Fundo branco para a parte central */
-            background-color: transparent; /* A parte central agora é transparente, herdando o branco da barra. */
-            background-color: white; /* Fundo branco para a parte central, garantindo contraste para o placar */
+            z-index: 4;
+            position: relative; /* Adicionado para o pseudo-elemento */
+            overflow: hidden; /* Adicionado para conter o blur */
+            /* O background será definido dinamicamente via JavaScript */
         }
-        body.light-mode .unified-center-content { background-color: white; } /* Garante branco no modo claro */
+
+        /* NOVO: Pseudo-elemento para criar o efeito de blur no centro do placar */
+        .unified-center-content::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px; /* Largura da área de blur */
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05); /* Um leve brilho para o efeito de vidro */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px); /* Suporte para Safari */
+            z-index: 5; /* Acima do fundo, mas abaixo do placar e logo (que têm z-index: 6) */
+        }
 
         .unified-score-num {
             width: 35px;
             text-align: center;
             color: #000000;
+            color: var(--text-primary); /* Adapta a cor do texto ao tema */
             font-weight: 900;
             font-size: 2.2rem;
             line-height: 1;
             z-index: 6;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-family: 'Nokia Pure Headline', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Adiciona sombra para melhor contraste */
         }
 
         .unified-league-logo-area {
@@ -325,7 +376,7 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-family: 'Nokia Pure Headline', sans-serif;
         }
 
         /* --- OVERLAYS GERAIS (Cartão e Gol) --- */
@@ -405,6 +456,37 @@
             text-overflow: ellipsis;
             overflow: hidden;
         }
+
+        /* --- ANIMAÇÕES DE GOL APRIMORADAS --- */
+        @keyframes card-shake {
+            0%, 100% { transform: translateY(-4px) scale(1.01) translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateY(-4px) scale(1.01) translateX(-3px); }
+            20%, 40%, 60%, 80% { transform: translateY(-4px) scale(1.01) translateX(3px); }
+        }
+        .match-card.goal-shake {
+            animation: card-shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes score-flash {
+            0%, 100% { transform: scale(1); color: var(--text-primary); }
+            50% { transform: scale(1.5); color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        }
+        .score-flash-anim {
+            animation: score-flash 0.6s ease-in-out;
+        }
+
+        .unified-goal-content.animate .unified-goal-text-g {
+            opacity: 1 !important;
+            animation: goal-g-anim 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .unified-goal-content.animate .unified-goal-text-l {
+            opacity: 1 !important;
+            animation: goal-l-anim 0.3s ease-out 0.6s forwards; /* Delay para aparecer depois dos 'O's */
+        }
+
+        @keyframes goal-g-anim { from { transform: scale(0) rotate(-45deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
+        @keyframes goal-l-anim { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
         .sub-icon {
             width: 20px;
             height: 20px;
@@ -487,6 +569,7 @@
         }
 
         .unified-goal-text-g {
+            opacity: 0;
             font-size: 2.5rem; 
             font-weight: 900;
             line-height: 1;
@@ -495,12 +578,14 @@
         }
 
         .unified-goal-text-os {
+            opacity: 0;
             font-size: 1.8rem;
             font-weight: 900;
             letter-spacing: -1px;
         }
         
         .unified-goal-text-l {
+            opacity: 0;
             font-size: 1.8rem;
             font-weight: 900;
             margin-left: 1px;
@@ -668,26 +753,44 @@
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer; z-index: 10;
         }
-        .player:hover { z-index: 20; transform: translate(-50%, -60%) rotateX(-45deg) scale(1.1); }
+        .player:hover { z-index: 20; transform: translate(-50%, -55%) rotateX(-45deg) scale(1.1); }
         .kit {
-            width: 40px; height: 40px;
-            border-radius: 50%; border: 2px solid white;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Roboto Condensed', sans-serif; font-size: 16px; font-weight: 700;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px 10px 4px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto Condensed', sans-serif;
             box-shadow: 0 5px 10px rgba(0,0,0,0.4);
             position: relative;
+            padding: 4px 2px;
+            box-sizing: border-box;
+        }
+        .kit-name {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+        .kit-number {
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 1;
         }
         .player-shadow {
             position: absolute; bottom: 12px; width: 35px; height: 10px;
             background: rgba(0,0,0,0.5); border-radius: 50%;
             transform: rotateX(45deg) translateY(5px);
             filter: blur(2px); z-index: -1;
-        }
-        .player-name {
-            margin-top: 4px; background: var(--input-bg); color: var(--text-primary);
-            padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;
-            text-align: center; white-space: nowrap; text-shadow: 0 1px 2px black;
-            border: 1px solid var(--glass-border);
         }
 
         main { display: flex; gap: 30px; min-height: 100vh; max-width: 1600px; margin: 0 auto; }
@@ -714,10 +817,13 @@
             .header-main { padding: 0 8px; height: 48px; }
             
             /* Ajustes Finos para Placar em Tela Estreita */
-            .tv-scoreboard { height: 55px; padding: 0 5px; }
-            .tv-team-box { font-size: 0.65rem; gap: 3px; }
-            .tv-team-box img { width: 18px; height: 18px; }
-            .tv-time { font-size: 0.5rem; margin-top: 1px; padding: 1px 3px; }
+            .unified-main-bar { height: 40px; }
+            .unified-team-block { padding: 0 8px; }
+            .unified-team-abbr { font-size: 1rem; }
+            .unified-team-logo { width: 22px; height: 22px; }
+            .unified-score-num { font-size: 1.6rem; }
+            .unified-league-logo-area img { max-height: 25px; max-width: 25px; }
+            .unified-timer-pill { font-size: 0.8rem; padding: 1px 6px 2px 6px; }
 
             /* Modal Mobile Extra Pequeno */ .modal-content { height: 100vh; width: 100vw; border-radius: 0; } /* Full screen */
             #modal-top-section { height: 120px; }
@@ -1333,7 +1439,7 @@
                 'default': [ { t: 90, l: 50 }, { t: 75, l: 15 }, { t: 75, l: 40 }, { t: 75, l: 60 }, { t: 75, l: 85 }, { t: 50, l: 25 }, { t: 50, l: 50 }, { t: 50, l: 75 }, { t: 25, l: 20 }, { t: 25, l: 50 }, { t: 25, l: 80 } ]
             },
 
-            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {}, f1ScoreboardCache: {}, scorersCache: {}, playerDatabaseCache: null, matchTimerInterval: null, matchCardTimers: [], liveUpdateInterval: null },
+            state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {}, f1ScoreboardCache: {}, scorersCache: {}, playerDatabaseCache: null, matchTimerInterval: null, matchCardTimers: [], liveUpdateInterval: null, goalIntervals: {} },
 
             init() {
                 try {
@@ -1789,7 +1895,7 @@
                                     <img src="${home.team.logo || ''}" class="unified-team-logo mr-2" alt="${home.team.shortDisplayName}">
                                     <div class="unified-team-abbr">${home.team.abbreviation}</div>
                                 </div>
-                                <div class="unified-center-content">
+                                <div class="unified-center-content" style="background: linear-gradient(to right, ${homeTeamColor} 0%, ${homeTeamColor} 50%, ${awayTeamColor} 50%, ${awayTeamColor} 100%);">
                                     <div class="unified-score-num" id="score-home-${ev.id}">${home.score || '0'}</div>
                                     <div class="unified-league-logo-area">
                                         <img src="${leagueLogo}" alt="${lConfig.name}">
@@ -2466,7 +2572,7 @@
                         const comp = ev.competitions[0];
                         const home = comp.competitors.find(c => c.homeAway === 'home');
                         const away = comp.competitors.find(c => c.homeAway === 'away');
-                        const isHomeGame = home.id === teamId;
+                        const isHomeGame = String(home.id) === String(teamId);
                         const opponent = isHomeGame ? away : home;
 
                         const eventDate = new Date(ev.date);
@@ -2502,7 +2608,7 @@
                         const comp = ev.competitions[0];
                         const home = comp.competitors.find(c => c.homeAway === 'home');
                         const away = comp.competitors.find(c => c.homeAway === 'away');
-                        const isOurTeamHome = home.id === teamId;
+                        const isOurTeamHome = String(home.id) === String(teamId);
                         const ourTeam = isOurTeamHome ? home : away;
                         const opponent = isOurTeamHome ? away : home;
 
@@ -2866,11 +2972,11 @@
 
                 const espnHomeTeam = matchData.header.competitions[0].competitors.find(c => c.homeAway === 'home');
                 const espnAwayTeam = matchData.header.competitions[0].competitors.find(c => c.homeAway === 'away');
-                const homeLineupData = lineups.find(l => l.team.id === espnHomeTeam.team.id);
-                const awayLineupData = lineups.find(l => l.team.id === espnAwayTeam.team.id);
+                const homeLineupData = lineups.find(l => String(l.team.id) === String(espnHomeTeam.team.id));
+                const awayLineupData = lineups.find(l => String(l.team.id) === String(espnAwayTeam.team.id));
                 const coaches = matchData.coaches || [];
-                const homeCoach = coaches.find(c => c.team.id === espnHomeTeam.team.id);
-                const awayCoach = coaches.find(c => c.team.id === espnAwayTeam.team.id);
+                const homeCoach = coaches.find(c => String(c.team.id) === String(espnHomeTeam.team.id));
+                const awayCoach = coaches.find(c => String(c.team.id) === String(espnAwayTeam.team.id));
 
                 if (homeLineupData) {
                     homeContainer.innerHTML = this.generateTacticalBoardHTML(homeLineupData, espnHomeTeam, homeCoach, 'home');
@@ -2936,10 +3042,12 @@
                             };
                             const finalTextColor = isGk ? '#FFFFFF' : getTextColorForBg(teamColor);
 
-                            return `<div class="player" id="p-${teamType}-${index}">
-                                        <div class="kit" style="background-color: #${isGk ? '333333' : teamColor}; color: ${finalTextColor};">${player.jersey || '-'}</div>
+                            return `<div class="player" id="p-${teamType}-${index}" title="${player.displayName}">
+                                        <div class="kit" style="background-color: #${isGk ? '333333' : teamColor}; color: ${finalTextColor};">
+                                            <div class="kit-name">${player.shortName || player.displayName?.split(' ').pop() || 'Jogador'}</div>
+                                            <div class="kit-number">${player.jersey || '-'}</div>
+                                        </div>
                                         <div class="player-shadow"></div>
-                                        <div class="player-name">${player.shortName || player.displayName?.split(' ').pop() || 'Jogador'}</div>
                                     </div>`;
                         }).join('')}
                     </div>
@@ -2966,68 +3074,73 @@
                 return headerHtml + tacticalFieldHtml + subsHtml + coachHtml;
             },
 
-            triggerGoalAnimation(eventId, scoringTeam) {
-                const elGoalOverlay = document.getElementById(`goal-overlay-${eventId}`);
-                const elGoalLogo = document.getElementById(`goal-overlay-logo-${eventId}`);
-                const elGoalOs = document.getElementById(`goal-text-os-${eventId}`);
-                const elGoalL = document.getElementById(`goal-text-l-${eventId}`);
-
-                if (!elGoalOverlay || !elGoalLogo || !elGoalOs || !elGoalL) return;
-
-                elGoalLogo.src = scoringTeam.team.logos?.[0]?.href || '';
-
-                const primaryColor = scoringTeam.team.color;
-                const secondaryColor = scoringTeam.team.alternateColor || primaryColor;
-
-                // Helper to decide text color based on background luminance
-                const getTextColorForBg = (hex) => {
-                    if (!hex || hex.length !== 6) return 'var(--text-invert)';
-                    try {
-                        const r = parseInt(hex.substring(0, 2), 16);
-                        const g = parseInt(hex.substring(2, 4), 16);
-                        const b = parseInt(hex.substring(4, 6), 16);
-                        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-                        return (yiq >= 128) ? '#000000' : '#FFFFFF';
-                    } catch (e) {
-                        return 'var(--text-invert)'; // Fallback on error
-                    }
-                };
-
-                // Reset styles and apply new ones
-                elGoalOverlay.className = "unified-full-overlay"; // Reset classes
-                if (primaryColor) {
-                    elGoalOverlay.style.background = `linear-gradient(90deg, #${primaryColor} 0%, #${secondaryColor} 100%)`;
-                    elGoalOverlay.style.color = getTextColorForBg(primaryColor);
-                } else {
-                    elGoalOverlay.classList.add('bg-goal-generic'); // Fallback to generic style
-                }
-
-                elGoalOs.innerText = "";
-                elGoalL.style.opacity = "0";
-
-                // Use a timeout to ensure the class removal is processed before adding it again
-                elGoalOverlay.classList.remove('active');
-                setTimeout(() => elGoalOverlay.classList.add('active'), 50);
-
-                let oCount = 0;
-                const maxOs = 14; 
-                
-                // Clear any existing interval for this specific goal animation
-                const intervalId = `goalInterval_${eventId}`;
-                if (window[intervalId]) clearInterval(window[intervalId]);
-
-                window[intervalId] = setInterval(() => {
-                    elGoalOs.innerText += "O";
-                    oCount++;
-                    if(oCount >= maxOs) {
-                        clearInterval(window[intervalId]);
-                        elGoalL.style.opacity = "1"; 
-                    }
-                }, 50);
-
-                // Hide overlay after animation
-                setTimeout(() => { elGoalOverlay.classList.remove('active'); }, 3500);
-            },
+             triggerGoalAnimation(eventId, scoringTeam) {
+                 const matchCard = document.querySelector(`.match-card[data-event-id='${eventId}']`);
+                 const elGoalOverlay = document.getElementById(`goal-overlay-${eventId}`);
+                 const elGoalContent = elGoalOverlay ? elGoalOverlay.querySelector('.unified-goal-content') : null;
+                 const elGoalLogo = document.getElementById(`goal-overlay-logo-${eventId}`);
+                 const elGoalOs = document.getElementById(`goal-text-os-${eventId}`);
+                 const isHomeGoal = scoringTeam.homeAway === 'home';
+                 const scoreEl = document.getElementById(`score-${isHomeGoal ? 'home' : 'away'}-${eventId}`);
+ 
+                 if (!matchCard || !elGoalOverlay || !elGoalContent || !elGoalLogo || !elGoalOs || !scoreEl) return;
+ 
+                 scoreEl.classList.add('score-flash-anim');
+                 setTimeout(() => scoreEl.classList.remove('score-flash-anim'), 600);
+ 
+                 matchCard.classList.add('goal-shake');
+                 setTimeout(() => matchCard.classList.remove('goal-shake'), 800);
+ 
+                 elGoalLogo.src = scoringTeam.team.logos?.[0]?.href || '';
+                 const primaryColor = scoringTeam.team.color;
+                 const secondaryColor = scoringTeam.team.alternateColor || primaryColor;
+                 const getTextColorForBg = (hex) => {
+                     if (!hex || hex.length < 6) return 'var(--text-invert)';
+                     try {
+                         const r = parseInt(hex.substring(0, 2), 16);
+                         const g = parseInt(hex.substring(2, 4), 16);
+                         const b = parseInt(hex.substring(4, 6), 16);
+                         return ((r * 299) + (g * 587) + (b * 114)) / 1000 >= 128 ? '#000000' : '#FFFFFF';
+                     } catch (e) { return 'var(--text-invert)'; }
+                 };
+ 
+                 elGoalOverlay.className = "unified-full-overlay";
+                 if (primaryColor) {
+                     elGoalOverlay.style.background = `linear-gradient(90deg, #${primaryColor} 0%, #${secondaryColor} 100%)`;
+                     elGoalOverlay.style.color = getTextColorForBg(primaryColor);
+                 } else {
+                     elGoalOverlay.classList.add('bg-goal-generic');
+                 }
+ 
+                 elGoalContent.classList.remove('animate');
+                 elGoalOs.innerText = "";
+ 
+                 elGoalOverlay.classList.remove('active');
+                 setTimeout(() => elGoalOverlay.classList.add('active'), 50);
+ 
+                 setTimeout(() => {
+                     elGoalContent.classList.add('animate');
+                     elGoalOs.style.opacity = 1;
+ 
+                     let oCount = 0;
+                     const maxOs = 10;
+                     if (this.state.goalIntervals[eventId]) clearInterval(this.state.goalIntervals[eventId]);
+ 
+                     this.state.goalIntervals[eventId] = setInterval(() => {
+                         elGoalOs.innerText += "O";
+                         oCount++;
+                         if (oCount >= maxOs) clearInterval(this.state.goalIntervals[eventId]);
+                     }, 30);
+                 }, 200);
+ 
+                 setTimeout(() => {
+                     elGoalOverlay.classList.remove('active');
+                     setTimeout(() => {
+                         elGoalContent.classList.remove('animate');
+                         elGoalOs.innerText = "";
+                     }, 500);
+                 }, 4000);
+             },
 
             triggerCardAnimation(eventId, cardEvent, team) {
                 const elCardOverlay = document.getElementById(`card-overlay-${eventId}`);
