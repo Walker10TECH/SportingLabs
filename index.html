@@ -265,6 +265,18 @@
             justify-content: space-between;
         }
 
+        /* NOVO: Pseudo-elemento para criar o efeito de blur em todo o placar */
+        .unified-main-bar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px; /* Garante que o blur não vaze das bordas arredondadas */
+            background: rgba(255, 255, 255, 0.05); /* Leve brilho para o efeito de vidro */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 5; /* Fica acima das cores de fundo, mas abaixo do texto e logos */
+        }
+
         .unified-team-block {
             display: flex;
             align-items: center;
@@ -273,8 +285,14 @@
             position: relative;
             height: 100%;
             transition: background-color 0.3s;
-            z-index: 5; 
             /* O background-color será definido dinamicamente via JavaScript com a cor do time */
+        }
+        .unified-team-block::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(0,0,0,0.2));
+            z-index: 0;
         }
         /* Removido body.light-mode .unified-team-block pois o background é dinâmico */
 
@@ -295,6 +313,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             letter-spacing: 0.5px;
             z-index: 6;
+            position: relative; /* Garante que fique acima do overlay de blur */
             font-family: 'Nokia Pure Headline', sans-serif;
         }
 
@@ -303,24 +322,7 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            z-index: 4;
-            position: relative; /* Adicionado para o pseudo-elemento */
-            overflow: hidden; /* Adicionado para conter o blur */
             /* O background será definido dinamicamente via JavaScript */
-        }
-
-        /* NOVO: Pseudo-elemento para criar o efeito de blur no centro do placar */
-        .unified-center-content::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px; /* Largura da área de blur */
-            height: 100%;
-            background: rgba(255, 255, 255, 0.05); /* Um leve brilho para o efeito de vidro */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px); /* Suporte para Safari */
-            z-index: 5; /* Acima do fundo, mas abaixo do placar e logo (que têm z-index: 6) */
         }
 
         .unified-score-num {
@@ -332,8 +334,9 @@
             font-size: 2.2rem;
             line-height: 1;
             z-index: 6;
+            position: relative; /* Garante que fique acima do overlay de blur */
             font-family: 'Nokia Pure Headline', sans-serif;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Adiciona sombra para melhor contraste */
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5), 0 -1px 0 rgba(0,0,0,0.3);
         }
 
         .unified-league-logo-area {
@@ -357,11 +360,12 @@
             object-fit: contain;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
             z-index: 6;
+            position: relative; /* Garante que fique acima do overlay de blur */
         }
 
         .unified-timer-pill {
             margin-top: -4px;
-            background-color: var(--accent); /* Usando a cor de destaque da aplicação */
+            background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 90%, white), color-mix(in srgb, var(--accent) 90%, black));
             color: #000000; /* Texto preto para o cronômetro */
             padding: 2px 10px 4px 10px;
             border-bottom-left-radius: 8px;
@@ -371,12 +375,15 @@
             text-align: center;
             position: relative;
             z-index: 1;
-            box-shadow: 0 4px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 color-mix(in srgb, var(--accent) 80%, white);
+            border: 1px solid rgba(0,0,0,0.2);
+            border-top: none;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
             font-family: 'Nokia Pure Headline', sans-serif;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.2);
         }
 
         /* --- OVERLAYS GERAIS (Cartão e Gol) --- */
@@ -540,21 +547,41 @@
             margin-top: 2px;
             padding: 0 1rem;
         }
-        .eog-content {
+        .sog-content, .eog-content {
             font-family: 'Roboto Condensed', sans-serif;
             color: white;
             text-shadow: 0 2px 8px rgba(0,0,0,0.6);
         }
-        .eog-title {
+        .sog-title, .eog-title {
             font-size: 2rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            opacity: 0;
         }
-        .eog-subtitle {
+        .sog-subtitle, .eog-subtitle {
             font-size: 1rem;
             font-weight: 700;
-            opacity: 0.8;
+            opacity: 0;
+            margin-top: 4px;
+        }
+
+        @keyframes eog-title-anim {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes eog-subtitle-anim {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .unified-full-overlay.active .sog-title,
+        .unified-full-overlay.active .eog-title {
+            animation: eog-title-anim 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .unified-full-overlay.active .sog-subtitle,
+        .unified-full-overlay.active .eog-subtitle {
+            animation: eog-subtitle-anim 0.6s ease-out 0.2s forwards;
         }
 
         /* --- ESTILOS DO GOL --- */
@@ -1166,6 +1193,9 @@
                             <div id="away-lineup"></div>
                         </div>
                     </div>
+                    <div id="match-tab-broadcast" class="match-tab-pane hidden">
+                        <!-- Broadcast channels will be injected here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1290,7 +1320,7 @@
                 name: "Futebol",
                 logo: "https://cdn-icons-png.flaticon.com/512/53/53283.png",
                 views: [
-                    { id: 'matches', name: 'Jogos de Hoje', icon: 'calendar-days' },
+                    { id: 'matches', name: 'Jogos', icon: 'calendar-days' },
                     { id: 'standings', name: 'Classificação', icon: 'trophy' },
                     { id: 'scorers', name: 'Artilharia', icon: 'target' },
                     { id: 'news', name: 'Notícias', icon: 'zap' },
@@ -1408,6 +1438,10 @@
             ESPN_BASE_SITE: 'https://site.api.espn.com/apis/site/v2/sports',
             ESPN_BASE_WEB: 'https://site.web.api.espn.com/apis',
             APIFOOTBALL_BASE_URL: 'https://v3.football.api-sports.io',
+            // NOVO: Endpoint para transmissões baseado no exemplo do usuário.
+            ESPORTESEMBED_BASE_URL: 'https://esportesembed.top',
+            // FALLBACK: Endpoint do provedor anterior para maior robustez.
+            REIDOSCANAIS_BASE_URL: 'https://api.reidoscanais.io',
             OPENF1_BASE_URL: 'https://api.openf1.org/v1',
             getScoreboardUrl: (s, l, d) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/scoreboard?lang=pt&region=br&dates=${d}&limit=100`,
             getStandingsUrl: (l) => `${API_CONFIG.ESPN_BASE_WEB}/v2/sports/soccer/${l}/standings?lang=pt`,
@@ -1417,6 +1451,10 @@
             getTeamsUrl: (s, l) => `${API_CONFIG.ESPN_BASE_SITE}/${s}/${l}/teams?lang=pt&region=br`,
             getTeamRosterUrl: (l, t) => `${API_CONFIG.ESPN_BASE_SITE}/soccer/${l}/teams/${t}/roster?lang=pt`,
             getApiFootballScorersUrl: (leagueId, season) => `${API_CONFIG.APIFOOTBALL_BASE_URL}/players/topscorers?league=${leagueId}&season=${season}`,
+            // NOVO: Gera a URL de embed diretamente.
+            getEsportesEmbedUrl: (slug) => `${API_CONFIG.ESPORTESEMBED_BASE_URL}/${slug}`,
+            // FALLBACK: URL de partida do provedor anterior.
+            getReiDosCanaisMatchUrl: (slug) => `${API_CONFIG.REIDOSCANAIS_BASE_URL}/sports/${slug}`,
             getWikiSearchUrl: (q) => `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`,
             getWikiDetailUrl: (t) => `https://pt.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&exintro&explaintext&pithumbsize=500&titles=${encodeURIComponent(t)}&format=json&origin=*`,
             // F1 OpenF1
@@ -1437,6 +1475,16 @@
                 '3-5-2': [ { t: 90, l: 50 }, { t: 78, l: 75 }, { t: 80, l: 50 }, { t: 78, l: 25 }, { t: 50, l: 85 }, { t: 55, l: 60 }, { t: 55, l: 40 }, { t: 50, l: 15 }, { t: 35, l: 50 }, { t: 20, l: 65 }, { t: 20, l: 35 } ],
                 '4-2-3-1': [ { t: 90, l: 50 }, { t: 75, l: 85 }, { t: 78, l: 60 }, { t: 78, l: 40 }, { t: 75, l: 15 }, { t: 60, l: 65 }, { t: 60, l: 35 }, { t: 35, l: 80 }, { t: 35, l: 50 }, { t: 35, l: 20 }, { t: 15, l: 50 } ],
                 'default': [ { t: 90, l: 50 }, { t: 75, l: 15 }, { t: 75, l: 40 }, { t: 75, l: 60 }, { t: 75, l: 85 }, { t: 50, l: 25 }, { t: 50, l: 50 }, { t: 50, l: 75 }, { t: 25, l: 20 }, { t: 25, l: 50 }, { t: 25, l: 80 } ]
+            },
+
+            triggerStartOfGameAnimation(eventId) {
+                const elSogOverlay = document.getElementById(`sog-overlay-${eventId}`);
+                if (!elSogOverlay) return;
+
+                elSogOverlay.classList.remove('active');
+                setTimeout(() => elSogOverlay.classList.add('active'), 50);
+
+                setTimeout(() => { elSogOverlay.classList.remove('active'); }, 4000);
             },
 
             state: { currentSport: 'soccer', currentLeague: 'brasileirao', currentDate: new Date(), view: 'matches', selectedSeason: 2026, currentMatchData: null, theme: 'dark', espnTeamsCache: {}, f1ScoreboardCache: {}, scorersCache: {}, playerDatabaseCache: null, matchTimerInterval: null, matchCardTimers: [], liveUpdateInterval: null, goalIntervals: {} },
@@ -1882,6 +1930,14 @@
                                     </div>
                                 </div>
 
+                                <!-- Start of Game Overlay -->
+                                <div id="sog-overlay-${ev.id}" class="unified-full-overlay" style="justify-content: center; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
+                                    <div class="sog-content text-center">
+                                        <div class="sog-title">BOLA ROLANDO</div>
+                                        <div class="sog-subtitle">Início de Jogo</div>
+                                    </div>
+                                </div>
+
                                 <!-- End of Game Overlay -->
                                 <div id="eog-overlay-${ev.id}" class="unified-full-overlay" style="justify-content: center; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
                                     <div class="eog-content text-center">
@@ -1961,11 +2017,13 @@
                         const a = comp.competitors.find(c => c.homeAway === 'away');
                         const status = ev.status.type;
 
-                        // 1. Checa Fim de Jogo
+                        // 1. Checa Fim de Jogo e Início de Jogo
                         const oldStatusState = matchCard.getAttribute('data-status-state');
                         if (oldStatusState === 'in' && status.state === 'post') {
                             // CORREÇÃO: Chamando a função de animação de fim de jogo que estava faltando.
                             this.triggerEndOfGameAnimation(ev.id);
+                        } else if (oldStatusState === 'pre' && status.state === 'in') {
+                            this.triggerStartOfGameAnimation(ev.id);
                         }
                         matchCard.setAttribute('data-status-state', status.state);
 
@@ -2889,6 +2947,7 @@
                 const tabsContainer = document.getElementById('match-modal-tabs');
                 const lineupsData = d.lineups;
                 let tabsHtml = `<button data-tab="summary" onclick="app.switchMatchModalTab('summary')">Resumo</button>`;
+                tabsHtml += `<button data-tab="broadcast" onclick="app.switchMatchModalTab('broadcast')">Transmissão</button>`;
                 tabsHtml += `<button data-tab="lineups" onclick="app.switchMatchModalTab('lineups')">Escalações</button>`;
                 tabsContainer.innerHTML = tabsHtml;
                 this.switchMatchModalTab('summary'); // Activate summary tab by default
@@ -2954,6 +3013,119 @@
 
                 // Render Lineups into its tab
                 this.renderEspnLineups(d);
+            },
+
+            async fetchBroadcastForMatch() {
+                const container = document.getElementById('match-tab-broadcast');
+                if (!container || !this.state.currentMatchData?.header) {
+                    if (container) container.innerHTML = '<div class="text-center text-gray-500 p-10">Dados da partida não encontrados.</div>';
+                    return;
+                }
+
+                container.innerHTML = '<div class="py-20 flex justify-center"><div class="loader-ring"></div></div>';
+
+                // Usa o nome completo do evento para uma busca mais precisa
+                let matchName = this.state.currentMatchData.header.name;
+
+                // Fallback para construir o nome da partida se `header.name` não existir
+                if (!matchName) {
+                    const competition = this.state.currentMatchData.header.competitions?.[0];
+                    const homeTeam = competition?.competitors?.find(c => c.homeAway === 'home');
+                    const awayTeam = competition?.competitors?.find(c => c.homeAway === 'away');
+                    if (homeTeam && awayTeam) {
+                        matchName = `${homeTeam.team.displayName} vs ${awayTeam.team.displayName}`;
+                    }
+                }
+
+                if (!matchName) {
+                    container.innerHTML = '<div class="text-center text-gray-500 p-10">Não foi possível determinar o nome da partida para a busca.</div>';
+                    return;
+                }
+                
+                let allEmbeds = [];
+
+                // --- Fonte 1: esportesembed.top (Geração Direta) ---
+                const finalMatchNameEsportes = matchName.replace(/ em /gi, ' x ').replace(/ vs /gi, ' x ');
+                const matchSlugEsportes = finalMatchNameEsportes.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
+                    .replace(/[^a-z0-9\s-x]/g, '') // Remove caracteres especiais, permitindo 'x'
+                    .trim().replace(/\s+/g, '-'); // Substitui espaços por hífens
+
+                for (let i = 1; i <= 3; i++) { // Gera 3 opções de canais
+                    allEmbeds.push({
+                        embed_url: API_CONFIG.getEsportesEmbedUrl(`${matchSlugEsportes}-${i}`),
+                        provider: `Fonte A - Opção ${i}`,
+                        quality: 'HD'
+                    });
+                }
+
+                // --- Fonte 2: reidoscanais.io (API Fetch como Fallback) ---
+                try {
+                    const finalMatchNameRei = matchName.replace(/ em /gi, ' vs ');
+                    const matchSlugRei = finalMatchNameRei.toLowerCase()
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .trim().replace(/\s+/g, '-');
+
+                    const res = await fetch(API_CONFIG.getReiDosCanaisMatchUrl(matchSlugRei));
+                    if (res.ok) {
+                        const searchResults = await res.json();
+                        const matchData = Array.isArray(searchResults) ? searchResults[0] : searchResults;
+
+                        if (matchData && matchData.embeds && matchData.embeds.length > 0) {
+                            const fallbackEmbeds = matchData.embeds.map(embed => ({ ...embed, provider: `Fonte B - ${embed.provider || 'Opção'}` }));
+                            allEmbeds.push(...fallbackEmbeds);
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Fonte de fallback (Rei dos Canais) falhou:", e);
+                }
+
+                // Renderiza todos os embeds encontrados
+                if (allEmbeds.length > 0) {
+                    this.renderBroadcastForMatch(allEmbeds);
+                } else {
+                    container.innerHTML = '<div class="text-center text-gray-500 p-10">Nenhuma transmissão encontrada para esta partida.</div>';
+                }
+            },
+
+            renderBroadcastForMatch(embeds) {
+                const container = document.getElementById('match-tab-broadcast');
+                if (!container) return;
+
+                if (!embeds || embeds.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-500 p-10">Nenhuma transmissão encontrada para esta partida.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="aspect-video bg-black rounded-xl mb-6 overflow-hidden border border-[var(--glass-border)]">
+                        <iframe id="broadcast-player" class="w-full h-full" src="${embeds[0].embed_url}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Fontes de Transmissão</h4>
+                        <div id="broadcast-channel-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+                `;
+
+                const channelListContainer = document.getElementById('broadcast-channel-list');
+                const player = document.getElementById('broadcast-player');
+
+                embeds.forEach((embed, index) => {
+                    const card = document.createElement('button');
+                    card.className = `scorer-card !p-3 flex items-center gap-3 cursor-pointer hover:border-[var(--accent)] w-full ${index === 0 ? 'border-[var(--accent)]' : ''}`;
+                    card.innerHTML = `
+                        <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0"><i data-lucide="tv-2" class="w-5 h-5 text-[var(--accent)]"></i></div>
+                        <div class="flex-1 text-left"><div class="font-bold text-base" style="color: var(--text-primary);">${embed.provider}</div><div class="text-xs text-gray-400">${embed.quality || 'HD'}</div></div>
+                    `;
+                    card.onclick = () => {
+                        player.src = embed.embed_url;
+                        channelListContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('border-[var(--accent)]'));
+                        card.classList.add('border-[var(--accent)]');
+                    };
+                    channelListContainer.appendChild(card);
+                });
+                if(window.lucide) lucide.createIcons();
             },
 
             renderEspnLineups(matchData) {
@@ -3264,7 +3436,8 @@
 
             startLiveCardTimer(eventId, competitionStatus) {
                 const timeEl = document.getElementById(`timer-pill-${eventId}`);
-                if (!timeEl || timeEl.querySelector('.animate-pulse')) return null; // Não inicia se já estiver rodando
+                if (!timeEl || timeEl.dataset.timerActive) return null; // Não inicia se já estiver rodando
+                timeEl.dataset.timerActive = 'true';
 
                 const initialClock = competitionStatus.displayClock;
                 const period = competitionStatus.period;
@@ -3296,8 +3469,7 @@
                         const stoppageMinutes = Math.floor(stoppageSeconds / 60);
                         const stoppageRemainingSeconds = stoppageSeconds % 60;
                         timeString = `${String(regularTimeEnd).padStart(2, '0')}:00 +${String(stoppageMinutes).padStart(2, '0')}:${String(stoppageRemainingSeconds).padStart(2, '0')}`;
-                    }
-                    timeEl.innerHTML = `<span class="animate-pulse">${timeString}</span>`;
+                    }                    timeEl.innerHTML = `<span>${timeString}</span>`;
                 }, 1000);
 
                 return timerId;
@@ -3397,6 +3569,10 @@
                     pane.classList.add('hidden');
                 });
                 const activePane = document.getElementById(`match-tab-${tabId}`);
+                if (tabId === 'broadcast') {
+                    this.fetchBroadcastForMatch();
+                }
+
                 if (activePane) {
                     activePane.classList.remove('hidden');
                 }
@@ -3420,7 +3596,7 @@
             },
 
             setView(v) {
-                this.state.view = v;
+                this.state.view = v; this.closeWiki();
                 document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden'));
                 const viewEl = document.getElementById(`view-${v}`); if (viewEl) viewEl.classList.remove('hidden');
                 this.updateActiveNav(v);
