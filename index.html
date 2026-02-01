@@ -43,6 +43,18 @@
             --modal-bg: #0f0f11;
             --table-header-bg: rgba(255,255,255,0.02);
             --dropdown-bg: #111;
+            
+            /* Persona Base (Adulto) */
+            --font-family-primary: 'Nokia Pure Headline', sans-serif;
+            --font-family-secondary: 'Roboto Condensed', sans-serif;
+            --base-font-size: 1rem;
+            --heading-font-size: 1.5rem;
+            --card-border-radius: 24px;
+            --spacing-unit: 16px;
+            --button-padding-y: 8px;
+            --button-padding-x: 16px;
+            --nav-item-padding: 14px 18px;
+            --nav-item-border-radius: 16px;
 
             /* Cores Fixas */
             --accent: #d1ff4d;
@@ -89,6 +101,63 @@
             --scrollbar-thumb-bg: rgba(0,0,0,0.2);
         }
 
+        /* === PERSONA: JOVEM DINÂMICO === */
+        body.persona-young {
+            --bg-deep: #0a0a1a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #e0f7fa;
+            --text-muted: #80deea;
+            --accent: #00e676; /* Verde neon */
+            --ai-color: #00e676;
+            --ai-glow: rgba(0, 230, 118, 0.4);
+            --header-bg: rgba(10, 10, 26, 0.9);
+            --nav-item-bg: rgba(0, 230, 118, 0.1);
+            --nav-item-hover: rgba(0, 230, 118, 0.2);
+            --card-shadow: 0 10px 40px 0 rgba(0, 230, 118, 0.2);
+            --dropdown-bg: #0a0a1a;
+
+            --font-family-primary: 'Chakra Petch', sans-serif;
+            --font-family-secondary: 'Teko', sans-serif;
+            --base-font-size: 0.95rem;
+            --heading-font-size: 1.8rem;
+            --card-border-radius: 16px;
+            --spacing-unit: 12px;
+            --button-padding-y: 10px;
+            --button-padding-x: 20px;
+            --nav-item-padding: 12px 16px;
+            --nav-item-border-radius: 12px;
+        }
+
+        /* === PERSONA: PÚBLICO IDOSO === */
+        body.persona-elderly {
+            --bg-deep: #f0f0f0;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #333333;
+            --text-muted: #666666;
+            --text-invert: #ffffff;
+            --accent: #007bff; /* Azul clássico */
+            --ai-color: #007bff;
+            --ai-glow: rgba(0, 123, 255, 0.4);
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --nav-item-bg: rgba(0, 0, 0, 0.05);
+            --nav-item-hover: rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --dropdown-bg: #ffffff;
+
+            --font-family-primary: 'Roboto Condensed', sans-serif;
+            --font-family-secondary: 'Roboto Condensed', sans-serif;
+            --base-font-size: 1.1rem;
+            --heading-font-size: 1.6rem;
+            --card-border-radius: 8px;
+            --spacing-unit: 20px;
+            --button-padding-y: 12px;
+            --button-padding-x: 24px;
+            --nav-item-padding: 16px 20px;
+            --nav-item-border-radius: 8px;
+        }
+
         /* === FONTES LOCAIS (NOKIA PURE) === */
         @font-face {
             font-family: 'Nokia Pure Headline';
@@ -132,7 +201,7 @@
 
         /* === GLOBAL STYLES === */
         body {
-            font-family: 'Nokia Pure Headline', sans-serif;
+            font-family: var(--font-family-primary);
             background-color: var(--bg-deep);
             color: var(--text-primary);
             margin: 0; padding: 0; 
@@ -200,10 +269,10 @@
         }
 
         .nav-pill {
-            background: var(--nav-item-bg); border: 1px solid var(--glass-border);
-            color: var(--text-primary); padding: 8px 16px; border-radius: 100px;
+            background: var(--nav-item-bg); border: 1px solid var(--glass-border); /* Usar var(--nav-item-border-radius) para consistência */
+            color: var(--text-primary); padding: var(--button-padding-y) var(--button-padding-x); border-radius: 100px;
             font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px;
-            transition: all 0.3s var(--ease-smooth);
+            transition: all 0.3s var(--ease-smooth), border-color 0.3s;
             white-space: nowrap;
         }
         .nav-pill:hover, .nav-pill.active {
@@ -217,9 +286,10 @@
         body.light-mode .nav-pill:hover, body.light-mode .nav-pill.active { box-shadow: 0 0 5px var(--accent); }
 
         .search-input {
-            width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
-            padding: 12px 20px 12px 48px; border-radius: 16px; color: var(--text-primary); font-family: 'Nokia Pure Headline', sans-serif;
-            transition: all 0.3s;
+            width: 100%; background: var(--input-bg); 
+            border: 1px solid var(--input-border);
+            padding: var(--button-padding-y) var(--button-padding-x) var(--button-padding-y) calc(var(--button-padding-x) * 2.5); border-radius: var(--nav-item-border-radius); color: var(--text-primary); font-family: var(--font-family-primary);
+            transition: all 0.3s, border-color 0.3s;
         }
         .search-input:focus {
             border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.1);
@@ -230,14 +300,14 @@
             background: var(--nav-item-bg); border: 1px solid var(--glass-border);
             color: var(--text-primary); display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.3s;
+            border-radius: 50%; /* Mantém redondo */
         }
         .theme-toggle-btn:hover { background: var(--nav-item-hover); color: var(--accent); }
         
         /* === UNIFIED TV SCOREBOARD === */
         .match-card {
             background: var(--card-bg-gradient);
-            border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden;
-            position: relative; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            border: 1px solid var(--glass-border); border-radius: var(--card-border-radius); overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
             margin-bottom: 16px; animation: fade-slide-up 0.6s var(--ease-smooth) forwards; opacity: 0;
             box-shadow: var(--card-shadow);
             padding: 12px;
@@ -272,7 +342,7 @@
             inset: 0;
             border-radius: 8px; /* Garante que o blur não vaze das bordas arredondadas */
             background: rgba(255, 255, 255, 0.05); /* Leve brilho para o efeito de vidro */
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px); /* Usar var(--blur-intensity) */
             -webkit-backdrop-filter: blur(5px);
             z-index: 5; /* Fica acima das cores de fundo, mas abaixo do texto e logos */
         }
@@ -313,7 +383,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             letter-spacing: 0.5px;
             z-index: 6;
-            position: relative; /* Garante que fique acima do overlay de blur */
+            position: relative;
             font-family: 'Nokia Pure Headline', sans-serif;
         }
 
@@ -334,7 +404,7 @@
             font-size: 2.2rem;
             line-height: 1;
             z-index: 6;
-            position: relative; /* Garante que fique acima do overlay de blur */
+            position: relative;
             font-family: 'Nokia Pure Headline', sans-serif;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5), 0 -1px 0 rgba(0,0,0,0.3);
         }
@@ -360,7 +430,7 @@
             object-fit: contain;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
             z-index: 6;
-            position: relative; /* Garante que fique acima do overlay de blur */
+            position: relative;
         }
 
         .unified-timer-pill {
@@ -628,7 +698,7 @@
         .modal-score-display { 
             font-size: clamp(3.5rem, 10vw, 5.5rem); font-weight: 900; letter-spacing: -2px; line-height: 1;
             text-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #fff; margin-bottom: 10px;
-        }
+        } /* Usar var(--heading-font-size) */
         body.light-mode .modal-score-display { color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
         /* F1 Theme */
@@ -636,7 +706,7 @@
         body.light-mode .theme-f1 .league-header { border-bottom-color: #e10600; }
         .f1-race-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: all 0.3s; box-shadow: var(--card-shadow); }
         .f1-race-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-
+        
         /* General Tables/Grids */
         .std-table-container { overflow-x: auto; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass-bg); box-shadow: var(--card-shadow); }
         .std-table-header { display: grid; grid-template-columns: 50px minmax(180px, 3fr) repeat(7, 1fr); padding: 18px 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); background: var(--table-header-bg); align-items: center; text-align: center; min-width: 600px; }
@@ -679,7 +749,7 @@
         .news-card:hover .news-img { transform: scale(1.1); }
         .news-content { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05)); }
         .news-category { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
-        .news-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-primary); }
+        .news-title { font-size: var(--base-font-size); font-weight: 700; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-primary); }
         .news-footer { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
         
         .club-grid-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: var(--card-shadow); }
@@ -687,7 +757,7 @@
         .club-grid-card img { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); transition: transform 0.3s; }
         .club-grid-card:hover img { transform: scale(1.1); }
         .club-grid-card span { font-weight: 700; text-align: center; font-size: 1.1rem; color: var(--text-primary); }
-
+        
         .scorer-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; transition: 0.2s; box-shadow: var(--card-shadow); }
         .scorer-card:hover { border-color: var(--accent); }
         .scorer-rank { font-size: 1.5rem; font-weight: 800; color: var(--accent); width: 30px; text-align: center; }
@@ -703,7 +773,7 @@
         .search-result-item .result-text .subtitle { font-size: 0.8rem; color: var(--text-muted); }
 
         /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; } /* Usar var(--blur-intensity) */
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--modal-bg); width: 100%; max-width: 900px; height: 90vh; border-radius: 32px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.95) translateY(20px); transition: 0.4s; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
@@ -823,11 +893,11 @@
         main { display: flex; gap: 30px; min-height: 100vh; max-width: 1600px; margin: 0 auto; }
         .sidebar { width: 280px; flex-shrink: 0; position: sticky; top: 90px; height: calc(100vh - 110px); display: flex; flex-direction: column; gap: 20px; }
         .nav-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px; box-shadow: var(--card-shadow); }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 18px; border-radius: 16px; color: var(--text-muted); font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 14px; transition: all 0.2s; }
+        .nav-btn { width: 100%; text-align: left; padding: var(--nav-item-padding); border-radius: var(--nav-item-border-radius); color: var(--text-muted); font-weight: 600; font-size: var(--base-font-size); display: flex; align-items: center; gap: 14px; transition: all 0.2s; }
         .nav-btn:hover, .nav-btn.active { background: var(--nav-item-hover); color: var(--text-primary); }
         .nav-btn.active i { color: var(--accent); }
         .feed { flex: 1; min-width: 0; padding-top: 90px; padding-bottom: 100px; }
-
+        
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: var(--header-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 80; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; background: none; border: none; cursor: pointer; transition: all 0.3s; }
         .bottom-nav-item.active { color: var(--accent); }
@@ -857,7 +927,7 @@
             .modal-home-logo, .modal-away-logo { width: 40px; height: 40px; margin-bottom: 2px; }
             .modal-score-display { font-size: 2rem; }
             #modal-status { font-size: 9px; padding: 0px 8px; }
-            #modal-time { font-size: 10px; margin-top: 1px; }
+            #modal-time { font-size: 10px; margin-top: 1px; font-family: var(--font-family-secondary); }
             .modal-overlay .modal-content > .flex-1 { padding: 10px; } /* Content area padding */
             #modal-timeline { margin-left: 8px; padding-left: 16px; } /* Timeline indent */
 
@@ -883,7 +953,7 @@
             #modal-top-section { height: 150px; }
             .modal-home-logo, .modal-away-logo { width: 60px; height: 60px; margin-bottom: 4px; }
             .modal-score-display { font-size: 2.8rem; }
-            #modal-status { font-size: 10px; padding: 1px 10px; }
+            #modal-status { font-size: 10px; padding: 1px 10px; font-family: var(--font-family-secondary); }
             #modal-time { font-size: 12px; margin-top: 2px; }
             .modal-overlay .modal-content > .flex-1 { padding: 15px; }
             #modal-timeline { margin-left: 12px; padding-left: 20px; }
@@ -903,7 +973,7 @@
             .modal-content { max-width: 700px; height: 85vh; border-radius: 28px; }
             #modal-top-section { height: 200px; }
             .modal-home-logo, .modal-away-logo { width: 80px; height: 80px; }
-            .modal-score-display { font-size: 3.5rem; }
+            .modal-score-display { font-size: 3.5rem; font-family: var(--font-family-primary); }
             .modal-overlay .modal-content > .flex-1 { padding: 20px; }
         }
 
@@ -922,7 +992,7 @@
             .modal-content { max-width: 1200px; height: 90vh; border-radius: 40px; }
             #modal-top-section { height: 300px; }
             .modal-home-logo, .modal-away-logo { width: 120px; height: 120px; margin-bottom: 8px; }
-            .modal-score-display { font-size: 6rem; }
+            .modal-score-display { font-size: 6rem; font-family: var(--font-family-primary); }
             .modal-overlay .modal-content > .flex-1 { padding: 40px 60px; }
             #modal-timeline { margin-left: 24px; padding-left: 40px; }
         }
@@ -953,7 +1023,7 @@
             .modal-home-logo, .modal-away-logo {
                 width: 40px; height: 40px; margin-bottom: 2px; /* Keep consistent with portrait extra small */
             }
-            .modal-score-display { font-size: 2rem; } /* Keep consistent with portrait extra small */
+            .modal-score-display { font-size: 2rem; font-family: var(--font-family-primary); } /* Keep consistent with portrait extra small */
             .sidebar { display: none; } /* Ensure sidebar is hidden */
         }
     </style>
@@ -975,6 +1045,18 @@
                 <div class="relative group">
                     <button class="nav-pill" id="league-selector-btn"><img id="header-league-logo" class="w-4 h-4 rounded-full" src=""> <span id="header-league-name">Carregando...</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
                     <div class="dropdown-menu group-hover:block absolute top-full left-0 p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-64" id="league-menu"></div>
+                </div>
+                <!-- Persona Selector -->
+                <div class="relative group">
+                    <button class="nav-pill"><span id="header-persona-name">Adulto</span> <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+                    <div class="dropdown-menu group-hover:block absolute top-full left-0 p-2 rounded-xl border border-white/10 hidden z-50 shadow-xl w-48" id="persona-menu">
+                        <div class="dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white" onclick="app.setPersona('young')">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i> Jovem Dinâmico</div>
+                        <div class="dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white" onclick="app.setPersona('adult')">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i> Adulto</div>
+                        <div class="dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white" onclick="app.setPersona('elderly')">
+                            <i data-lucide="glasses" class="w-5 h-5"></i> Idoso</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1028,7 +1110,7 @@
             <div class="league-header flex items-center gap-4 md:gap-6 mb-6 md:mb-8 p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-0"></div>
                 <img id="page-league-logo" class="w-16 h-16 md:w-20 md:h-20 object-contain z-10 drop-shadow-xl" onerror="this.style.display='none'">
-                <div class="z-10">
+                <div class="z-10" style="font-family: var(--font-family-primary);">
                     <h1 id="page-league-name" class="font-black text-white leading-none tracking-tight"></h1>
                     <p class="text-[var(--accent)] font-bold text-xs md:text-sm mt-2 md:mt-3 uppercase tracking-[0.2em]" id="page-league-country"></p>
                 </div>
@@ -1038,7 +1120,7 @@
             <div id="view-matches" class="view-section">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 px-2 gap-4">
                     <div class="flex items-center gap-4">
-                        <h2 class="text-xl md:text-2xl font-bold" style="color: var(--text-primary)">Partidas</h2>
+                        <h2 class="text-xl md:text-2xl font-bold" style="color: var(--text-primary); font-family: var(--font-family-primary);">Partidas</h2>
                         <span id="live-indicator" class="hidden px-3 py-1 bg-[var(--accent)] text-black text-[11px] font-extrabold rounded-full animate-pulse">AO VIVO</span>
                     </div>
                     <input type="text" id="date-picker" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 w-full sm:w-36 text-center cursor-pointer hover:bg-white/10 transition outline-none focus:border-[var(--accent)]" placeholder="Hoje" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)">
@@ -1049,14 +1131,14 @@
 
             <!-- View: Standings -->
             <div id="view-standings" class="view-section hidden">
-                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Tabela</div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary); font-family: var(--font-family-primary);">Tabela</div>
                 <div id="standings-container" class="std-table-container"></div>
                 <div id="standings-legend" class="table-legend"></div>
             </div>
 
             <!-- View: Scorers -->
             <div id="view-scorers" class="view-section hidden">
-                <div id="scorers-header" class="flex justify-between items-center mb-8">
+                <div id="scorers-header" class="flex justify-between items-center mb-8" style="font-family: var(--font-family-primary);">
                     <div class="section-title !mb-0 text-xl md:text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Artilheiros</div>
                     <select id="season-selector" class="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 cursor-pointer outline-none" style="color: var(--text-primary); background: var(--input-bg); border-color: var(--glass-border)"></select>
                 </div>
@@ -1065,7 +1147,7 @@
 
             <!-- View: News -->
             <div id="view-news" class="view-section hidden">
-                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Últimas Notícias</div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary); font-family: var(--font-family-primary);">Últimas Notícias</div>
                 <!-- Responsive Grid: 1 col mobile, 2 col sm, 3 col lg, 4 col xl -->
                 <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8"></div>
             </div>
@@ -1073,7 +1155,7 @@
             <!-- View: Clubs -->
             <div id="view-clubs" class="view-section hidden">
                 <div class="text-2xl font-bold mb-8 border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Clubes da Liga</div>
-                <div class="mb-10 relative max-w-xl">
+                <div class="mb-10 relative max-w-xl" style="font-family: var(--font-family-primary);">
                     <input type="text" id="wiki-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar na Wikipedia...">
                     <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
@@ -1083,21 +1165,21 @@
 
             <!-- View: F1 Schedule -->
             <div id="view-schedule" class="view-section hidden">
-                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Calendário da Fórmula 1</div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary); font-family: var(--font-family-primary);">Calendário da Fórmula 1</div>
                 <div id="schedule-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6"></div>
             </div>
 
             <!-- View: F1 Driver Standings -->
             <div id="view-driver-standings" class="view-section hidden">
-                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Mundial de Pilotos</div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary); font-family: var(--font-family-primary);">Mundial de Pilotos</div>
                 <div id="driver-standings-container" class="std-table-container"></div>
             </div>
 
             <!-- View: F1 Team Standings -->
             <div id="view-team-standings" class="view-section hidden">
-                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Mundial de Construtores</div>
+                <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary); font-family: var(--font-family-primary);">Mundial de Construtores</div>
                 <div id="team-standings-container" class="std-table-container">
-                    <div class="std-table-header" style="grid-template-columns: 50px minmax(180px, 3fr) 1fr;"><div>#</div><div class="text-left">Equipe</div><div class="text-center">Pts</div></div>
+                    <div class="std-table-header" style="grid-template-columns: 50px minmax(180px, 3fr) 1fr; font-family: var(--font-family-primary);"><div>#</div><div class="text-left">Equipe</div><div class="text-center">Pts</div></div>
                     <div id="team-standings-body"></div>
                 </div>
             </div>
@@ -1105,7 +1187,7 @@
             <!-- View: F1 Historic Pilots -->
             <div id="view-historic-pilots" class="view-section hidden">
                 <div class="section-title mb-8 text-2xl font-bold border-l-4 border-[var(--accent)] pl-4" style="color: var(--text-primary)">Pilotos Históricos</div>
-                <div class="mb-10 relative max-w-xl">
+                <div class="mb-10 relative max-w-xl" style="font-family: var(--font-family-primary);">
                     <input type="text" id="wiki-pilot-search-input" class="search-input !py-4 !text-lg !pl-14" placeholder="Pesquisar piloto na Wikipedia...">
                     <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
@@ -1120,7 +1202,7 @@
             <!-- Shared Wiki Detail View -->
             <div id="wiki-detail" class="hidden">
                 <button onclick="app.closeWiki()" class="mb-6 text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar</button>
-                <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary)"></div>
+                <div id="wiki-content-area" class="wiki-detail-content glass-panel p-8" style="color: var(--text-primary); font-family: var(--font-family-primary);"></div>
             </div>
         </div>
     </main>
@@ -1140,7 +1222,7 @@
             <div id="f1-modal-top-section" class="relative h-[200px] md:h-[250px] flex flex-col items-center justify-center border-b border-white/10 shrink-0 p-6">
                 <div class="modal-header-bg" id="f1-modal-bg"></div>
                 <div class="relative z-10 text-center">
-                    <p id="f1-modal-circuit" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] mb-2"></p>
+                    <p id="f1-modal-circuit" class="text-[var(--accent)] font-bold uppercase text-xs tracking-[0.2em] mb-2" style="font-family: var(--font-family-secondary);"></p>
                     <h2 id="f1-modal-racename" class="text-2xl md:text-4xl font-black text-white leading-tight">Race Name</h2>
                     <p id="f1-modal-date" class="text-gray-400 text-sm md:text-base mt-2 font-medium"></p>
                 </div>
@@ -1162,10 +1244,10 @@
                     <div class="flex flex-col items-center w-1/3 text-center">
                         <img id="modal-home-logo" class="w-16 h-16 md:w-24 md:h-24 object-contain mb-2 md:mb-4 drop-shadow-2xl">
                         <h2 id="modal-home-name" class="text-xs md:text-xl font-black text-white leading-tight">HOME</h2>
-                    </div>
+                    </div> 
                     <div class="flex flex-col items-center">
                         <div class="modal-score-display" id="modal-score">0 - 0</div>
-                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] bg-black/60 px-3 md:px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-2 md:mt-3">AO VIVO</div>
+                        <div id="modal-status" class="text-[var(--accent)] font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] bg-black/60 px-3 md:px-4 py-1 rounded-full backdrop-blur-md border border-white/10 mt-2 md:mt-3" style="font-family: var(--font-family-secondary);">AO VIVO</div>
                         <div id="modal-time" class="text-gray-400 text-xs md:text-sm mt-2 font-mono"></div>
                     </div>
                     <div class="flex flex-col items-center w-1/3 text-center">
@@ -1182,8 +1264,8 @@
                 <div class="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
                     <div id="match-tab-summary" class="match-tab-pane">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Estatísticas</h3><div id="modal-stats" class="space-y-6"></div></div>
-                            <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2">Linha do Tempo</h3><div id="modal-timeline" class="relative ml-4"></div></div>
+                            <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2" style="font-family: var(--font-family-secondary);">Estatísticas</h3><div id="modal-stats" class="space-y-6"></div></div>
+                            <div><h3 class="text-xs font-bold text-gray-500 uppercase mb-6 tracking-widest border-b border-white/5 pb-2" style="font-family: var(--font-family-secondary);">Linha do Tempo</h3><div id="modal-timeline" class="relative ml-4"></div></div>
                         </div>
                     </div>
                     <div id="match-tab-lineups" class="match-tab-pane hidden">
@@ -1480,7 +1562,7 @@
             triggerStartOfGameAnimation(eventId) {
                 const elSogOverlay = document.getElementById(`sog-overlay-${eventId}`);
                 if (!elSogOverlay) return;
-
+                
                 elSogOverlay.classList.remove('active');
                 setTimeout(() => elSogOverlay.classList.add('active'), 50);
 
@@ -1492,6 +1574,7 @@
             init() {
                 try {
                     this.initTheme();
+                    this.initPersona(); // Initialize persona
                     this.renderSportsNav();
                     this.renderPrimaryNavigation();
                     this.renderSeasonSelector();
@@ -1508,6 +1591,24 @@
                 } else {
                     this.setTheme('dark'); 
                 }
+            },
+
+            initPersona() {
+                const savedPersona = localStorage.getItem('sporting_persona');
+                if (savedPersona) {
+                    this.setPersona(savedPersona);
+                } else {
+                    this.setPersona('adult'); // Default persona
+                }
+            },
+
+            setPersona(persona) {
+                this.state.currentPersona = persona;
+                document.body.classList.remove('persona-young', 'persona-adult', 'persona-elderly');
+                document.body.classList.add(`persona-${persona}`);
+                document.getElementById('header-persona-name').innerText = persona.charAt(0).toUpperCase() + persona.slice(1); // Update header text
+                localStorage.setItem('sporting_persona', persona);
+                if(window.lucide) window.lucide.createIcons(); // Re-render icons if their color changes
             },
 
             toggleTheme() {
@@ -1703,7 +1804,7 @@
                 menu.innerHTML = '';
                 Object.entries(SPORTS_DB).forEach(([key, sport]) => {
                     const item = document.createElement('div');
-                    item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white';
+                    item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white'; // Usar var(--text-primary)
                     item.innerHTML = `<img src="${sport.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${sport.name}`;
                     item.onclick = () => this.changeSport(key);
                     menu.appendChild(item);
@@ -1748,7 +1849,7 @@
 
                 Object.entries(SPORTS_DB.soccer.leagues).forEach(([key, league]) => {
                     if (menu) { const item = document.createElement('div'); item.className = 'dropdown-item p-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2 text-white'; item.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain" onerror="this.style.display='none'"> ${league.name}`; item.onclick = () => this.changeSoccerLeague(key); menu.appendChild(item); }
-                    if (sidebar) { const sideItem = document.createElement('button'); sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group'; sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition" onerror="this.style.display='none'"> <span class="font-medium">${league.name}</span>`; sideItem.onclick = () => this.changeSoccerLeague(key); sidebar.appendChild(sideItem); }
+                    if (sidebar) { const sideItem = document.createElement('button'); sideItem.className = 'w-full text-left p-2 px-3 rounded-xl hover:bg-white/10 flex items-center gap-3 text-sm text-gray-400 hover:text-white transition group'; sideItem.innerHTML = `<img src="${league.logo}" class="w-6 h-6 object-contain group-hover:scale-110 transition" onerror="this.style.display='none'"> <span class="font-medium" style="font-family: var(--font-family-primary);">${league.name}</span>`; sideItem.onclick = () => this.changeSoccerLeague(key); sidebar.appendChild(sideItem); }
                     if (mobList) { const mobItem = document.createElement('button'); mobItem.className = 'flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-full text-left hover:bg-white/10 transition'; mobItem.innerHTML = `<img src="${league.logo}" class="w-8 h-8 object-contain" onerror="this.style.display='none'"> <span class="text-white font-bold text-lg">${league.name}</span>`; mobItem.onclick = () => { this.changeSoccerLeague(key); this.toggleMobileLeague(); }; mobList.appendChild(mobItem); }
                 });
             },
@@ -1788,7 +1889,7 @@
                     setSrc('header-league-logo', league.logo);
                     setSrc('mob-league-logo', league.logo);
                     setText('page-league-name', league.name);
-                    setSrc('page-league-logo', league.logo);
+                    setSrc('page-league-logo', league.logo); // Usar var(--card-border-radius)
                     setText('page-league-country', "Temporada " + this.state.selectedSeason);
 
                     const bgEl = document.getElementById('app-background');
@@ -1877,7 +1978,7 @@
                     const leagueLogo = lConfig.logo;
 
                     const homeTeamColor = home.team.color ? `#${home.team.color}` : 'rgba(0,0,0,0.2)'; // Fallback se a cor não estiver disponível
-                    const awayTeamColor = away.team.color ? `#${away.team.color}` : 'rgba(0,0,0,0.2)'; // Fallback
+                    const awayTeamColor = away.team.color ? `#${away.team.color}` : 'rgba(0,0,0,0.2)';
 
                     card.innerHTML = `
                         <div class="unified-broadcast-board" data-event-id="${ev.id}">
@@ -1970,7 +2071,7 @@
                                 }
                             </div>
                         </div>
-                        <div class="match-footer"><span class="truncate w-1/2 font-bold">${(ev.name || '').replace(/ em /gi, ' vs ')}</span><span class="truncate w-1/2 text-right text-xs opacity-70"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${comp.venue?.fullName||'Estádio'}</span></div>`;
+                        <div class="match-footer"><span class="truncate w-1/2 font-bold" style="font-family: var(--font-family-primary);">${(ev.name || '').replace(/ em /gi, ' vs ')}</span><span class="truncate w-1/2 text-right text-xs opacity-70"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${comp.venue?.fullName||'Estádio'}</span></div>`;
                     grid.appendChild(card);
                     if (status.state === 'in') {
                         const timerId = this.startLiveCardTimer(ev.id, comp.status);
@@ -2180,7 +2281,7 @@
                     card.onclick = () => this.openF1Race(event);
                     
                     const comp = event.competitions[0];
-                    const venue = comp.venue;
+                    const venue = comp.venue; // Usar var(--card-border-radius)
                     const status = event.status?.type;
                     const isCompleted = status.completed;
                     
@@ -2196,7 +2297,7 @@
                                 const teamColor = p.athlete.team?.color ? `#${p.athlete.team.color}` : 'var(--glass-border)';
                                 return `
                                 <div class="flex items-center text-sm gap-3">
-                                    <span class="font-bold text-center w-6 text-base" style="color: var(--text-primary);">${p.order}</span>
+                                    <span class="font-bold text-center w-6 text-base" style="color: var(--text-primary); font-family: var(--font-family-primary);">${p.order}</span>
                                     <div class="w-1 h-4 rounded-full" style="background-color: ${teamColor};"></div>
                                     <span class="font-medium truncate" style="color: var(--text-primary);">${p.athlete.displayName}</span>
                                     <span class="ml-auto text-xs font-mono text-gray-400">${p.records?.[0]?.displayValue || ''}</span>
@@ -2211,7 +2312,7 @@
                         <div class="p-5">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-xs font-bold text-[var(--accent)] uppercase">${venue.fullName}</p>
+                                    <p class="text-xs font-bold text-[var(--accent)] uppercase" style="font-family: var(--font-family-secondary);">${venue.fullName}</p>
                                     <h3 class="font-bold text-lg text-white">${event.shortName}</h3>
                                 </div>
                                 <div class="text-right shrink-0 ml-4">
@@ -2261,15 +2362,15 @@
                     const teamColour = driverInfo && driverInfo.team_colour ? `#${driverInfo.team_colour}` : 'var(--text-muted)';
                     
                     html += `<div class="std-row" style="grid-template-columns: 50px minmax(180px, 2fr) minmax(150px, 2fr) 1fr;">
-                        <div class="rank-cell"><span>${standing.position || '-'}</span></div>
+                        <div class="rank-cell"><span style="font-family: var(--font-family-primary);">${standing.position || '-'}</span></div>
                         <div class="team-cell">
-                            <span class="truncate font-bold">${driverName}</span>
+                            <span class="truncate font-bold" style="font-family: var(--font-family-primary);">${driverName}</span>
                         </div>
                         <div class="team-cell">
                             <div style="width: 4px; height: 20px; background-color: ${teamColour}; border-radius: 2px; margin-right: 8px;"></div>
-                            <span class="truncate">${teamName}</span>
+                            <span class="truncate" style="font-family: var(--font-family-primary);">${teamName}</span>
                         </div>
-                        <span class="font-bold text-center text-lg">${standing.points || '0'}</span>
+                        <span class="font-bold text-center text-lg" style="font-family: var(--font-family-primary);">${standing.points || '0'}</span>
                     </div>`;
                 });
                 con.innerHTML = html;
@@ -2315,12 +2416,12 @@
                     row.className = 'std-row';
                     row.style.gridTemplateColumns = '50px minmax(180px, 3fr) 1fr';
                     row.innerHTML = `
-                        <div class="rank-cell"><span>${standing.position || '-'}</span></div>
+                        <div class="rank-cell"><span style="font-family: var(--font-family-primary);">${standing.position || '-'}</span></div>
                         <div class="team-cell">
                             <div style="width: 4px; height: 20px; background-color: ${teamColour}; border-radius: 2px; margin-right: 8px;"></div>
-                            <span class="truncate font-bold">${standing.team_name || 'Equipe N/D'}</span>
+                            <span class="truncate font-bold" style="font-family: var(--font-family-primary);">${standing.team_name || 'Equipe N/D'}</span>
                         </div>
-                        <span class="font-bold text-center text-lg">${standing.points || '0'}</span>
+                        <span class="font-bold text-center text-lg" style="font-family: var(--font-family-primary);">${standing.points || '0'}</span>
                     `;
                     con.appendChild(row);
                 });
@@ -2334,7 +2435,7 @@
                 
                 document.getElementById('f1-modal-racename').innerText = event.name;
                 document.getElementById('f1-modal-circuit').innerText = event.competitions[0].venue.fullName;
-                const startDate = new Date(event.date);
+                const startDate = new Date(event.date); // Usar var(--font-family-primary)
                 document.getElementById('f1-modal-date').innerText = startDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
                 document.getElementById('f1-modal-bg').style.backgroundImage = `url('${SPORTS_DB.formula1.bg}')`;
 
@@ -2374,7 +2475,7 @@
                     tabButton.className = 'px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white';
                     tabButton.innerText = tab.displayName;
                     
-                    const contentId = `f1-tab-content-${tab.id}`;
+                    const contentId = `f1-tab-content-${tab.id}`; // Usar var(--font-family-primary)
                     tabButton.onclick = () => {
                         tabsArea.querySelectorAll('button').forEach(btn => btn.className = 'px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white');
                         document.querySelectorAll('.f1-tab-pane').forEach(pane => pane.classList.add('hidden'));
@@ -2390,7 +2491,7 @@
                     const providerData = pickcenter.find(p => p.provider === tab.id);
                     if (providerData && providerData.tables) {
                         (providerData.tables || []).forEach(tableData => {
-                            const headers = tableData.headers || [];
+                            const headers = tableData.headers || []; // Usar var(--font-family-primary)
                             const gridCols = `50px repeat(${headers.length > 0 ? headers.length - 1 : 0}, minmax(0, 1fr))`;
                             let tableHtml = `<div class="std-table-container mb-8"><div class="p-4 font-bold text-lg bg-white/5">${tableData.displayName || 'Resultados'}</div><div class="std-table-header" style="grid-template-columns: ${gridCols};">${headers.map(h => `<div>${h || ''}</div>`).join('')}</div>`;
                             (tableData.rows || []).forEach(row => { 
@@ -2431,7 +2532,7 @@
 
                         const card = document.createElement('div');
                         card.className = 'scorer-card cursor-pointer';
-                        card.onclick = () => this.loadWikiDetail(p.name, p.photo);
+                    card.onclick = () => this.loadWikiDetail(p.name, p.photo); // Usar var(--font-family-primary)
                         card.innerHTML = `<div class="scorer-rank text-[var(--accent)]">${i+1}</div><img src="${p.photo}" class="scorer-img"><div class="flex-1"><div class="font-bold text-lg" style="color: var(--text-primary)">${p.name}</div><div class="text-sm font-medium flex items-center" style="color: var(--text-muted)">${teamLogoImg}<span>${s.team.name}</span></div></div><div class="scorer-goals">${s.goals.total}</div>`;
                         g.appendChild(card);
                     });
@@ -2464,7 +2565,7 @@
                     (d.articles||[]).slice(0,9).forEach(n => {
                         if(!n.links?.web?.href) return;
                         g.innerHTML += `<a href="${n.links.web.href}" target="_blank" class="news-card group block">
-                            <div class="news-img-wrapper">${n.images?.[0]?.url ? `<img src="${n.images[0].url}" class="news-img">` : ''}</div>
+                            <div class="news-img-wrapper">${n.images?.[0]?.url ? `<img src="${n.images[0].url}" class="news-img">` : ''}</div> // Usar var(--card-border-radius)
                             <div class="news-content">
                                 <div><div class="news-category">Notícia</div><h3 class="news-title group-hover:text-[var(--accent)] transition">${n.headline}</h3></div>
                                 <p class="news-footer"><i data-lucide="clock" class="w-3 h-3"></i> ${n.published||'Recente'}</p>
@@ -2485,7 +2586,7 @@
                     const card = document.createElement('div');
                     card.className = 'club-grid-card';
                     const displayName = pilotName.replace(/_/g, ' ');
-                    card.onclick = () => this.loadWikiDetail(pilotName);
+                    card.onclick = () => this.loadWikiDetail(pilotName); // Usar var(--font-family-primary)
                     card.innerHTML = `<div class="w-20 h-20 flex items-center justify-center"><i data-lucide="user-square" class="w-12 h-12 text-gray-400"></i></div><span>${displayName}</span>`;
                     container.appendChild(card);
                 });
@@ -2523,7 +2624,7 @@
                     const clubWikiName = league.clubs.find(c => c.replace(/_/g, ' ').toLowerCase() === teamData.name.toLowerCase()) || teamData.name.replace(/ /g, '_');
                     card.onclick = () => this.showTeamSchedule(teamData.id, displayName, logoUrl, clubWikiName);
  
-                    const imgContent = logoUrl ? `<img src="${logoUrl}" alt="${displayName}">` : `<div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl">⚽</div>`;
+                    const imgContent = logoUrl ? `<img src="${logoUrl}" alt="${displayName}">` : `<div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl" style="font-family: var(--font-family-primary);">⚽</div>`;
                     card.innerHTML = `${imgContent}<span>${displayName}</span>`;
                     container.appendChild(card);
                 });
@@ -2537,7 +2638,7 @@
                 container.innerHTML = `
                     <div class="flex items-center justify-between mb-8">
                         <button onclick="app.setView('clubs')" class="text-[var(--accent)] hover:text-white transition flex items-center gap-2 font-bold"><i data-lucide="arrow-left"></i> Voltar para Clubes</button>
-                    </div>
+                    </div> // Usar var(--font-family-primary)
                     <div class="flex flex-col md:flex-row items-center gap-6 mb-8 p-6 rounded-3xl bg-white/5 border border-white/10">
                         <img src="${teamLogo}" class="w-20 h-20 object-contain">
                         <div class="flex-1 text-center md:text-left">
@@ -2548,12 +2649,12 @@
                     <!-- TABS for Schedule and Roster -->
                     <div id="team-view-tabs" class="flex items-center border-b border-white/10 mb-6">
                         <button data-tab="schedule" class="px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-white border-[var(--accent)]">Jogos</button>
-                        <button data-tab="roster" class="px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white">Elenco</button>
+                        <button data-tab="roster" class="px-4 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap text-gray-400 border-transparent hover:text-white" style="font-family: var(--font-family-primary);">Elenco</button>
                     </div>
 
                     <!-- TAB CONTENT -->
                     <div id="team-tab-schedule">
-                        <h3 class="text-xl font-bold mb-6" style="color: var(--text-primary);">Próximos Jogos</h3>
+                        <h3 class="text-xl font-bold mb-6" style="color: var(--text-primary); font-family: var(--font-family-primary);">Próximos Jogos</h3>
                         <div id="team-schedule-list" class="space-y-4">
                             <div class="col-span-full py-20 flex justify-center"><div class="loader-ring"></div></div>
                         </div>
@@ -2640,7 +2741,7 @@
                         const item = document.createElement('div');
                         item.className = 'glass-panel !p-4 flex items-center gap-4';
                         item.innerHTML = `
-                            <div class="text-center w-20 shrink-0">
+                            <div class="text-center w-20 shrink-0" style="font-family: var(--font-family-primary);">
                                 <div class="font-bold text-sm" style="color: var(--text-primary);">${dateString}</div>
                                 <div class="text-xs text-gray-400">${timeString}</div>
                             </div>
@@ -2648,7 +2749,7 @@
                             <div class="flex items-center gap-4 flex-1">
                                 <img src="${opponent.team.logos?.[0]?.href}" class="w-8 h-8 object-contain">
                                 <div>
-                                    <div class="font-bold" style="color: var(--text-primary);">${opponent.team.displayName}</div>
+                                    <div class="font-bold" style="color: var(--text-primary); font-family: var(--font-family-primary);">${opponent.team.displayName}</div>
                                     <div class="text-xs text-gray-400">${ev.shortName}</div>
                                 </div>
                             </div>
@@ -2689,7 +2790,7 @@
                         const item = document.createElement('div');
                         item.className = 'glass-panel !p-4 flex items-center gap-4';
                         item.innerHTML = `
-                            <div class="flex items-center justify-center w-12 h-12 rounded-xl text-white font-bold text-lg ${resultColorClass} shrink-0">${resultIndicator}</div>
+                            <div class="flex items-center justify-center w-12 h-12 rounded-xl text-white font-bold text-lg ${resultColorClass} shrink-0" style="font-family: var(--font-family-primary);">${resultIndicator}</div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-3">
                                     <img src="${home.team.logos?.[0]?.href}" class="w-6 h-6 object-contain">
@@ -2703,7 +2804,7 @@
                                 </div>
                             </div>
                             <div class="w-px h-10 bg-white/10 mx-2"></div>
-                            <div class="text-center w-24 shrink-0">
+                            <div class="text-center w-24 shrink-0" style="font-family: var(--font-family-primary);">
                                 <div class="text-xs text-gray-400">${ev.competitions[0].league?.shortName || ev.league?.name || ''}</div>
                                 <div class="font-bold text-sm mt-1" style="color: var(--text-primary);">${dateString}</div>
                             </div>
@@ -2726,14 +2827,14 @@
                 // The data is grouped by position.
                 data.athletes.forEach(positionGroup => {
                     rosterList.innerHTML += `<h4 class="col-span-full text-lg font-bold text-[var(--accent)] mt-6 mb-2">${positionGroup.position}</h4>`;
-                    positionGroup.items.forEach(player => {
+                    positionGroup.items.forEach(player => { // Usar var(--font-family-primary)
                         const card = document.createElement('div');
                         card.className = 'scorer-card'; // Re-using scorer card style
                         card.innerHTML = `
                             <div class="scorer-rank text-[var(--accent)]">${player.jersey}</div>
                             <img src="${player.headshot?.href || ''}" class="scorer-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2EwYTBiMiI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMy41YzEuOTMgMCAzLjUgMS41NyAzLjUgMy41UzEzLjkzIDEyLjUgMTIgMTIuNXMtMy41LTEuNTctMy41LTMuNVMxMC4wNyA1LjUgMTIgNS41em0wIDEzLjVjLTIuOTcgMC02LjYxIDEuNDYtOC4wMyA0LjA0QzQuNDIgMjEuMjYgOC4wNiAyMiAxMiAyMnMyLjYxLS43NCAzLjk3LTEuNDZjLTEuNDItMi41OC01LjA2LTQuMDQtOC4wMy00LjA0eiIvPjwvc3ZnPg=='">
                             <div class="flex-1">
-                                <div class="font-bold text-lg" style="color: var(--text-primary)">${player.fullName}</div>
+                                <div class="font-bold text-lg" style="color: var(--text-primary); font-family: var(--font-family-primary);">${player.fullName}</div>
                                 <div class="text-sm font-medium flex items-center" style="color: var(--text-muted)">
                                     <img src="${player.flag?.href || ''}" class="w-4 h-4 mr-2">
                                     <span>${player.nationality}</span>
@@ -2804,7 +2905,7 @@
                     const finalLogoUrl = page.thumbnail?.source || logoUrl;
                     let html = `<div class="flex flex-col md:flex-row items-start gap-8 mb-8">`;
                     if (finalLogoUrl) {
-                        html += `<img src="${finalLogoUrl}" class="w-32 h-32 object-cover md:object-contain rounded-2xl border border-white/10 p-2 bg-white/5 shrink-0 mx-auto md:mx-0">`;
+                        html += `<img src="${finalLogoUrl}" class="w-32 h-32 object-cover md:object-contain rounded-2xl border border-white/10 p-2 bg-white/5 shrink-0 mx-auto md:mx-0">`; // Usar var(--card-border-radius)
                     }
                     html += `<div class="flex-1 pt-2 text-center md:text-left"><h2 class="text-4xl font-black leading-tight" style="color: var(--text-primary)">${page.title}</h2></div></div>`;
                     html += `<div class="text-lg leading-relaxed" style="color: var(--text-primary)">${page.extract ? page.extract.replace(/\n/g, '<br><br>') : 'Sem descrição.'}</div>`;
@@ -2940,7 +3041,7 @@
                     // Inicia o cronômetro em tempo real
                     this.startLiveMatchTimer(competitionStatus, d.header.competitions[0].details);
                 } else {
-                    setText('modal-time', mainStatus?.type?.state !== 'pre' ? (mainStatus?.type?.description || '') : '');
+                    setText('modal-time', mainStatus?.type?.state !== 'pre' ? (mainStatus?.type?.description || '') : ''); // Usar var(--font-family-primary)
                 }
 
                 // Render Tabs
@@ -2966,7 +3067,7 @@
                             const tot = (hNum || 0) + (aNum || 0) || 1;
                             const hPercent = (hNum / tot) * 100;
                             return `<div class="mb-4"><div class="flex justify-between text-xs font-bold uppercase text-gray-400 mb-2"><span>${hV}</span><span>${s.label}</span><span>${aV}</span></div><div class="h-2 bg-white/10 rounded-full flex overflow-hidden"><div class="bg-[var(--accent)] h-full" style="width:${hPercent}%"></div></div></div>`;
-                        }).join('');
+                        }).join(''); // Usar var(--font-family-primary)
 
                         if (statsHtml) {
                             statDiv.innerHTML = statsHtml;
@@ -2997,7 +3098,7 @@
                             const lowerType = type.toLowerCase();
                             if (lowerType.includes('goal')) icon = '⚽️';
                             else if (lowerType.includes('yellow card')) icon = '🟨';
-                            else if (lowerType.includes('red card')) icon = '🟥';
+                            else if (lowerType.includes('red card')) icon = '🟥'; // Usar var(--font-family-primary)
                             else if (lowerType.includes('substitution')) icon = '🔄';
                             return `<div class="relative pb-6 border-l border-white/10 pl-6 last:pb-0 last:border-transparent" style="border-color: var(--glass-border)">
                                 <span class="absolute -left-[9px] bg-black text-xs font-bold text-[var(--accent)] border border-[var(--accent)] rounded px-1">${clock}</span>
@@ -3096,7 +3197,7 @@
                 if (!embeds || embeds.length === 0) {
                     container.innerHTML = '<div class="text-center text-gray-500 p-10">Nenhuma transmissão encontrada para esta partida.</div>';
                     return;
-                }
+                } // Usar var(--card-border-radius)
 
                 container.innerHTML = `
                     <div class="aspect-video bg-black rounded-xl mb-6 overflow-hidden border border-[var(--glass-border)]">
@@ -3114,7 +3215,7 @@
                 embeds.forEach((embed, index) => {
                     const card = document.createElement('button');
                     card.className = `scorer-card !p-3 flex items-center gap-3 cursor-pointer hover:border-[var(--accent)] w-full ${index === 0 ? 'border-[var(--accent)]' : ''}`;
-                    card.innerHTML = `
+                    card.innerHTML = ` // Usar var(--font-family-primary)
                         <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0"><i data-lucide="tv-2" class="w-5 h-5 text-[var(--accent)]"></i></div>
                         <div class="flex-1 text-left"><div class="font-bold text-base" style="color: var(--text-primary);">${embed.provider}</div><div class="text-xs text-gray-400">${embed.quality || 'HD'}</div></div>
                     `;
@@ -3183,7 +3284,7 @@
                 // --- Header ---
                 let headerHtml = `<div class="flex items-center gap-3 mb-4">
                     <img src="${espnTeamData.team.logos[0].href}" class="w-8 h-8 object-contain">
-                    <div>
+                    <div style="font-family: var(--font-family-primary);">
                         <div class="font-bold text-lg" style="color: var(--text-primary)">${espnTeamData.team.displayName}</div>
                         ${formation ? `<div class="text-sm font-medium text-[var(--accent)]">${formation}</div>` : ''}
                     </div>
@@ -3191,7 +3292,7 @@
 
                 // --- Tactical Field ---
                 let tacticalFieldHtml = `<div class="stadium-container">
-                    <div class="pitch" id="pitch-${teamType}">
+                    <div class="pitch" id="pitch-${teamType}"> // Usar var(--card-border-radius)
                         <!-- Markings -->
                         <div class="marking center-line"></div><div class="marking center-circle"></div>
                         <div class="marking penalty-area-top"></div><div class="marking penalty-area-bottom"></div>
@@ -3217,7 +3318,7 @@
                             return `<div class="player" id="p-${teamType}-${index}" title="${player.displayName}">
                                         <div class="kit" style="background-color: #${isGk ? '333333' : teamColor}; color: ${finalTextColor};">
                                             <div class="kit-name">${player.shortName || player.displayName?.split(' ').pop() || 'Jogador'}</div>
-                                            <div class="kit-number">${player.jersey || '-'}</div>
+                                            <div class="kit-number" style="font-family: var(--font-family-primary);">${player.jersey || '-'}</div>
                                         </div>
                                         <div class="player-shadow"></div>
                                     </div>`;
@@ -3232,7 +3333,7 @@
                     subsHtml += '<div class="space-y-3">';
                     subs.forEach(p => {
                         const player = p.athlete;
-                        subsHtml += `<div class="flex items-center text-sm opacity-80">
+                        subsHtml += `<div class="flex items-center text-sm opacity-80" style="font-family: var(--font-family-primary);">
                                             <span class="font-mono font-bold w-8 text-gray-500">${player.jersey || '-'}</span>
                                             <span style="color: var(--text-primary)">${player.displayName || 'Jogador N/D'}</span>
                                             <span class="ml-auto text-xs text-gray-500">${player.position?.abbreviation || ''}</span>
@@ -3241,7 +3342,7 @@
                     subsHtml += '</div>';
                 }
                 
-                const coachHtml = coachData ? `<h4 class="text-xs font-bold text-gray-500 uppercase mt-6 mb-3 tracking-widest">Técnico</h4><div class="flex items-center text-sm"><span style="color: var(--text-primary)">${coachData.displayName || coachData.fullName}</span></div>` : '';
+                const coachHtml = coachData ? `<h4 class="text-xs font-bold text-gray-500 uppercase mt-6 mb-3 tracking-widest" style="font-family: var(--font-family-secondary);">Técnico</h4><div class="flex items-center text-sm"><span style="color: var(--text-primary); font-family: var(--font-family-primary);">${coachData.displayName || coachData.fullName}</span></div>` : '';
 
                 return headerHtml + tacticalFieldHtml + subsHtml + coachHtml;
             },
@@ -3468,7 +3569,7 @@
                         const stoppageSeconds = currentTotalSeconds - regularTimeEndSeconds;
                         const stoppageMinutes = Math.floor(stoppageSeconds / 60);
                         const stoppageRemainingSeconds = stoppageSeconds % 60;
-                        timeString = `${String(regularTimeEnd).padStart(2, '0')}:00 +${String(stoppageMinutes).padStart(2, '0')}:${String(stoppageRemainingSeconds).padStart(2, '0')}`;
+                    timeString = `${String(regularTimeEnd).padStart(2, '0')}:00 +${String(stoppageMinutes).padStart(2, '0')}:${String(stoppageRemainingSeconds).padStart(2, '0')}`; // Usar var(--font-family-primary)
                     }                    timeEl.innerHTML = `<span>${timeString}</span>`;
                 }, 1000);
 
@@ -3518,7 +3619,7 @@
                             timeString = `${String(regularTimeEnd).padStart(2, '0')}:00 +${String(stoppageTime).padStart(2, '0')}:00`;
                         } else {
                             timeString = `${String(regularTimeEnd).padStart(2, '0')}:00 +${String(stoppageMinutes).padStart(2, '0')}:${String(stoppageRemainingSeconds).padStart(2, '0')}`;
-                        }
+                        } // Usar var(--font-family-primary)
                     }
                     timeEl.innerText = timeString;
                 }, 1000);
