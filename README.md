@@ -1,8 +1,8 @@
-# SportingLabs W3Labs - Painel de Dados Esportivos
+# W3Labs Sports - Painel de Dados Esportivos
 
 ##  Visão Geral
 
-O SportingLabs é uma aplicação web de página única (SPA - Single Page Application) projetada para exibir dados esportivos de forma dinâmica e interativa. Construído com HTML, CSS e JavaScript puros, o projeto consome múltiplas APIs para fornecer informações em tempo real sobre partidas de futebol e Fórmula 1, com animações de eventos, placares dinâmicos, classificações, notícias e muito mais.
+O W3Labs Sports é uma aplicação web de página única (SPA - Single Page Application) projetada para exibir dados esportivos de forma dinâmica e interativa. Construído com HTML, CSS e JavaScript puros, o projeto consome múltiplas APIs para fornecer informações em tempo real sobre partidas de futebol e Fórmula 1, com animações de eventos, placares dinâmicos, classificações, notícias e muito mais.
 
 A interface é moderna, utilizando o conceito de "glassmorphism", e é totalmente responsiva, adaptando-se desde telas de smartphones ultrapequenos até monitores ultrawide.
 
