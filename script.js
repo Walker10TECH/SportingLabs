@@ -17,6 +17,12 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                         bg: "https://s2-globo-play.glbimg.com/rHTMAA96-XWwbs6h4pEWeZXlREw=/https://s2.glbimg.com/aNGo_xeD86fO2XMCGBRlpe7rmmg=/i.s3.glbimg.com/v1/AUTH_c3c606ff68e7478091d1ca496f9c5625/internal_photos/bs/2025/L/P/Y3zKUbSTWAUtZN86BTzg/2025-4731-brasileirao-background.jpg",
                         clubs: ["Clube_Atlético_Mineiro", "Esporte_Clube_Bahia", "Botafogo_de_Futebol_e_Regatas", "Ceará_Sporting_Club", "Sport_Club_Corinthians_Paulista", "Cruzeiro_Esporte_Clube", "Clube_de_Regatas_do_Flamengo", "Fluminense_Football_Club", "Fortaleza_Esporte_Clube", "Grêmio_Foot-Ball_Porto_Alegrense", "Sport_Club_Internacional", "Esporte_Clube_Juventude", "Mirassol_Futebol_Clube", "Sociedade_Esportiva_Palmeiras", "Red_Bull_Bragantino", "Santos_Futebol_Clube", "São_Paulo_Futebol_Clube", "Sport_Club_do_Recife", "Club_de_Regatas_Vasco_da_Gama", "Esporte_Clube_Vitória"]
                     },
+                    "brasileiraob": { 
+                        id: "bra.2", apiFootballId: 72, seasonId: 2026, name: "Brasileirão Série B", 
+                        logo: "https://upload.wikimedia.org/wikipedia/pt/d/d6/Campeonato_Brasileiro_de_Futebol_S%C3%A9rie_B.png", 
+                        bg: "https://s2-globo-play.glbimg.com/rHTMAA96-XWwbs6h4pEWeZXlREw=/https://s2.glbimg.com/aNGo_xeD86fO2XMCGBRlpe7rmmg=/i.s3.glbimg.com/v1/AUTH_c3c606ff68e7478091d1ca496f9c5625/internal_photos/bs/2025/L/P/Y3zKUbSTWAUtZN86BTzg/2025-4731-brasileirao-background.jpg",
+                        clubs: ["Goiás_Esporte_Clube", "Sport_Club_do_Recife", "Ceará_Sporting_Club", "América_Futebol_Clube_(Minas_Gerais)", "Coritiba_Foot_Ball_Club", "Vila_Nova_Futebol_Clube", "Clube_de_Regatas_Brasil", "Grêmio_Novorizontino", "Mirassol_Futebol_Clube", "Operário_Ferroviário_Esporte_Clube", "Amazonas_Futebol_Clube", "Avaí_Futebol_Clube", "Associação_Chapecoense_de_Futebol", "Paysandu_Sport_Club", "Botafogo_Futebol_Clube_(Ribeirão_Preto)", "Guarani_Futebol_Clube", "Associação_Atlética_Ponte_Preta", "Ituano_Futebol_Clube", "Brusque_Futebol_Clube"]
+                    },
                     "copadobrasil": { 
                         id: "bra.copa_do_brazil", apiFootballId: 73, seasonId: 2026, name: "Copa do Brasil", 
                         logo: "https://cdn-img.zerozero.pt/img/logos/competicoes/260_imgbank_cb_20250227155245.png", 
@@ -567,8 +573,10 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
 
                     grid.appendChild(card);
 
-                    if (['bra.1', 'bra.2'].includes(lConfig.id)) {
-                        this.playLfuIntro(ev.id, index);
+                    if (['bra.1', 'bra.2', 'bra.copa_do_brazil'].includes(lConfig.id)) {
+                        this.playCbfIntro(ev.id, index);
+                    } else if (lConfig.id === 'ita.1') {
+                        this.playSerieAIntro(ev.id, index);
                     } else if (lConfig.id === 'bra.camp.gaucho') {
                         this.playGauchaoIntro(ev.id, index);
                     } else {
@@ -592,28 +600,130 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                 const scaleStyle = isPip ? 'style="transform: scale(1); padding: 1rem;"' : '';
 
                 // Conditional rendering based on league
-                if (['bra.1', 'bra.2'].includes(lConfig.id)) { // LFU Scoreboard Theme
+                if (['bra.1', 'bra.2', 'bra.copa_do_brazil'].includes(lConfig.id)) { // NOVO CBF Theme
                     const homeTeamColor = home.team.color ? `#${home.team.color}` : '#0d80bf';
                     const awayTeamColor = away.team.color ? `#${away.team.color}` : '#e50e18';
+                    const timeBoxColor = lConfig.id === 'bra.2' ? '#FFD700' : '#c9f500'; // Amarelo para Série B
                     return `
-                        <div class="lfu-widget-container" id="widgetContainer-${ev.id}" ${scaleStyle}>
-                            <div class="lfu-scoreboard-bar">
-                                <div class="lfu-team-box lfu-home-team" id="homeBox-${ev.id}">
-                                    <div class="lfu-team-color-strip lfu-home-strip" id="homeStrip-${ev.id}" style="background-color: ${homeTeamColor};"></div>
-                                    <div class="lfu-team-text-wrapper" id="homeText-${ev.id}"><span class="lfu-team-name">${home.team.abbreviation}</span></div>
-                                    <div class="lfu-goal-overlay" id="homeGoalOverlay-${ev.id}" style="background-color: ${homeTeamColor};">
-                                        <img src="${home.team.logo}" class="lfu-team-logo-anim">
-                                        <div class="lfu-goal-word"><span class="lfu-letter l1">G</span><span class="lfu-letter l2">O</span><span class="lfu-letter l3">L</span></div>
+                        <div class="cbf-widget-container" id="widgetContainer-${ev.id}" ${scaleStyle}>
+                            <div class="cbf-scoreboard-wrapper" id="scoreboardWrapper-${ev.id}">
+                                <!-- Barra Branca de Fundo -->
+                                <div class="cbf-main-bar">
+                                    <!-- Lado Esquerdo -->
+                                    <div class="cbf-team-side cbf-team-left" id="homeBox-${ev.id}" data-color="#${home.team.color || '0b071a'}" data-logo="${home.team.logo}">
+                                        <img src="${home.team.logo}" alt="${home.team.abbreviation}" class="cbf-logo">
+                                        <span class="cbf-team-name">${home.team.abbreviation}</span>
+                                        <div class="cbf-shape-left" style="background-color: ${homeTeamColor};"></div>
+                                    </div>
+                                    <!-- Lado Direito -->
+                                    <div class="cbf-team-side cbf-team-right" id="awayBox-${ev.id}" data-color="#${away.team.color || '0b071a'}" data-logo="${away.team.logo}">
+                                        <div class="cbf-shape-right" style="background-color: ${awayTeamColor};"></div>
+                                        <span class="cbf-team-name">${away.team.abbreviation}</span>
+                                        <img src="${away.team.logo}" alt="${away.team.abbreviation}" class="cbf-logo">
                                     </div>
                                 </div>
-                                <div class="lfu-match-center" id="matchCenter-${ev.id}">
-                                    <div class="lfu-score" id="score-home-${ev.id}">${home.score || '0'}</div>
-                                    <div class="lfu-logo-container"><img src="https://image2url.com/r2/default/images/1771518129374-b83a4652-c951-4ce7-a9ad-164074b9391b.png" class="lfu-logo-img" alt="LFU Logo"></div>
-                                    <div class="lfu-score" id="score-away-${ev.id}">${away.score || '0'}</div>
+                                <!-- Barra de Tempo -->
+                                <div class="cbf-time-box" id="timer-pill-${ev.id}" style="background-color: ${timeBoxColor};">
+                                    <span class="cbf-time-text">${status?.state === 'in' ? (displayClock || "45:00").replace("'", "") : (status?.shortDetail || 'FIM')}</span>
                                 </div>
-                                <div class="lfu-team-box lfu-away-team" id="awayBox-${ev.id}"><div class="lfu-team-color-strip lfu-away-strip" id="awayStrip-${ev.id}" style="background-color: ${awayTeamColor};"></div><div class="lfu-team-text-wrapper" id="awayText-${ev.id}"><span class="lfu-team-name">${away.team.abbreviation}</span></div><div class="lfu-goal-overlay" id="awayGoalOverlay-${ev.id}" style="background-color: ${awayTeamColor};"><img src="${away.team.logo}" class="lfu-team-logo-anim"><div class="lfu-goal-word"><span class="lfu-letter l1">G</span><span class="lfu-letter l2">O</span><span class="lfu-letter l3">L</span></div></div></div>
+                                <!-- Caixa do Placar Central -->
+                                <div class="cbf-score-box">
+                                    <span class="cbf-score-number" id="score-home-${ev.id}">${home.score || '0'}</span>
+                                    <span class="cbf-score-divider">|</span>
+                                    <span class="cbf-score-number" id="score-away-${ev.id}">${away.score || '0'}</span>
+                                </div>
+
+                                <!-- Animação Gigante de Gol -->
+                                <div class="cbf-goal-banner" id="goalBanner-${ev.id}">
+                                    <div class="cbf-goal-left">
+                                        <img src="" class="cbf-goal-logo-img" id="goalLogo-${ev.id}">
+                                    </div>
+                                    <div class="cbf-goal-right">
+                                        <span class="cbf-goal-text" id="goalText-${ev.id}">GOOOOOOOOOOL</span>
+                                        <!-- Mascote Genérico -->
+                                        <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" class="cbf-goal-mascot-img" id="goalMascot-${ev.id}">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="lfu-timer-container" id="timer-pill-${ev.id}"><span>${status?.state === 'in' ? (displayClock || "45:00").replace("'", "") : (status?.shortDetail || 'FIM')}</span></div>
+                        </div>
+                    `;
+                } else if (lConfig.id === 'ita.1') { // Serie A Theme
+                    const homeTeamColor = home.team.color ? `#${home.team.color}` : '#030833';
+                    const awayTeamColor = away.team.color ? `#${away.team.color}` : '#d11b27';
+                    
+                    const darkenColor = (hex, percent) => {
+                        if (!hex) return '#000000';
+                        hex = hex.replace('#', '');
+                        if (hex.length === 3) hex = hex.split('').map(x => x+x).join('');
+                        let r = parseInt(hex.substring(0,2), 16);
+                        let g = parseInt(hex.substring(2,4), 16);
+                        let b = parseInt(hex.substring(4,6), 16);
+                        r = parseInt(r * (100 - percent) / 100);
+                        g = parseInt(g * (100 - percent) / 100);
+                        b = parseInt(b * (100 - percent) / 100);
+                        return `#${(r < 255 ? r < 1 ? 0 : r : 255).toString(16).padStart(2, '0')}${(g < 255 ? g < 1 ? 0 : g : 255).toString(16).padStart(2, '0')}${(b < 255 ? b < 1 ? 0 : b : 255).toString(16).padStart(2, '0')}`;
+                    };
+                    const homeDark = darkenColor(homeTeamColor, 40);
+                    const awayDark = darkenColor(awayTeamColor, 40);
+
+                    const homeAccentLight = home.team.alternateColor ? `#${home.team.alternateColor}` : '#5dfcfc';
+                    const homeAccentDark = darkenColor(homeAccentLight, 20);
+                    const awayAccentLight = away.team.alternateColor ? `#${away.team.alternateColor}` : '#d11b27';
+                    const awayAccentDark = darkenColor(awayAccentLight, 20);
+
+                    return `
+                        <div class="sa-widget-container" id="widgetContainer-${ev.id}" ${scaleStyle}>
+                            <div class="sa-scoreboard-container">
+                                <!-- 3D Layers -->
+                                <div class="sa-piece sa-layer-3d sa-home-3d" style="background: ${homeDark}"></div>
+                                <div class="sa-piece sa-layer-3d sa-away-3d" style="background: ${awayDark}"></div>
+                                
+                                <div class="sa-piece sa-layer-3d sa-accent-l-3d" style="background: ${darkenColor(homeAccentDark, 40)}"></div>
+                                <div class="sa-piece sa-layer-3d sa-accent-r-3d" style="background: ${darkenColor(awayAccentDark, 40)}"></div>
+                                
+                                <div class="sa-piece sa-layer-3d sa-score-l-3d"></div>
+                                <div class="sa-piece sa-layer-3d sa-score-r-3d"></div>
+
+                                <!-- Front Layers -->
+                                <div class="sa-piece sa-layer-front sa-home-front" id="homeBox-${ev.id}" style="background: linear-gradient(to bottom, ${homeTeamColor}, ${homeDark})">
+                                    <span class="sa-team-name">${home.team.abbreviation}</span>
+                                    <span class="sa-goal-text">GOL!</span>
+                                </div>
+                                <div class="sa-piece sa-layer-front sa-away-front" id="awayBox-${ev.id}" style="background: linear-gradient(to bottom, ${awayTeamColor}, ${awayDark})">
+                                    <span class="sa-team-name">${away.team.abbreviation}</span>
+                                    <span class="sa-goal-text">GOL!</span>
+                                </div>
+
+                                <div class="sa-piece sa-layer-front sa-accent-l-front" style="background: linear-gradient(135deg, ${homeAccentLight}, ${homeAccentDark})"></div>
+                                <div class="sa-piece sa-layer-front sa-accent-r-front" style="background: linear-gradient(135deg, ${awayAccentLight}, ${awayAccentDark})"></div>
+
+                                <div class="sa-piece sa-layer-front sa-score-l-front"><span class="sa-score-number" id="score-home-${ev.id}">${home.score || '0'}</span></div>
+                                <div class="sa-piece sa-layer-front sa-score-r-front"><span class="sa-score-number" id="score-away-${ev.id}">${away.score || '0'}</span></div>
+
+                                <!-- Timer & Shield -->
+                                <div class="sa-timer-panel" id="timer-pill-${ev.id}"><span>${status?.state === 'in' ? (displayClock || "45:00").replace("'", "") : (status?.shortDetail || 'FIM')}</span></div>
+                                <div class="sa-shield-container"><div class="sa-shield-base"></div><div class="sa-shield-outer"></div><div class="sa-shield-inner"><img src="${lConfig.logo}" alt="Serie A" class="sa-serie-a-logo"></div></div>
+                            </div>
+                        </div>
+                    `;
+                } else if (lConfig.id === 'conmebol.libertadores') { // Libertadores Theme
+                    const homeTeamColor = home.team.color ? `#${home.team.color}` : '#8CDEDC';
+                    const awayTeamColor = away.team.color ? `#${away.team.color}` : 'transparent';
+                    
+                    return `
+                        <div class="w-full flex justify-center py-4" id="widgetContainer-${ev.id}" ${scaleStyle}>
+                            <div class="lib-placar-wrapper">
+                                <div class="lib-scoreboard">
+                                    <div class="lib-box lib-logo-box"><img src="${lConfig.logo}" alt="Libertadores"></div>
+                                    <div class="lib-box lib-team-box lib-team-home" style="border-bottom-color: ${homeTeamColor}">${home.team.abbreviation}</div>
+                                    <div class="lib-box lib-score-box" id="score-box-${ev.id}"><span id="score-home-${ev.id}">${home.score || '0'}</span>-<span id="score-away-${ev.id}">${away.score || '0'}</span></div>
+                                    <div class="lib-box lib-team-box lib-team-away" style="border-bottom-color: ${awayTeamColor}">${away.team.abbreviation}</div>
+                                    <div class="lib-box lib-time-box" id="timer-pill-${ev.id}">${status?.state === 'in' ? (displayClock || "45:00").replace("'", "") : (status?.shortDetail || 'FIM')}</div>
+                                </div>
+                                <div class="lib-event-bar" id="eventBar-${ev.id}">
+                                    <div class="lib-event-content" id="eventContent-${ev.id}"></div>
+                                </div>
+                            </div>
                         </div>
                     `;
                 } else if (lConfig.id === 'bra.camp.gaucho') { // Modern Scoreboard Theme (Gauchão style)
@@ -732,7 +842,14 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                         const isGauchao = league.id === 'bra.camp.gaucho';
 
                         if (newHomeScore > oldHomeScore) {
-                            if (isGauchao) {
+                            if (['bra.1', 'bra.2', 'bra.copa_do_brazil'].includes(league.id)) {
+                                this.triggerCbfGoalAnimation(ev.id, 'home');
+                            } else if (league.id === 'ita.1') {
+                                this.triggerSerieAGoalAnimation(ev.id, 'home');
+                            } else if (league.id === 'conmebol.libertadores') {
+                                this.triggerLibertadoresEvent(ev.id, 'goal', h.team.abbreviation, 'GOL');
+                                this.triggerLibertadoresGoalPop(ev.id);
+                            } else if (isGauchao) {
                                 this.triggerGauchaoGoalAnimation(ev.id, 'home');
                             } else {
                                 this.triggerBrasileiraoGoalAnimation(ev.id, 'home');
@@ -741,7 +858,14 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                             matchCard.setAttribute('data-home-score', newHomeScore);
                         }
                         if (newAwayScore > oldAwayScore) {
-                            if (isGauchao) {
+                            if (['bra.1', 'bra.2', 'bra.copa_do_brazil'].includes(league.id)) {
+                                this.triggerCbfGoalAnimation(ev.id, 'away');
+                            } else if (league.id === 'ita.1') {
+                                this.triggerSerieAGoalAnimation(ev.id, 'away');
+                            } else if (league.id === 'conmebol.libertadores') {
+                                this.triggerLibertadoresEvent(ev.id, 'goal', a.team.abbreviation, 'GOL');
+                                this.triggerLibertadoresGoalPop(ev.id);
+                            } else if (isGauchao) {
                                 this.triggerGauchaoGoalAnimation(ev.id, 'away');
                             } else {
                                 this.triggerBrasileiraoGoalAnimation(ev.id, 'away');
@@ -755,7 +879,14 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                             const cardEvents = allEvents.filter(e => e.type === 'yellowcard' || e.type === 'redcard');
                             if (cardEvents.length > oldCardCount) {
                                 const lastNewCard = cardEvents[cardEvents.length - 1], teamSide = h.team.id === lastNewCard.team.id ? 'home' : 'away';
-                                if (isGauchao) {
+                                if (['bra.1', 'bra.2', 'bra.copa_do_brazil'].includes(league.id)) {
+                                    this.triggerCbfCardAnimation(ev.id, teamSide, lastNewCard.type);
+                                } else if (league.id === 'ita.1') {
+                                    this.triggerSerieACardAnimation(ev.id, teamSide, lastNewCard.type);
+                                } else if (league.id === 'conmebol.libertadores') {
+                                    const playerName = lastNewCard.athletesInvolved?.[0]?.shortName || 'JOGADOR';
+                                    this.triggerLibertadoresEvent(ev.id, lastNewCard.type === 'redcard' ? 'red' : 'yellow', teamSide === 'home' ? h.team.abbreviation : a.team.abbreviation, playerName);
+                                } else if (isGauchao) {
                                     this.triggerGauchaoCardAnimation(ev.id, teamSide, lastNewCard.type);
                                 } else {
                                     this.triggerBrasileiraoCardAnimation(ev.id, teamSide, lastNewCard.type);
@@ -768,7 +899,14 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                             if (subEvents.length > oldSubCount) {
                                 const lastNewSub = subEvents[subEvents.length - 1];
                                 const team = h.team.id === lastNewSub.team.id ? h : a;
-                                this.triggerSubstitutionAnimation(ev.id, lastNewSub, team);
+                                if (league.id === 'conmebol.libertadores') {
+                                    const pOut = lastNewSub.athletesInvolved?.find(x => x.type === 'athleteout');
+                                    const pIn = lastNewSub.athletesInvolved?.find(x => x.type === 'athletein');
+                                    const text = `EN: ${pIn?.shortName || ''} | SA: ${pOut?.shortName || ''}`;
+                                    this.triggerLibertadoresEvent(ev.id, 'sub', team.team.abbreviation, text);
+                                } else {
+                                    this.triggerSubstitutionAnimation(ev.id, lastNewSub, team);
+                                }
                                 matchCard.setAttribute('data-substitution-events', subEvents.length);
                             }
 
@@ -776,7 +914,11 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                             const varEvents = allEvents.filter(e => e.text && (e.text.toLowerCase().includes('var') || e.text.toLowerCase().includes('revisão')));
                             if (varEvents.length > oldVarCount) {
                                 const lastNewVar = varEvents[varEvents.length - 1];
-                                this.triggerVARAnimation(ev.id, lastNewVar);
+                                if (league.id === 'conmebol.libertadores') {
+                                    this.triggerLibertadoresEvent(ev.id, 'var', '', lastNewVar.text || 'REVISÃO DE VÍDEO');
+                                } else {
+                                    this.triggerVARAnimation(ev.id, lastNewVar);
+                                }
                                 matchCard.setAttribute('data-var-events', varEvents.length);
                             }
                         }
@@ -913,7 +1055,7 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                 con.innerHTML = '';
                 
                 const leagueKey = this.state.currentLeague;
-                const isLfu = ['brasileirao', 'brasileiraob'].includes(leagueKey);
+                const isCbf = ['brasileirao', 'brasileiraob'].includes(leagueKey);
 
                 let zones = {};
                 let legendItems = [];
@@ -932,25 +1074,24 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                 } else if (leagueKey === 'brasileiraob') {
                     zones = { 1: 'acesso', 2: 'acesso', 3: 'acesso', 4: 'acesso', 17: 'rebaixamento', 18: 'rebaixamento', 19: 'rebaixamento', 20: 'rebaixamento' };
                     legendItems = [ { color: 'bg-acesso', text: 'Acesso à Série A' }, { color: 'bg-rebaixamento', text: 'Rebaixamento' } ];
-                    document.styleSheets[0].insertRule('.bg-acesso { background-color: #22c55e; }', document.styleSheets[0].cssRules.length);
                 } else if (['premier','laliga','seriea','bundesliga'].includes(leagueKey)) {
                         zones = { 1: 'libertadores', 2: 'libertadores', 3: 'libertadores', 4: 'libertadores', 5: 'sulamericana', 6: 'sulamericana', 18: 'rebaixamento', 19: 'rebaixamento', 20: 'rebaixamento' };
                         legendItems = [ { color: 'bg-libertadores', text: 'Champions League' }, { color: 'bg-sulamericana', text: 'Europa League' }, { color: 'bg-rebaixamento', text: 'Rebaixamento' } ];
                 }
 
-                if (isLfu) {
+                if (isCbf) {
                     if (legend) {
-                        legend.className = 'lfu-standings-legend';
-                        legend.innerHTML = legendItems.map(i => `<div class="lfu-legend-item"><div class="lfu-legend-dot ${i.color}"></div><span>${i.text}</span></div>`).join('');
+                        legend.className = 'cbf-standings-legend';
+                        legend.innerHTML = legendItems.map(i => `<div class="cbf-legend-item"><div class="cbf-legend-dot ${i.color}"></div><span>${i.text}</span></div>`).join('');
                     }
                     (data.children||[]).forEach(g => {
-                        const card = document.createElement('div'); card.className = 'lfu-standings-card mb-6';
-                        let html = `<div class="lfu-standings-header"><div>#</div><div class="text-left">Clube</div><div class="text-center">Pts</div><div class="text-center hidden sm:block">J</div><div class="text-center hidden sm:block">V</div><div class="text-center hidden sm:block">E</div><div class="text-center hidden sm:block">D</div><div class="text-center hidden sm:block">SG</div><div class="text-center">%</div></div>`;
+                        const card = document.createElement('div'); card.className = 'cbf-standings-card mb-6';
+                        let html = `<div class="cbf-standings-header"><div>#</div><div class="text-left">Clube</div><div class="text-center">Pts</div><div class="text-center hidden sm:block">J</div><div class="text-center hidden sm:block">V</div><div class="text-center hidden sm:block">E</div><div class="text-center hidden sm:block">D</div><div class="text-center hidden sm:block">SG</div><div class="text-center">%</div></div>`;
                         (g.standings.entries||[]).forEach((e,i) => {
                             const val = n => e.stats.find(s=>s.name===n)?.value||0;
                             const rank = i + 1;
                             const zoneClass = zones[rank] ? `zone-${zones[rank]}` : '';
-                            html += `<div class="lfu-standings-row"><div class="lfu-rank-cell ${zoneClass}"><span>${rank}</span></div><div class="lfu-team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate">${e.team.shortDisplayName}</span></div><span class="lfu-points-cell">${val('points')}</span><span class="lfu-stats-cell hidden sm:block">${val('gamesPlayed')}</span><span class="lfu-stats-cell hidden sm:block">${val('wins')}</span><span class="lfu-stats-cell hidden sm:block">${val('ties')}</span><span class="lfu-stats-cell hidden sm:block">${val('losses')}</span><span class="lfu-stats-cell hidden sm:block">${val('pointDifferential')}</span><span class="lfu-stats-cell text-xs">${val('gamesPlayed') > 0 ? Math.round((val('points')/(val('gamesPlayed')*3))*100) : 0}%</span></div>`;
+                            html += `<div class="cbf-standings-row"><div class="cbf-rank-cell ${zoneClass}"><span>${rank}</span></div><div class="cbf-team-cell"><img src="${e.team.logos?.[0]?.href}"> <span class="truncate">${e.team.shortDisplayName}</span></div><span class="cbf-points-cell">${val('points')}</span><span class="cbf-stats-cell hidden sm:block">${val('gamesPlayed')}</span><span class="cbf-stats-cell hidden sm:block">${val('wins')}</span><span class="cbf-stats-cell hidden sm:block">${val('ties')}</span><span class="cbf-stats-cell hidden sm:block">${val('losses')}</span><span class="cbf-stats-cell hidden sm:block">${val('pointDifferential')}</span><span class="cbf-stats-cell text-xs">${val('gamesPlayed') > 0 ? Math.round((val('points')/(val('gamesPlayed')*3))*100) : 0}%</span></div>`;
                         });
                         card.innerHTML = html; con.appendChild(card);
                     });
@@ -1479,6 +1620,139 @@ const APIFOOTBALL_KEY = "9c617e9d2b646ee084b312546b1974fe";
                     ]
                 });
             },
+
+            // ---- ANIMAÇÕES DO PLACAR LIBERTADORES ----
+            triggerLibertadoresEvent(eventId, type, team, text) {
+                const eventBar = document.getElementById(`eventBar-${eventId}`);
+                const eventContent = document.getElementById(`eventContent-${eventId}`);
+                if (!eventBar || !eventContent) return;
+
+                if (this.state.libertadoresTimeouts && this.state.libertadoresTimeouts[eventId]) {
+                    clearTimeout(this.state.libertadoresTimeouts[eventId]);
+                } else if (!this.state.libertadoresTimeouts) {
+                    this.state.libertadoresTimeouts = {};
+                }
+
+                eventBar.classList.remove('show');
+
+                setTimeout(() => {
+                    let htmlContent = '';
+                    switch(type) {
+                        case 'yellow': htmlContent = `<div class="lib-card-icon lib-card-yellow"></div> <div class="lib-event-text">${team} - ${text}</div>`; break;
+                        case 'red': htmlContent = `<div class="lib-card-icon lib-card-red"></div> <div class="lib-event-text">${team} - ${text}</div>`; break;
+                        case 'var': htmlContent = `<div class="lib-var-icon">VAR</div> <div class="lib-event-text">${text}</div>`; break;
+                        case 'sub': htmlContent = `<div class="lib-sub-icon"><span class="lib-sub-in">▲</span><span class="lib-sub-out">▼</span></div> <div class="lib-event-text">${team} - ${text}</div>`; break;
+                        case 'goal': htmlContent = `<div class="lib-goal-icon">⚽</div> <div class="lib-event-text">GOL ${team}</div>`; break;
+                    }
+                    eventContent.innerHTML = htmlContent;
+                    eventBar.classList.add('show');
+
+                    this.state.libertadoresTimeouts[eventId] = setTimeout(() => { eventBar.classList.remove('show'); }, 5000);
+                }, 50);
+            },
+
+            triggerLibertadoresGoalPop(eventId) { const scoreBox = document.getElementById(`score-box-${eventId}`); if (scoreBox) { scoreBox.classList.add('pop'); setTimeout(() => scoreBox.classList.remove('pop'), 500); } },
+
+            // ---- ANIMAÇÕES DO PLACAR SERIE A ITALIA ----
+            playSerieAIntro(eventId, index) {
+                const get = (id) => document.getElementById(id);
+                const delay = index * 200;
+                const widget = get(`widgetContainer-${eventId}`);
+                if (!widget) return;
+                
+                widget.classList.add('sa-intro-mode');
+                const container = widget.querySelector('.sa-scoreboard-container');
+                if(!container) return;
+
+                const leftElements = container.querySelectorAll('.sa-home-3d, .sa-home-front, .sa-accent-l-3d, .sa-accent-l-front, .sa-score-l-3d, .sa-score-l-front');
+                const rightElements = container.querySelectorAll('.sa-away-3d, .sa-away-front, .sa-accent-r-3d, .sa-accent-r-front, .sa-score-r-3d, .sa-score-r-front');
+                const timerPanel = container.querySelector('.sa-timer-panel');
+                const shield = container.querySelector('.sa-shield-container');
+
+                leftElements.forEach(el => el.classList.remove('sa-anim-left'));
+                rightElements.forEach(el => el.classList.remove('sa-anim-right'));
+                if(timerPanel) timerPanel.classList.remove('sa-anim-timer');
+                if(shield) shield.classList.remove('sa-anim-shield');
+
+                void widget.offsetWidth;
+
+                setTimeout(() => {
+                    leftElements.forEach(el => el.classList.add('sa-anim-left'));
+                    rightElements.forEach(el => el.classList.add('sa-anim-right'));
+                    setTimeout(() => {
+                        if(shield) shield.classList.add('sa-anim-shield');
+                        if(timerPanel) timerPanel.classList.add('sa-anim-timer');
+                    }, 300);
+                    setTimeout(() => { widget.classList.remove('sa-intro-mode'); }, 1500);
+                }, delay);
+            },
+
+            triggerSerieAGoalAnimation(eventId, teamSide) {
+                const panel = document.getElementById(`${teamSide}Box-${eventId}`);
+                const scoreEl = document.getElementById(`score-${teamSide}-${eventId}`);
+                if (!panel || !scoreEl) return;
+                panel.classList.add('sa-is-goal');
+                setTimeout(() => {
+                    panel.classList.remove('sa-is-goal');
+                    setTimeout(() => { const animClass = teamSide === 'home' ? 'sa-score-pop-l' : 'sa-score-pop-r'; scoreEl.classList.add(animClass); setTimeout(() => scoreEl.classList.remove(animClass), 600); }, 150);
+                }, 3000);
+            },
+            triggerSerieACardAnimation(eventId, teamSide, cardType) { const boxEl = document.getElementById(`${teamSide}Box-${eventId}`); if (!boxEl) return; const className = cardType === 'redcard' ? 'sa-red-active' : 'sa-yellow-active'; boxEl.classList.add(className); setTimeout(() => boxEl.classList.remove(className), 3000); },
+
+            // ---- ANIMAÇÕES DO PLACAR CBF (BRASILEIRÃO/COPA) ----
+            playCbfIntro(eventId, index) {
+                const get = (id) => document.getElementById(id);
+                const delay = index * 200;
+                const wrapper = get(`scoreboardWrapper-${eventId}`);
+                if (!wrapper) return;
+                
+                wrapper.classList.remove('cbf-is-visible');
+                void wrapper.offsetWidth; // Força o reflow para resetar a animação
+
+                setTimeout(() => {
+                    wrapper.classList.add('cbf-is-visible');
+                }, delay + 100);
+            },
+
+            triggerCbfGoalAnimation(eventId, teamSide) {
+                const scoreEl = document.getElementById(`score-${teamSide}-${eventId}`);
+                if (scoreEl) {
+                    scoreEl.classList.add('pop');
+                    setTimeout(() => scoreEl.classList.remove('pop'), 300);
+                }
+
+                const banner = document.getElementById(`goalBanner-${eventId}`);
+                const logo = document.getElementById(`goalLogo-${eventId}`);
+                const teamBox = document.getElementById(`${teamSide}Box-${eventId}`);
+
+                if (banner && logo && teamBox) {
+                    const teamColor = teamBox.getAttribute('data-color') || '#0b071a';
+                    const teamLogo = teamBox.getAttribute('data-logo') || '';
+
+                    banner.style.backgroundColor = teamColor;
+                    logo.src = teamLogo;
+
+                    banner.classList.remove('hide', 'show');
+                    void banner.offsetWidth; // Força o reflow
+                    banner.classList.add('show');
+
+                    setTimeout(() => {
+                        if (banner.classList.contains('show')) {
+                            banner.classList.remove('show');
+                            banner.classList.add('hide');
+                        }
+                    }, 5000);
+                }
+            },
+
+            triggerCbfCardAnimation(eventId, teamSide, cardType) {
+                const boxEl = document.getElementById(`${teamSide}Box-${eventId}`);
+                if (!boxEl) return;
+                const className = cardType === 'redcard' ? 'red-active' : 'yellow-active';
+                boxEl.classList.add(className);
+                setTimeout(() => boxEl.classList.remove(className), 3000);
+            },
+            // ----------------------------------------------------
 
             playBrasileiraoIntro(eventId, index) {
                 const get = (id) => document.getElementById(id);
